@@ -1,0 +1,1377 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+<title>Ulangan Biologi – Ekosistem</title>
+<style>
+:root {
+  --p:    #1d4ed8;
+  --p2:   #1e40af;
+  --plight:#dbeafe;
+  --ok:   #059669;
+  --err:  #dc2626;
+  --warn: #d97706;
+  --bg:   #f0f4f8;
+  --card: #ffffff;
+  --txt:  #1e293b;
+  --muted:#64748b;
+  --bdr:  #e2e8f0;
+  --sh:   0 2px 16px rgba(0,0,0,.10);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg);color:var(--txt);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;user-select:none;-webkit-user-select:none;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{display:flex;align-items:flex-start;justify-content:center;padding:12px;padding-bottom:calc(12px + env(safe-area-inset-bottom));padding-top:calc(12px + env(safe-area-inset-top))}
+
+/* ── WRAPPER ── */
+.wrap{width:100%;max-width:640px}
+
+/* ── PAGES ── */
+.pg{display:none;animation:fadeIn .3s ease}
+.pg.on{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ── CARD ── */
+.card{background:var(--card);border-radius:14px;box-shadow:var(--sh);padding:24px;margin-bottom:14px}
+
+/* ── LOGIN ── */
+.login-head{text-align:center;margin-bottom:24px}
+.login-head .badge{display:inline-block;background:var(--plight);color:var(--p);font-size:11px;font-weight:700;letter-spacing:.08em;padding:4px 10px;border-radius:20px;margin-bottom:10px;text-transform:uppercase}
+.login-head h1{font-size:20px;font-weight:800;color:var(--p2);line-height:1.3}
+.login-head p{font-size:13px;color:var(--muted);margin-top:4px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em}
+.field input,.field select{width:100%;padding:13px 14px;border:1.5px solid var(--bdr);border-radius:9px;font-size:16px;color:var(--txt);background:#fff;outline:none;transition:border .2s;-webkit-appearance:none;appearance:none}
+.field input:focus,.field select:focus{border-color:var(--p)}
+.pwd-wrap{position:relative}
+.pwd-wrap input{padding-right:46px}
+.pwd-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);padding:4px;display:flex;align-items:center}
+.pwd-eye:active{color:var(--p)}
+
+/* ── TIMER ── */
+#timerWrap{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:700;color:var(--p)}
+#timerWrap svg{width:18px;height:18px}
+#timerWrap.warn{color:var(--warn)}
+#timerWrap.danger{color:var(--err);animation:pulse .6s infinite alternate}
+@keyframes pulse{to{opacity:.5}}
+
+/* ── PROGRESS ── */
+.prog-wrap{margin-bottom:18px}
+.prog-label{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:5px;font-weight:600}
+.prog-bar{height:7px;background:var(--bdr);border-radius:99px;overflow:hidden}
+.prog-fill{height:100%;background:var(--p);border-radius:99px;transition:width .4s ease}
+
+/* ── QUIZ HEADER ── */
+.quiz-hd{display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:1.5px solid var(--bdr);margin-bottom:18px}
+.quiz-hd .soal-tag{font-weight:800;font-size:15px;color:var(--p)}
+.try-badge{font-size:12px;color:var(--muted);background:var(--bg);padding:3px 10px;border-radius:20px}
+
+/* ── QUESTION TEXT ── */
+.q-txt{font-size:16px;font-weight:700;line-height:1.5;margin-bottom:6px}
+.q-hint{font-size:12px;color:var(--muted);margin-bottom:18px;font-style:italic}
+
+/* ── STIMULUS ── */
+.stim{background:var(--plight);border-left:4px solid var(--p);border-radius:0 8px 8px 0;padding:13px 15px;font-size:13.5px;line-height:1.7;color:#1e3a5f;margin-bottom:18px;font-style:italic}
+
+/* ── OPTIONS ── */
+.opts{display:flex;flex-direction:column;gap:10px;margin-bottom:22px}
+.opt-lbl{display:flex;align-items:flex-start;gap:12px;padding:13px 14px;border:1.5px solid var(--bdr);border-radius:10px;cursor:pointer;transition:border .15s,background .15s;line-height:1.5;font-size:14.5px}
+.opt-lbl:active{background:#f8faff}
+.opt-lbl input{margin-top:2px;flex-shrink:0;width:17px;height:17px;accent-color:var(--p);cursor:pointer}
+.opt-lbl.selected{border-color:var(--p);background:var(--plight)}
+
+/* ── BUTTONS ── */
+.btn{display:block;width:100%;padding:14px;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;transition:opacity .15s,transform .1s}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:var(--p);color:#fff}
+.btn-primary:hover{opacity:.92}
+.btn-finish{background:var(--ok);color:#fff}
+
+/* ── RESULT ── */
+.score-banner{text-align:center;padding:20px;background:linear-gradient(135deg,var(--p2),var(--p));border-radius:12px;color:#fff;margin-bottom:20px}
+.score-banner .label{font-size:12px;opacity:.8;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
+.score-banner .val{font-size:44px;font-weight:900;line-height:1}
+.score-banner .sub{font-size:13px;opacity:.75;margin-top:4px}
+.info-box{background:var(--bg);border:1px solid var(--bdr);border-radius:10px;padding:14px;font-size:13.5px;line-height:1.9;margin-bottom:18px}
+.info-box strong{color:var(--p)}
+.res-table{width:100%;border-collapse:collapse;font-size:13px}
+.res-table th,.res-table td{border:1px solid var(--bdr);padding:9px 10px;text-align:left}
+.res-table th{background:var(--plight);font-weight:700;color:var(--p2)}
+.res-table tr:nth-child(even) td{background:#f8fafc}
+.pt-hi{font-weight:700;color:var(--ok)}
+.pt-lo{font-weight:700;color:var(--muted)}
+
+/* ── QR CODE RESULT ── */
+.qr-section{text-align:center;margin:18px 0 10px}
+.qr-section .qr-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+.qr-section .qr-title span{color:var(--p)}
+#qrCanvas{display:inline-block;padding:10px;background:#fff;border:2px solid var(--bdr);border-radius:10px;box-shadow:var(--sh)}
+#qrCanvas img,#qrCanvas canvas{display:block}
+.qr-note{font-size:11px;color:var(--muted);margin-top:8px;font-style:italic;line-height:1.5}
+
+.toast-wrap{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;width:90%;max-width:420px}
+.toast{padding:13px 20px;border-radius:10px;font-size:14px;font-weight:600;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.18);animation:slideDown .3s ease;display:none}
+.toast.show{display:block}
+@keyframes slideDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:none}}
+.t-err{background:var(--err);color:#fff}
+.t-warn{background:#fff;border:2px solid var(--warn);color:var(--warn)}
+.t-ok{background:var(--ok);color:#fff}
+
+/* ── VIOLATION OVERLAY ── */
+#violOverlay{display:none;position:fixed;inset:0;background:rgba(220,38,38,.97);z-index:9998;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:30px;color:#fff}
+#violOverlay.show{display:flex}
+#violOverlay h2{font-size:22px;margin-bottom:10px}
+#violOverlay p{font-size:14px;opacity:.9;margin-bottom:20px;line-height:1.6}
+#violOverlay .count{font-size:48px;font-weight:900;margin:10px 0}
+#violOverlay .sub{font-size:13px;opacity:.75}
+
+/* ── CONFIRM DIALOG ── */
+#confirmOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9997;align-items:center;justify-content:center;padding:20px}
+#confirmOverlay.show{display:flex}
+.confirm-box{background:#fff;border-radius:14px;padding:24px;max-width:340px;width:100%;text-align:center}
+.confirm-box h3{font-size:17px;font-weight:800;margin-bottom:10px}
+.confirm-box p{font-size:14px;color:var(--muted);margin-bottom:20px;line-height:1.6}
+.confirm-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn-outline{background:#fff;color:var(--p);border:1.5px solid var(--p);border-radius:9px;padding:11px;font-size:14px;font-weight:700;cursor:pointer}
+.btn-yes{background:var(--ok);color:#fff;border:none;border-radius:9px;padding:11px;font-size:14px;font-weight:700;cursor:pointer}
+.btn-wa{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:15px;border:none;border-radius:12px;background:#25D366;color:#fff;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(37,211,102,.35);transition:opacity .15s,transform .1s;margin-top:4px;text-decoration:none}
+.btn-wa:active{transform:scale(.98);opacity:.9}
+.btn-wa svg{flex-shrink:0}
+/* ── WKWEBVIEW REDIRECT OVERLAY ── */
+#wkvOverlay{display:none;position:fixed;inset:0;background:rgba(10,20,50,.97);z-index:99999;align-items:center;justify-content:center;padding:20px;flex-direction:column}
+#wkvOverlay.show{display:flex}
+.wkv-box{background:#fff;border-radius:20px;padding:26px 20px 22px;max-width:340px;width:100%;text-align:center}
+.wkv-icon{font-size:46px;margin-bottom:6px;line-height:1}
+.wkv-title{font-size:17px;font-weight:800;color:#1e293b;margin-bottom:6px}
+.wkv-desc{font-size:13px;color:#64748b;line-height:1.6;margin-bottom:16px}
+.wkv-step{background:#f1f5f9;border-radius:10px;padding:11px 14px;margin-bottom:14px;text-align:left}
+.wkv-step p{font-size:12.5px;color:#475569;margin:0;line-height:1.75}
+.wkv-step strong{color:#1e293b;font-weight:700}
+.wkv-url-box{font-size:11px;font-family:monospace;background:#e2e8f0;padding:7px 10px;border-radius:7px;word-break:break-all;color:#334155;margin-top:8px;display:block;text-align:left}
+.wkv-btns{display:flex;flex-direction:column;gap:9px}
+.wkv-btn{display:flex;align-items:center;justify-content:center;gap:9px;padding:13px 16px;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;text-decoration:none;width:100%;letter-spacing:.01em}
+.wkv-safari{background:#0071e3;color:#fff}
+.wkv-chrome{background:#1a73e8;color:#fff}
+.wkv-divider{display:flex;align-items:center;gap:8px;margin:4px 0}
+.wkv-divider span{font-size:11px;color:#94a3b8;white-space:nowrap}
+.wkv-divider hr{flex:1;border:none;border-top:1px solid #e2e8f0}
+</style>
+<!-- QR Code library – INLINE (100% offline, no CDN needed) -->
+<script>
+var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this.parsedData=[];for(var b=[],d=0,e=this.data.length;e>d;d++){var f=this.data.charCodeAt(d);f>65536?(b[0]=240|(1835008&f)>>>18,b[1]=128|(258048&f)>>>12,b[2]=128|(4032&f)>>>6,b[3]=128|63&f):f>2048?(b[0]=224|(61440&f)>>>12,b[1]=128|(4032&f)>>>6,b[2]=128|63&f):f>128?(b[0]=192|(1984&f)>>>6,b[1]=128|63&f):b[0]=f,this.parsedData=this.parsedData.concat(b)}this.parsedData.length!=this.data.length&&(this.parsedData.unshift(191),this.parsedData.unshift(187),this.parsedData.unshift(239))}function b(a,b){this.typeNumber=a,this.errorCorrectLevel=b,this.modules=null,this.moduleCount=0,this.dataCache=null,this.dataList=[]}function i(a,b){if(void 0==a.length)throw new Error(a.length+"/"+b);for(var c=0;c<a.length&&0==a[c];)c++;this.num=new Array(a.length-c+b);for(var d=0;d<a.length-c;d++)this.num[d]=a[d+c]}function j(a,b){this.totalCount=a,this.dataCount=b}function k(){this.buffer=[],this.length=0}function m(){return"undefined"!=typeof CanvasRenderingContext2D}function n(){var a=!1,b=navigator.userAgent;return/android/i.test(b)&&(a=!0,aMat=b.toString().match(/android ([0-9]\.[0-9])/i),aMat&&aMat[1]&&(a=parseFloat(aMat[1]))),a}function r(a,b){for(var c=1,e=s(a),f=0,g=l.length;g>=f;f++){var h=0;switch(b){case d.L:h=l[f][0];break;case d.M:h=l[f][1];break;case d.Q:h=l[f][2];break;case d.H:h=l[f][3]}if(h>=e)break;c++}if(c>l.length)throw new Error("Too long data");return c}function s(a){var b=encodeURI(a).toString().replace(/\%[0-9a-fA-F]{2}/g,"a");return b.length+(b.length!=a?3:0)}a.prototype={getLength:function(){return this.parsedData.length},write:function(a){for(var b=0,c=this.parsedData.length;c>b;b++)a.put(this.parsedData[b],8)}},b.prototype={addData:function(b){var c=new a(b);this.dataList.push(c),this.dataCache=null},isDark:function(a,b){if(0>a||this.moduleCount<=a||0>b||this.moduleCount<=b)throw new Error(a+","+b);return this.modules[a][b]},getModuleCount:function(){return this.moduleCount},make:function(){this.makeImpl(!1,this.getBestMaskPattern())},makeImpl:function(a,c){this.moduleCount=4*this.typeNumber+17,this.modules=new Array(this.moduleCount);for(var d=0;d<this.moduleCount;d++){this.modules[d]=new Array(this.moduleCount);for(var e=0;e<this.moduleCount;e++)this.modules[d][e]=null}this.setupPositionProbePattern(0,0),this.setupPositionProbePattern(this.moduleCount-7,0),this.setupPositionProbePattern(0,this.moduleCount-7),this.setupPositionAdjustPattern(),this.setupTimingPattern(),this.setupTypeInfo(a,c),this.typeNumber>=7&&this.setupTypeNumber(a),null==this.dataCache&&(this.dataCache=b.createData(this.typeNumber,this.errorCorrectLevel,this.dataList)),this.mapData(this.dataCache,c)},setupPositionProbePattern:function(a,b){for(var c=-1;7>=c;c++)if(!(-1>=a+c||this.moduleCount<=a+c))for(var d=-1;7>=d;d++)-1>=b+d||this.moduleCount<=b+d||(this.modules[a+c][b+d]=c>=0&&6>=c&&(0==d||6==d)||d>=0&&6>=d&&(0==c||6==c)||c>=2&&4>=c&&d>=2&&4>=d?!0:!1)},getBestMaskPattern:function(){for(var a=0,b=0,c=0;8>c;c++){this.makeImpl(!0,c);var d=f.getLostPoint(this);(0==c||a>d)&&(a=d,b=c)}return b},createMovieClip:function(a,b,c){var d=a.createEmptyMovieClip(b,c),e=1;this.make();for(var f=0;f<this.modules.length;f++)for(var g=f*e,h=0;h<this.modules[f].length;h++){var i=h*e,j=this.modules[f][h];j&&(d.beginFill(0,100),d.moveTo(i,g),d.lineTo(i+e,g),d.lineTo(i+e,g+e),d.lineTo(i,g+e),d.endFill())}return d},setupTimingPattern:function(){for(var a=8;a<this.moduleCount-8;a++)null==this.modules[a][6]&&(this.modules[a][6]=0==a%2);for(var b=8;b<this.moduleCount-8;b++)null==this.modules[6][b]&&(this.modules[6][b]=0==b%2)},setupPositionAdjustPattern:function(){for(var a=f.getPatternPosition(this.typeNumber),b=0;b<a.length;b++)for(var c=0;c<a.length;c++){var d=a[b],e=a[c];if(null==this.modules[d][e])for(var g=-2;2>=g;g++)for(var h=-2;2>=h;h++)this.modules[d+g][e+h]=-2==g||2==g||-2==h||2==h||0==g&&0==h?!0:!1}},setupTypeNumber:function(a){for(var b=f.getBCHTypeNumber(this.typeNumber),c=0;18>c;c++){var d=!a&&1==(1&b>>c);this.modules[Math.floor(c/3)][c%3+this.moduleCount-8-3]=d}for(var c=0;18>c;c++){var d=!a&&1==(1&b>>c);this.modules[c%3+this.moduleCount-8-3][Math.floor(c/3)]=d}},setupTypeInfo:function(a,b){for(var c=this.errorCorrectLevel<<3|b,d=f.getBCHTypeInfo(c),e=0;15>e;e++){var g=!a&&1==(1&d>>e);6>e?this.modules[e][8]=g:8>e?this.modules[e+1][8]=g:this.modules[this.moduleCount-15+e][8]=g}for(var e=0;15>e;e++){var g=!a&&1==(1&d>>e);8>e?this.modules[8][this.moduleCount-e-1]=g:9>e?this.modules[8][15-e-1+1]=g:this.modules[8][15-e-1]=g}this.modules[this.moduleCount-8][8]=!a},mapData:function(a,b){for(var c=-1,d=this.moduleCount-1,e=7,g=0,h=this.moduleCount-1;h>0;h-=2)for(6==h&&h--;;){for(var i=0;2>i;i++)if(null==this.modules[d][h-i]){var j=!1;g<a.length&&(j=1==(1&a[g]>>>e));var k=f.getMask(b,d,h-i);k&&(j=!j),this.modules[d][h-i]=j,e--,-1==e&&(g++,e=7)}if(d+=c,0>d||this.moduleCount<=d){d-=c,c=-c;break}}}},b.PAD0=236,b.PAD1=17,b.createData=function(a,c,d){for(var e=j.getRSBlocks(a,c),g=new k,h=0;h<d.length;h++){var i=d[h];g.put(i.mode,4),g.put(i.getLength(),f.getLengthInBits(i.mode,a)),i.write(g)}for(var l=0,h=0;h<e.length;h++)l+=e[h].dataCount;if(g.getLengthInBits()>8*l)throw new Error("code length overflow. ("+g.getLengthInBits()+">"+8*l+")");for(g.getLengthInBits()+4<=8*l&&g.put(0,4);0!=g.getLengthInBits()%8;)g.putBit(!1);for(;;){if(g.getLengthInBits()>=8*l)break;if(g.put(b.PAD0,8),g.getLengthInBits()>=8*l)break;g.put(b.PAD1,8)}return b.createBytes(g,e)},b.createBytes=function(a,b){for(var c=0,d=0,e=0,g=new Array(b.length),h=new Array(b.length),j=0;j<b.length;j++){var k=b[j].dataCount,l=b[j].totalCount-k;d=Math.max(d,k),e=Math.max(e,l),g[j]=new Array(k);for(var m=0;m<g[j].length;m++)g[j][m]=255&a.buffer[m+c];c+=k;var n=f.getErrorCorrectPolynomial(l),o=new i(g[j],n.getLength()-1),p=o.mod(n);h[j]=new Array(n.getLength()-1);for(var m=0;m<h[j].length;m++){var q=m+p.getLength()-h[j].length;h[j][m]=q>=0?p.get(q):0}}for(var r=0,m=0;m<b.length;m++)r+=b[m].totalCount;for(var s=new Array(r),t=0,m=0;d>m;m++)for(var j=0;j<b.length;j++)m<g[j].length&&(s[t++]=g[j][m]);for(var m=0;e>m;m++)for(var j=0;j<b.length;j++)m<h[j].length&&(s[t++]=h[j][m]);return s};for(var c={MODE_NUMBER:1,MODE_ALPHA_NUM:2,MODE_8BIT_BYTE:4,MODE_KANJI:8},d={L:1,M:0,Q:3,H:2},e={PATTERN000:0,PATTERN001:1,PATTERN010:2,PATTERN011:3,PATTERN100:4,PATTERN101:5,PATTERN110:6,PATTERN111:7},f={PATTERN_POSITION_TABLE:[[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],[6,30,56,82],[6,30,58,86],[6,34,62,90],[6,28,50,72,94],[6,26,50,74,98],[6,30,54,78,102],[6,28,54,80,106],[6,32,58,84,110],[6,30,58,86,114],[6,34,62,90,118],[6,26,50,74,98,122],[6,30,54,78,102,126],[6,26,52,78,104,130],[6,30,56,82,108,134],[6,34,60,86,112,138],[6,30,58,86,114,142],[6,34,62,90,118,146],[6,30,54,78,102,126,150],[6,24,50,76,102,128,154],[6,28,54,80,106,132,158],[6,32,58,84,110,136,162],[6,26,54,82,110,138,166],[6,30,58,86,114,142,170]],G15:1335,G18:7973,G15_MASK:21522,getBCHTypeInfo:function(a){for(var b=a<<10;f.getBCHDigit(b)-f.getBCHDigit(f.G15)>=0;)b^=f.G15<<f.getBCHDigit(b)-f.getBCHDigit(f.G15);return(a<<10|b)^f.G15_MASK},getBCHTypeNumber:function(a){for(var b=a<<12;f.getBCHDigit(b)-f.getBCHDigit(f.G18)>=0;)b^=f.G18<<f.getBCHDigit(b)-f.getBCHDigit(f.G18);return a<<12|b},getBCHDigit:function(a){for(var b=0;0!=a;)b++,a>>>=1;return b},getPatternPosition:function(a){return f.PATTERN_POSITION_TABLE[a-1]},getMask:function(a,b,c){switch(a){case e.PATTERN000:return 0==(b+c)%2;case e.PATTERN001:return 0==b%2;case e.PATTERN010:return 0==c%3;case e.PATTERN011:return 0==(b+c)%3;case e.PATTERN100:return 0==(Math.floor(b/2)+Math.floor(c/3))%2;case e.PATTERN101:return 0==b*c%2+b*c%3;case e.PATTERN110:return 0==(b*c%2+b*c%3)%2;case e.PATTERN111:return 0==(b*c%3+(b+c)%2)%2;default:throw new Error("bad maskPattern:"+a)}},getErrorCorrectPolynomial:function(a){for(var b=new i([1],0),c=0;a>c;c++)b=b.multiply(new i([1,g.gexp(c)],0));return b},getLengthInBits:function(a,b){if(b>=1&&10>b)switch(a){case c.MODE_NUMBER:return 10;case c.MODE_ALPHA_NUM:return 9;case c.MODE_8BIT_BYTE:return 8;case c.MODE_KANJI:return 8;default:throw new Error("mode:"+a)}else if(27>b)switch(a){case c.MODE_NUMBER:return 12;case c.MODE_ALPHA_NUM:return 11;case c.MODE_8BIT_BYTE:return 16;case c.MODE_KANJI:return 10;default:throw new Error("mode:"+a)}else{if(!(41>b))throw new Error("type:"+b);switch(a){case c.MODE_NUMBER:return 14;case c.MODE_ALPHA_NUM:return 13;case c.MODE_8BIT_BYTE:return 16;case c.MODE_KANJI:return 12;default:throw new Error("mode:"+a)}}},getLostPoint:function(a){for(var b=a.getModuleCount(),c=0,d=0;b>d;d++)for(var e=0;b>e;e++){for(var f=0,g=a.isDark(d,e),h=-1;1>=h;h++)if(!(0>d+h||d+h>=b))for(var i=-1;1>=i;i++)0>e+i||e+i>=b||(0!=h||0!=i)&&g==a.isDark(d+h,e+i)&&f++;f>5&&(c+=3+f-5)}for(var d=0;b-1>d;d++)for(var e=0;b-1>e;e++){var j=0;a.isDark(d,e)&&j++,a.isDark(d+1,e)&&j++,a.isDark(d,e+1)&&j++,a.isDark(d+1,e+1)&&j++,(0==j||4==j)&&(c+=3)}for(var d=0;b>d;d++)for(var e=0;b-6>e;e++)a.isDark(d,e)&&!a.isDark(d,e+1)&&a.isDark(d,e+2)&&a.isDark(d,e+3)&&a.isDark(d,e+4)&&!a.isDark(d,e+5)&&a.isDark(d,e+6)&&(c+=40);for(var e=0;b>e;e++)for(var d=0;b-6>d;d++)a.isDark(d,e)&&!a.isDark(d+1,e)&&a.isDark(d+2,e)&&a.isDark(d+3,e)&&a.isDark(d+4,e)&&!a.isDark(d+5,e)&&a.isDark(d+6,e)&&(c+=40);for(var k=0,e=0;b>e;e++)for(var d=0;b>d;d++)a.isDark(d,e)&&k++;var l=Math.abs(100*k/b/b-50)/5;return c+=10*l}},g={glog:function(a){if(1>a)throw new Error("glog("+a+")");return g.LOG_TABLE[a]},gexp:function(a){for(;0>a;)a+=255;for(;a>=256;)a-=255;return g.EXP_TABLE[a]},EXP_TABLE:new Array(256),LOG_TABLE:new Array(256)},h=0;8>h;h++)g.EXP_TABLE[h]=1<<h;for(var h=8;256>h;h++)g.EXP_TABLE[h]=g.EXP_TABLE[h-4]^g.EXP_TABLE[h-5]^g.EXP_TABLE[h-6]^g.EXP_TABLE[h-8];for(var h=0;255>h;h++)g.LOG_TABLE[g.EXP_TABLE[h]]=h;i.prototype={get:function(a){return this.num[a]},getLength:function(){return this.num.length},multiply:function(a){for(var b=new Array(this.getLength()+a.getLength()-1),c=0;c<this.getLength();c++)for(var d=0;d<a.getLength();d++)b[c+d]^=g.gexp(g.glog(this.get(c))+g.glog(a.get(d)));return new i(b,0)},mod:function(a){if(this.getLength()-a.getLength()<0)return this;for(var b=g.glog(this.get(0))-g.glog(a.get(0)),c=new Array(this.getLength()),d=0;d<this.getLength();d++)c[d]=this.get(d);for(var d=0;d<a.getLength();d++)c[d]^=g.gexp(g.glog(a.get(d))+b);return new i(c,0).mod(a)}},j.RS_BLOCK_TABLE=[[1,26,19],[1,26,16],[1,26,13],[1,26,9],[1,44,34],[1,44,28],[1,44,22],[1,44,16],[1,70,55],[1,70,44],[2,35,17],[2,35,13],[1,100,80],[2,50,32],[2,50,24],[4,25,9],[1,134,108],[2,67,43],[2,33,15,2,34,16],[2,33,11,2,34,12],[2,86,68],[4,43,27],[4,43,19],[4,43,15],[2,98,78],[4,49,31],[2,32,14,4,33,15],[4,39,13,1,40,14],[2,121,97],[2,60,38,2,61,39],[4,40,18,2,41,19],[4,40,14,2,41,15],[2,146,116],[3,58,36,2,59,37],[4,36,16,4,37,17],[4,36,12,4,37,13],[2,86,68,2,87,69],[4,69,43,1,70,44],[6,43,19,2,44,20],[6,43,15,2,44,16],[4,101,81],[1,80,50,4,81,51],[4,50,22,4,51,23],[3,36,12,8,37,13],[2,116,92,2,117,93],[6,58,36,2,59,37],[4,46,20,6,47,21],[7,42,14,4,43,15],[4,133,107],[8,59,37,1,60,38],[8,44,20,4,45,21],[12,33,11,4,34,12],[3,145,115,1,146,116],[4,64,40,5,65,41],[11,36,16,5,37,17],[11,36,12,5,37,13],[5,109,87,1,110,88],[5,65,41,5,66,42],[5,54,24,7,55,25],[11,36,12],[5,122,98,1,123,99],[7,73,45,3,74,46],[15,43,19,2,44,20],[3,45,15,13,46,16],[1,135,107,5,136,108],[10,74,46,1,75,47],[1,50,22,15,51,23],[2,42,14,17,43,15],[5,150,120,1,151,121],[9,69,43,4,70,44],[17,50,22,1,51,23],[2,42,14,19,43,15],[3,141,113,4,142,114],[3,70,44,11,71,45],[17,47,21,4,48,22],[9,39,13,16,40,14],[3,135,107,5,136,108],[3,67,41,13,68,42],[15,54,24,5,55,25],[15,43,15,10,44,16],[4,144,116,4,145,117],[17,68,42],[17,50,22,6,51,23],[19,46,16,6,47,17],[2,139,111,7,140,112],[17,74,46],[7,54,24,16,55,25],[34,37,13],[4,151,121,5,152,122],[4,75,47,14,76,48],[11,54,24,14,55,25],[16,45,15,14,46,16],[6,147,117,4,148,118],[6,73,45,14,74,46],[11,54,24,16,55,25],[30,46,16,2,47,17],[8,132,106,4,133,107],[8,75,47,13,76,48],[7,54,24,22,55,25],[22,45,15,13,46,16],[10,142,114,2,143,115],[19,74,46,4,75,47],[28,50,22,6,51,23],[33,46,16,4,47,17],[8,152,122,4,153,123],[22,73,45,3,74,46],[8,53,23,26,54,24],[12,45,15,28,46,16],[3,147,117,10,148,118],[3,73,45,23,74,46],[4,54,24,31,55,25],[11,45,15,31,46,16],[7,146,116,7,147,117],[21,73,45,7,74,46],[1,53,23,37,54,24],[19,45,15,26,46,16],[5,145,115,10,146,116],[19,75,47,10,76,48],[15,54,24,25,55,25],[23,45,15,25,46,16],[13,145,115,3,146,116],[2,74,46,29,75,47],[42,54,24,1,55,25],[23,45,15,28,46,16],[17,145,115],[10,74,46,23,75,47],[10,54,24,35,55,25],[19,45,15,35,46,16],[17,145,115,1,146,116],[14,74,46,21,75,47],[29,54,24,19,55,25],[11,45,15,46,46,16],[13,145,115,6,146,116],[14,74,46,23,75,47],[44,54,24,7,55,25],[59,46,16,1,47,17],[12,151,121,7,152,122],[12,75,47,26,76,48],[39,54,24,14,55,25],[22,45,15,41,46,16],[6,151,121,14,152,122],[6,75,47,34,76,48],[46,54,24,10,55,25],[2,45,15,64,46,16],[17,152,122,4,153,123],[29,74,46,14,75,47],[49,54,24,10,55,25],[24,45,15,46,46,16],[4,152,122,18,153,123],[13,74,46,32,75,47],[48,54,24,14,55,25],[42,45,15,32,46,16],[20,147,117,4,148,118],[40,75,47,7,76,48],[43,54,24,22,55,25],[10,45,15,67,46,16],[19,148,118,6,149,119],[18,75,47,31,76,48],[34,54,24,34,55,25],[20,45,15,61,46,16]],j.getRSBlocks=function(a,b){var c=j.getRsBlockTable(a,b);if(void 0==c)throw new Error("bad rs block @ typeNumber:"+a+"/errorCorrectLevel:"+b);for(var d=c.length/3,e=[],f=0;d>f;f++)for(var g=c[3*f+0],h=c[3*f+1],i=c[3*f+2],k=0;g>k;k++)e.push(new j(h,i));return e},j.getRsBlockTable=function(a,b){switch(b){case d.L:return j.RS_BLOCK_TABLE[4*(a-1)+0];case d.M:return j.RS_BLOCK_TABLE[4*(a-1)+1];case d.Q:return j.RS_BLOCK_TABLE[4*(a-1)+2];case d.H:return j.RS_BLOCK_TABLE[4*(a-1)+3];default:return void 0}},k.prototype={get:function(a){var b=Math.floor(a/8);return 1==(1&this.buffer[b]>>>7-a%8)},put:function(a,b){for(var c=0;b>c;c++)this.putBit(1==(1&a>>>b-c-1))},getLengthInBits:function(){return this.length},putBit:function(a){var b=Math.floor(this.length/8);this.buffer.length<=b&&this.buffer.push(0),a&&(this.buffer[b]|=128>>>this.length%8),this.length++}};var l=[[17,14,11,7],[32,26,20,14],[53,42,32,24],[78,62,46,34],[106,84,60,44],[134,106,74,58],[154,122,86,64],[192,152,108,84],[230,180,130,98],[271,213,151,119],[321,251,177,137],[367,287,203,155],[425,331,241,177],[458,362,258,194],[520,412,292,220],[586,450,322,250],[644,504,364,280],[718,560,394,310],[792,624,442,338],[858,666,482,382],[929,711,509,403],[1003,779,565,439],[1091,857,611,461],[1171,911,661,511],[1273,997,715,535],[1367,1059,751,593],[1465,1125,805,625],[1528,1190,868,658],[1628,1264,908,698],[1732,1370,982,742],[1840,1452,1030,790],[1952,1538,1112,842],[2068,1628,1168,898],[2188,1722,1228,958],[2303,1809,1283,983],[2431,1911,1351,1051],[2563,1989,1423,1093],[2699,2099,1499,1139],[2809,2213,1579,1219],[2953,2331,1663,1273]],o=function(){var a=function(a,b){this._el=a,this._htOption=b};return a.prototype.draw=function(a){function g(a,b){var c=document.createElementNS("http://www.w3.org/2000/svg",a);for(var d in b)b.hasOwnProperty(d)&&c.setAttribute(d,b[d]);return c}var b=this._htOption,c=this._el,d=a.getModuleCount();Math.floor(b.width/d),Math.floor(b.height/d),this.clear();var h=g("svg",{viewBox:"0 0 "+String(d)+" "+String(d),width:"100%",height:"100%",fill:b.colorLight});h.setAttributeNS("http://www.w3.org/2000/xmlns/","xmlns:xlink","http://www.w3.org/1999/xlink"),c.appendChild(h),h.appendChild(g("rect",{fill:b.colorDark,width:"1",height:"1",id:"template"}));for(var i=0;d>i;i++)for(var j=0;d>j;j++)if(a.isDark(i,j)){var k=g("use",{x:String(i),y:String(j)});k.setAttributeNS("http://www.w3.org/1999/xlink","href","#template"),h.appendChild(k)}},a.prototype.clear=function(){for(;this._el.hasChildNodes();)this._el.removeChild(this._el.lastChild)},a}(),p="svg"===document.documentElement.tagName.toLowerCase(),q=p?o:m()?function(){function a(){this._elImage.src=this._elCanvas.toDataURL("image/png"),this._elImage.style.display="block",this._elCanvas.style.display="none"}function d(a,b){var c=this;if(c._fFail=b,c._fSuccess=a,null===c._bSupportDataURI){var d=document.createElement("img"),e=function(){c._bSupportDataURI=!1,c._fFail&&_fFail.call(c)},f=function(){c._bSupportDataURI=!0,c._fSuccess&&c._fSuccess.call(c)};return d.onabort=e,d.onerror=e,d.onload=f,d.src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==",void 0}c._bSupportDataURI===!0&&c._fSuccess?c._fSuccess.call(c):c._bSupportDataURI===!1&&c._fFail&&c._fFail.call(c)}if(this._android&&this._android<=2.1){var b=1/window.devicePixelRatio,c=CanvasRenderingContext2D.prototype.drawImage;CanvasRenderingContext2D.prototype.drawImage=function(a,d,e,f,g,h,i,j){if("nodeName"in a&&/img/i.test(a.nodeName))for(var l=arguments.length-1;l>=1;l--)arguments[l]=arguments[l]*b;else"undefined"==typeof j&&(arguments[1]*=b,arguments[2]*=b,arguments[3]*=b,arguments[4]*=b);c.apply(this,arguments)}}var e=function(a,b){this._bIsPainted=!1,this._android=n(),this._htOption=b,this._elCanvas=document.createElement("canvas"),this._elCanvas.width=b.width,this._elCanvas.height=b.height,a.appendChild(this._elCanvas),this._el=a,this._oContext=this._elCanvas.getContext("2d"),this._bIsPainted=!1,this._elImage=document.createElement("img"),this._elImage.style.display="none",this._el.appendChild(this._elImage),this._bSupportDataURI=null};return e.prototype.draw=function(a){var b=this._elImage,c=this._oContext,d=this._htOption,e=a.getModuleCount(),f=d.width/e,g=d.height/e,h=Math.round(f),i=Math.round(g);b.style.display="none",this.clear();for(var j=0;e>j;j++)for(var k=0;e>k;k++){var l=a.isDark(j,k),m=k*f,n=j*g;c.strokeStyle=l?d.colorDark:d.colorLight,c.lineWidth=1,c.fillStyle=l?d.colorDark:d.colorLight,c.fillRect(m,n,f,g),c.strokeRect(Math.floor(m)+.5,Math.floor(n)+.5,h,i),c.strokeRect(Math.ceil(m)-.5,Math.ceil(n)-.5,h,i)}this._bIsPainted=!0},e.prototype.makeImage=function(){this._bIsPainted&&d.call(this,a)},e.prototype.isPainted=function(){return this._bIsPainted},e.prototype.clear=function(){this._oContext.clearRect(0,0,this._elCanvas.width,this._elCanvas.height),this._bIsPainted=!1},e.prototype.round=function(a){return a?Math.floor(1e3*a)/1e3:a},e}():function(){var a=function(a,b){this._el=a,this._htOption=b};return a.prototype.draw=function(a){for(var b=this._htOption,c=this._el,d=a.getModuleCount(),e=Math.floor(b.width/d),f=Math.floor(b.height/d),g=['<table style="border:0;border-collapse:collapse;">'],h=0;d>h;h++){g.push("<tr>");for(var i=0;d>i;i++)g.push('<td style="border:0;border-collapse:collapse;padding:0;margin:0;width:'+e+"px;height:"+f+"px;background-color:"+(a.isDark(h,i)?b.colorDark:b.colorLight)+';"></td>');g.push("</tr>")}g.push("</table>"),c.innerHTML=g.join("");var j=c.childNodes[0],k=(b.width-j.offsetWidth)/2,l=(b.height-j.offsetHeight)/2;k>0&&l>0&&(j.style.margin=l+"px "+k+"px")},a.prototype.clear=function(){this._el.innerHTML=""},a}();QRCode=function(a,b){if(this._htOption={width:256,height:256,typeNumber:4,colorDark:"#000000",colorLight:"#ffffff",correctLevel:d.H},"string"==typeof b&&(b={text:b}),b)for(var c in b)this._htOption[c]=b[c];"string"==typeof a&&(a=document.getElementById(a)),this._android=n(),this._el=a,this._oQRCode=null,this._oDrawing=new q(this._el,this._htOption),this._htOption.text&&this.makeCode(this._htOption.text)},QRCode.prototype.makeCode=function(a){this._oQRCode=new b(r(a,this._htOption.correctLevel),this._htOption.correctLevel),this._oQRCode.addData(a),this._oQRCode.make(),this._el.title=a,this._oDrawing.draw(this._oQRCode),this.makeImage()},QRCode.prototype.makeImage=function(){"function"==typeof this._oDrawing.makeImage&&(!this._android||this._android>=3)&&this._oDrawing.makeImage()},QRCode.prototype.clear=function(){this._oDrawing.clear()},QRCode.CorrectLevel=d}();
+</script>
+</head>
+<body>
+
+
+<!-- WKWEBVIEW REDIRECT OVERLAY -->
+<div id="wkvOverlay">
+  <div class="wkv-box">
+    <div class="wkv-icon">⚠️</div>
+    <div class="wkv-title">Buka di Browser Dulu</div>
+    <div class="wkv-desc">Ujian tidak bisa dijalankan di dalam WhatsApp. Ikuti langkah berikut:</div>
+    <div class="wkv-step">
+      <p><strong>Cara 1 — Langsung buka di Safari:</strong><br>
+      Tap ikon <strong>&#8599;</strong> (pojok kanan atas) → pilih <strong>"Open in Safari"</strong></p>
+    </div>
+    <div class="wkv-step">
+      <p><strong>Cara 2 — Simpan lalu buka:</strong><br>
+      Tap ikon <strong>&#8599;</strong> → <strong>"Save to Files"</strong> → buka app <strong>Files</strong> → tap file ujian → otomatis terbuka di Safari</p>
+    </div>
+    <div class="wkv-btns">
+      <a id="wkvSafariBtn" class="wkv-btn wkv-safari" href="#">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+        Buka di Safari
+      </a>
+      <div class="wkv-divider"><hr><span>atau</span><hr></div>
+      <a id="wkvChromeBtn" class="wkv-btn wkv-chrome" href="#">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="21.17" y1="8" x2="12" y2="8"/><line x1="3.95" y1="6.06" x2="8.54" y2="14"/><line x1="10.88" y1="21.94" x2="15.46" y2="14"/></svg>
+        Buka di Chrome
+      </a>
+    </div>
+    <p id="wkvUrlNote" style="font-size:11px;color:#94a3b8;margin-top:12px;line-height:1.5">Atau salin URL berikut dan buka manual di Safari:<br><span id="wkvUrlDisplay" class="wkv-url-box"></span></p>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-wrap">
+  <div class="toast t-err" id="tErr"></div>
+  <div class="toast t-warn" id="tWarn"></div>
+  <div class="toast t-ok" id="tOk"></div>
+</div>
+
+<!-- VIOLATION OVERLAY -->
+<div id="violOverlay">
+  <h2>&#9888; PELANGGARAN TERDETEKSI</h2>
+  <p>Berpindah tab, membuka aplikasi lain,<br>atau mencoba menggunakan alat bantu.</p>
+  <div class="count" id="violCount">0</div>
+  <div class="sub">pelanggaran ke-</div>
+  <p style="margin-top:14px;font-size:13px">Ujian direset ke awal soal yang ditentukan.<br>Menutup notifikasi ini dalam 4 detik...</p>
+</div>
+
+<!-- CONFIRM DIALOG -->
+<div id="confirmOverlay">
+  <div class="confirm-box">
+    <h3>Selesaikan Ujian?</h3>
+    <p>Anda telah menjawab semua soal.<br>Nilai tidak dapat diubah setelah ini.</p>
+    <div class="confirm-btns">
+      <button class="btn-outline" onclick="closeConfirm()">Periksa Lagi</button>
+      <button class="btn-yes" onclick="finishConfirmed()">Ya, Kumpulkan</button>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- ① LOGIN -->
+<div id="pgLogin" class="pg on">
+  <div class="card">
+    <div class="login-head">
+      <div class="badge">SMA &ndash; Kelas 10</div>
+      <h1>Ulangan Sumatif Biologi<br>Ekosistem</h1>
+      <p>Isi data dengan benar, lalu masukkan kode akses ujian.</p>
+    </div>
+    <div class="field">
+      <label>Nama Lengkap</label>
+      <input type="text" id="inNama" placeholder="Masukkan nama lengkap&hellip;" autocomplete="off">
+    </div>
+    <div class="field">
+      <label>Kelas</label>
+      <select id="inKelas">
+        <option value="">&mdash; Pilih Kelas &mdash;</option>
+        <option value="X1">X 1</option>
+        <option value="X2">X 2</option>
+        <option value="X3">X 3</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Kode Akses Ujian</label>
+      <div class="pwd-wrap">
+        <input type="password" id="inKode" placeholder="Masukkan kode dari Guru&hellip;" autocomplete="off">
+        <button class="pwd-eye" type="button" onclick="togglePwd()" title="Tampilkan/Sembunyikan">
+          <svg id="eyeIcon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="mulaiUjian()">Mulai Ujian &rarr;</button>
+  </div>
+</div>
+
+<!-- ② QUIZ -->
+<div id="pgQuiz" class="pg">
+  <div class="card" style="padding-bottom:16px">
+    <div class="prog-wrap">
+      <div class="prog-label">
+        <span id="dispSoal">Soal 1 / 20</span>
+        <div id="timerWrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+          <span id="dispTimer">90:00</span>
+        </div>
+      </div>
+      <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+    </div>
+    <div class="quiz-hd">
+      <span class="soal-tag" id="dispQTag">Soal 1</span>
+      <span class="try-badge" id="dispTry">Percobaan ke-1</span>
+    </div>
+    <!-- TATA LETAK: Pertanyaan (atas) → Stimulus (tengah) → Opsi Jawaban (bawah) -->
+    <div class="q-txt" id="qTxt"></div>
+    <div class="q-hint" id="qHint"></div>
+    <div class="stim" id="stimBox"></div>
+    <div class="opts" id="optsBox"></div>
+    <button class="btn btn-primary" id="btnKirim" onclick="cekJawaban()">Kirim Jawaban</button>
+  </div>
+</div>
+
+<!-- ③ RESULT -->
+<div id="pgResult" class="pg">
+  <div class="card">
+    <div class="score-banner">
+      <div class="label">Skor Total Ujian</div>
+      <div class="val" id="rSkor">0</div>
+      <div class="sub">dari 100 poin</div>
+    </div>
+    <div class="info-box">
+      <strong>Nama &nbsp;&nbsp;&nbsp;:</strong> <span id="rNama"></span><br>
+      <strong>Kelas &nbsp;&nbsp;&nbsp;:</strong> <span id="rKelas"></span><br>
+      <strong>Tanggal :</strong> <span id="rTgl"></span><br>
+      <strong>Selesai &nbsp;:</strong> <span id="rSelesai"></span><br>
+      <strong>Durasi &nbsp;&nbsp;:</strong> <span id="rDurasi"></span><br>
+      <strong>Pelanggaran:</strong> <span id="rPelanggaran"></span><br>
+      <strong>Kode Integritas:</strong> <span id="rKodeIntegritas" style="font-family:monospace;font-size:12px;color:var(--p2);word-break:break-all"></span>
+    </div>
+    <div class="qr-section">
+      <div class="qr-title">📷 Scan QR &rarr; Guru &nbsp;<span>(atau screenshot seluruh halaman)</span></div>
+      <div id="qrCanvas"></div>
+      <p class="qr-note">QR berisi: nama, kelas, skor, kode integritas, dan durasi.<br>Guru cukup scan — tidak perlu ketik manual.</p>
+    </div>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:6px;text-align:center;font-style:italic">
+      ⚠ Kode integritas diverifikasi oleh Guru. Jangan ditutup sebelum screenshot.
+    </p>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:14px;text-align:center">
+      Screenshot halaman ini untuk dikirimkan kepada Guru.
+    </p>
+    <table class="res-table">
+      <thead>
+        <tr><th>No.</th><th>Tipe</th><th>Percobaan</th><th>Poin</th></tr>
+      </thead>
+      <tbody id="resTbody"></tbody>
+    </table>
+    <div class="wa-wrap">
+      <p style="font-size:12px;color:var(--muted);text-align:center;margin-bottom:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em">📤 Kirim Hasil ke Guru</p>
+      <a id="btnWA" class="btn-wa" href="#" onclick="return _openWA(this)">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+        Kirim Hasil ke WhatsApp Guru
+      </a>
+      <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:9px;font-style:italic;line-height:1.5">Klik tombol di atas → WhatsApp terbuka otomatis dengan data hasil ujian.<br>Setelah terkirim, ketuk <strong>Back</strong> di WA untuk kembali &amp; screenshot halaman ini.</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- /wrap -->
+
+<script>
+(function(){'use strict';
+
+/* ═══════════════════════════════════════════════════
+   DETEKSI WKWEBVIEW (file dibuka dari dalam WA/app)
+   ═══════════════════════════════════════════════════
+   Indikator WKWebView:
+   1. localStorage.setItem() langsung melempar error (blokir storage)
+   2. window.webkit.messageHandlers ada (tanda native WKWebView)
+   3. User-agent iOS tapi BUKAN Safari murni (tidak ada "Safari/" di akhir UA)
+   ═══════════════════════════════════════════════════ */
+(function detectWKWebView(){
+  var ua = navigator.userAgent || '';
+  var isIOS = /iphone|ipad|ipod/i.test(ua) ||
+              (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  if(!isIOS) return; /* Hanya relevan di iOS */
+
+  /* Cek 1: localStorage diblokir → sinyal kuat WKWebView in-app */
+  var lsBlocked = false;
+  try{
+    localStorage.setItem('__wkv_test__','1');
+    localStorage.removeItem('__wkv_test__');
+  }catch(e){ lsBlocked = true; }
+
+  /* Cek 2: window.webkit.messageHandlers (injected oleh WKWebView host) */
+  var hasWKBridge = !!(window.webkit && window.webkit.messageHandlers);
+
+  /* Cek 3: UA iOS tapi tidak ada "Safari/" versi di akhir (WA/Telegram/dll) */
+  var isSafariUA = /Safari\/[\d.]+$/.test(ua);
+  var isChromeIOS = /CriOS/.test(ua);
+  var isInAppUA = isIOS && !isSafariUA && !isChromeIOS;
+
+  var isWKV = lsBlocked || hasWKBridge || isInAppUA;
+  if(!isWKV) return;
+
+  /* ── Tampilkan overlay ── */
+  var currentUrl = window.location.href;
+  var isFileProto = currentUrl.indexOf('file://') === 0 || currentUrl.indexOf('blob:') === 0;
+
+  var overlay = document.getElementById('wkvOverlay');
+  var safariBtn = document.getElementById('wkvSafariBtn');
+  var chromeBtn = document.getElementById('wkvChromeBtn');
+  var urlDisplay = document.getElementById('wkvUrlDisplay');
+  var urlNote = document.getElementById('wkvUrlNote');
+
+  if(isFileProto){
+    /* File attachment: tidak ada URL yang bisa dioper ke browser */
+    if(urlDisplay) urlDisplay.textContent = '(file lokal — tidak ada URL)';
+    if(safariBtn) safariBtn.style.display = 'none';
+    if(chromeBtn) chromeBtn.style.display = 'none';
+    /* Ubah instruksi jadi cara manual */
+    var stepEl = overlay ? overlay.querySelector('.wkv-step p') : null;
+    if(stepEl) stepEl.innerHTML =
+      '<strong>File dibuka sebagai lampiran.</strong><br>' +
+      'Simpan file ini ke perangkat, lalu buka manual menggunakan Safari atau Chrome.' +
+      '<br><br>Atau minta guru membagikan <strong>link URL</strong> (bukan file attachment).';
+    if(urlNote) urlNote.style.display = 'none';
+  } else {
+    /* Ada URL → bisa buat tombol Safari & Chrome */
+    var encodedUrl = encodeURIComponent(currentUrl);
+
+    /* Safari: tidak ada skema deep link resmi, gunakan x-safari-https:// */
+    var safariUrl = currentUrl.replace(/^https?:\/\//, function(m){
+      return m === 'https://' ? 'x-safari-https://' : 'x-safari-http://';
+    });
+
+    /* Chrome iOS: googlechrome:// atau googlechromes:// */
+    var chromeUrl = currentUrl.replace(/^https?:\/\//, function(m){
+      return m === 'https://' ? 'googlechromes://' : 'googlechrome://';
+    });
+
+    if(safariBtn){ safariBtn.href = safariUrl; }
+    if(chromeBtn){ chromeBtn.href = chromeUrl; }
+    if(urlDisplay){ urlDisplay.textContent = currentUrl; }
+
+    /* Tap URL → copy ke clipboard */
+    if(urlDisplay){
+      urlDisplay.style.cursor = 'pointer';
+      urlDisplay.addEventListener('click', function(){
+        try{
+          navigator.clipboard.writeText(currentUrl).then(function(){
+            urlDisplay.textContent = '✓ URL disalin!';
+            setTimeout(function(){ urlDisplay.textContent = currentUrl; }, 2000);
+          });
+        }catch(e){
+          /* fallback: select text */
+          var range = document.createRange();
+          range.selectNode(urlDisplay);
+          window.getSelection().removeAllRanges();
+          window.getSelection().addRange(range);
+        }
+      });
+    }
+  }
+
+  if(overlay) overlay.classList.add('show');
+})();
+
+/* ═══════════════════════════════════════════════════
+   KONFIGURASI GURU – ubah sebelum dibagikan ke siswa
+   ═══════════════════════════════════════════════════ */
+var CFG_DURASI_MENIT = 90;
+/* ── PASSWORD PER KELAS (teks biasa) ── */
+var CFG_PASS_PLAIN = "BIOLOGI26";
+var CFG_PASS_MAP = null; /* tidak dipakai lagi */
+/* ═══════════════════════════════════════════════════ */
+var CFG_RESET_IDX = 5;  // reset ke indeks soal ini (0-based). 5 = soal ke-6
+/* ═══════════════════════════════════════════════════ */
+
+/* ── ENKRIPSI JAWABAN (SHA-256) ── */
+/* Hashing satu arah: jawaban tidak bisa dikembalikan ke teks asli */
+function _sha256(str) {
+  /* Implementasi SHA-256 murni JavaScript */
+  function rightRotate(value, amount) {
+    return (value >>> amount) | (value << (32 - amount));
+  }
+  var mathPow = Math.pow;
+  var maxWord = mathPow(2, 32);
+  var lengthProperty = 'length';
+  var i, j;
+  var result = '';
+  var words = [];
+  var asciiBitLength = str[lengthProperty] * 8;
+  var hash = [];
+  var k = [];
+  var primeCounter = 0;
+  var isComposite = {};
+  for (var candidate = 2; primeCounter < 64; candidate++) {
+    if (!isComposite[candidate]) {
+      for (i = 0; i < 313; i += candidate) isComposite[i] = candidate;
+      hash[primeCounter] = (mathPow(candidate, .5) * maxWord) | 0;
+      k[primeCounter++] = (mathPow(candidate, 1/3) * maxWord) | 0;
+    }
+  }
+  str += '\x80';
+  while (str[lengthProperty] % 64 - 56) str += '\x00';
+  for (i = 0; i < str[lengthProperty]; i++) {
+    j = str.charCodeAt(i);
+    if (j >> 8) return '';
+    words[i >> 2] |= j << ((3 - i) % 4) * 8;
+  }
+  words[words[lengthProperty]] = ((asciiBitLength / maxWord) | 0);
+  words[words[lengthProperty]] = (asciiBitLength);
+  for (j = 0; j < words[lengthProperty];) {
+    var w = words.slice(j, j += 16);
+    var oldHash = hash.slice(0);
+    var a, b, c, d, e, f, g, h;
+    a = hash[0]; b = hash[1]; c = hash[2]; d = hash[3];
+    e = hash[4]; f = hash[5]; g = hash[6]; h = hash[7];
+    for (i = 0; i < 64; i++) {
+      var noAction = i < 16 ? w[i] : (
+        rightRotate(w[i-15], 7) ^ rightRotate(w[i-15], 18) ^ (w[i-15] >>> 3)
+        + (w[i-2] = rightRotate(w[i-2], 17) ^ rightRotate(w[i-2], 19) ^ (w[i-2] >>> 10))
+        + w[i-7] + w[i-16]
+      );
+      w[i] = noAction & maxWord;
+      var temp1 = h + (rightRotate(e, 6) ^ rightRotate(e, 11) ^ rightRotate(e, 25)) + ((e & f) ^ (~e & g)) + k[i] + (noAction & 0xFFFFFFFF);
+      var temp2 = (rightRotate(a, 2) ^ rightRotate(a, 13) ^ rightRotate(a, 22)) + ((a & b) ^ (a & c) ^ (b & c));
+      h = g; g = f; f = e; e = (d + temp1) & 0xFFFFFFFF; d = c; c = b; b = a;
+      a = (temp1 + temp2) & 0xFFFFFFFF;
+    }
+    hash = [(hash[0]+a)&0xFFFFFFFF,(hash[1]+b)&0xFFFFFFFF,(hash[2]+c)&0xFFFFFFFF,(hash[3]+d)&0xFFFFFFFF,
+            (hash[4]+e)&0xFFFFFFFF,(hash[5]+f)&0xFFFFFFFF,(hash[6]+g)&0xFFFFFFFF,(hash[7]+h)&0xFFFFFFFF];
+  }
+  for (i = 0; i < 8; i++) {
+    for (j = 3; j + 1; j--) {
+      var b2 = (hash[i] >> (j * 8)) & 255;
+      result += ((b2 < 16) ? 0 : '') + b2.toString(16);
+    }
+  }
+  return result;
+}
+function _enc(s){ return _sha256(s); }
+
+/* ── DATA SOAL ─────────────────────────────────────── */
+var SOAL = [
+{id:1,type:"PG",_rc:1,
+stim:"Taman Nasional Sebangau dikenal sebagai habitat pelestarian alam yang sangat penting di Kalimantan Tengah. Di dalam kawasan ini, pohon ramin tumbuh subur berdampingan dengan kantong semar dan paku-pakuan. Berbagai satwa langka seperti orangutan dan burung rangkong juga menjadikan tajuk pepohonan sebagai tempat berlindung dan mencari makan. Seluruh makhluk hidup yang bernapas dan berinteraksi di area ini membentuk kesatuan komponen biotik yang saling bergantung satu sama lain.",
+q:"Manakah di antara kelompok makhluk hidup berikut yang semuanya termasuk ke dalam komponen biotik khas yang menempati ekosistem hutan rawa gambut di Kalimantan Tengah?",
+opts:["Orangutan, pohon ramin, dan burung rangkong","Orangutan, pohon meranti, dan tanah gambut","Air hitam, ikan toman, dan pohon ramin","Kantong semar, batu, dan buaya muara","Cahaya matahari, beruang madu, dan pakis udang"]},
+
+{id:2,type:"PG",_rc:1,
+stim:"Sungai Kahayan merupakan urat nadi kehidupan yang menyimpan keanekaragaman hayati perairan. Di lokasi pencarian ikan, nelayan sering mendapati sekelompok ikan seluang berenang di sela-sela hamparan eceng gondok, sementara populasi ikan toman mengintai dari perairan dalam. Kumpulan dari berbagai populasi makhluk hidup yang mendiami wilayah perairan yang sama pada waktu tertentu ini sangat memengaruhi kelestarian lingkungan. Tingkatan organisasi ekologi yang menaungi interaksi antarpopulasi secara bersamaan ini harus dijaga dari pencemaran berlebih.",
+q:"Tingkatan organisasi yang dimaksud dalam narasi tersebut adalah...",
+opts:["Komunitas","Individu","Populasi","Biosfer","Kompetisi"]},
+
+{id:3,type:"PG",_rc:1,
+stim:"Hutan adat di perbukitan Schwaner memiliki tutupan kanopi yang sangat rapat dari berbagai pohon berkayu seperti ulin dan gaharu. Tumbuhan hijau ini memiliki klorofil yang memungkinkan mereka menyerap energi matahari untuk mengubah zat anorganik menjadi zat organik. Kemampuan mandiri dalam menghasilkan sumber makanan ini menjadikan mereka sebagai titik awal masuknya aliran energi ke dalam ekosistem. Oleh karena itu, semua organisme lain di dalam hutan sangat bergantung pada keberadaan kelompok autotrof ini.",
+q:"Berdasarkan peranannya dalam aliran energi ekosistem, kelompok tumbuhan hijau tersebut dikategorikan sebagai...",
+opts:["Produsen","Abiotik","Detritivor","Konsumen Primer","Dekomposer"]},
+
+{id:4,type:"PG",_rc:1,
+stim:"Perairan rawa banjiran Sungai Barito memiliki dinamika kehidupan yang saling terhubung melalui sebuah rantai makanan. Kangkung liar menyerap cahaya matahari untuk tumbuh subur dan kemudian menjadi sumber nutrisi utama bagi ikan-ikan kecil pemakan tumbuhan. Ikan-ikan kecil ini selanjutnya diburu dan dimangsa oleh ikan toman yang bertindak sebagai predator puncak di perairan tersebut. Proses perpindahan nutrisi dari tumbuhan hingga menuju ke tubuh predator ini menggambarkan dengan jelas bagaimana aliran energi didistribusikan dalam ekosistem.",
+q:"Berdasarkan narasi stimulus, bagaimanakah proses perpindahan energi yang benar terjadi di dalam ekosistem tersebut?",
+opts:["Energi matahari ditangkap kangkung liar, lalu mengalir ke ikan herbivor, dan berlanjut ke ikan toman","Energi mengalir dari bakteri pembusuk menuju kangkung liar melalui zat hara","Ikan toman mendapatkan energi langsung dari kangkung liar saat ikan herbivor tidak ada","Bakteri pembusuk menciptakan energi baru untuk diserap kembali oleh ikan toman yang hidup","Aliran energi bergerak secara siklik dari ikan toman kembali menjadi kangkung liar"]},
+
+{id:5,type:"PG",_rc:1,
+stim:"Kubah gambut di kawasan eks-PLG Kabupaten Kapuas terbentuk dari tumpukan sisa tumbuhan yang tidak membusuk sempurna selama ribuan tahun. Tumpukan material organik basah ini secara alami bertindak sebagai gudang penyimpanan senyawa karbon raksasa di bawah tanah. Sayangnya, pembuatan kanal-kanal air di masa lalu membuat lahan ini mengering dan menjadi sangat rentan terbakar saat musim kemarau panjang tiba. Jika terjadi kebakaran hebat, material purba tersebut akan hangus dan secara masif menyumbangkan gas rumah kaca ke udara lepas.",
+q:"Berdasarkan pemahaman Anda mengenai komponen ekosistem, apa dampak utama dari keringnya lahan gambut tersebut terhadap keseimbangan siklus karbon global?",
+opts:["Pelepasan karbon yang tersimpan jutaan tahun di dalam gambut ke atmosfer dalam bentuk gas CO\u2082","Terjadinya peningkatan fiksasi nitrogen oleh mikroorganisme tanah","Meningkatnya kemampuan produsen di hutan gambut untuk melakukan fotosintesis","Penurunan suhu udara di sekitar hutan karena hilangnya uap air tanah","Mempercepat proses dekomposisi serasah hutan sehingga tanah menjadi lebih subur"]},
+
+{id:6,type:"PG",_rc:1,
+stim:"Di kawasan pinggiran hutan Sebangau, ketersediaan hewan mangsa seperti tikus tanah seringkali menurun drastis pada puncak musim kemarau. Kondisi ini memaksa burung elang tikus dan ular sanca untuk memperebutkan target buruan yang sama di area vegetasi rasau. Meskipun kedua hewan pemangsa ini tidak saling memangsa satu sama lain, persaingan yang ketat untuk mendapatkan sumber daya makanan sangat memengaruhi tingkat kelangsungan hidup mereka. Interaksi ekologis di mana dua jenis organisme dari spesies yang berbeda saling bersaing ini sering ditemukan di alam liar.",
+q:"Hubungan interaksi yang terjadi antara elang tikus dan ular sanca dalam memperebutkan sumber makanan yang sama tersebut dinamakan...",
+opts:["Kompetisi interspesifik, karena terjadi persaingan antar spesies yang berbeda","Kompetisi intraspesifik, karena terjadi persaingan antar individu dalam satu spesies","Parasitisme, karena ular sanca mengambil keuntungan dari elang","Komensalisme, karena elang diuntungkan dan ular tidak dirugikan","Predasi, karena salah satu hewan memakan hewan yang lain"]},
+
+{id:7,type:"PG",_rc:1,
+stim:"Danau Tahai memiliki air yang berwarna merah kecokelatan sangat gelap akibat tingginya kandungan zat tanin dari sisa pembusukan pepohonan di sekitarnya. Pewarnaan alami ini menyebabkan cahaya matahari tertahan di permukaan dan sama sekali tidak mampu menembus hingga ke dasar perairan (zona profundal). Tanpa adanya cahaya perantara, tidak ada satu pun tumbuhan air atau fitoplankton yang dapat melakukan fotosintesis di zona bawah tersebut. Akibatnya, organisme yang menetap di dasar danau harus bertahan hidup dengan cara mengonsumsi serpihan sisa organisme mati yang perlahan tenggelam dari atas.",
+q:"Berdasarkan kondisi tersebut, apa konsekuensi logis terhadap kehidupan komponen biotik di zona dalam (profundal) Danau Tahai?",
+opts:["Hewan-hewan di dasar danau sangat bergantung pada detritus yang jatuh dari permukaan","Populasi tanaman air berdaun lebar di dasar danau akan tumbuh sangat subur","Kadar oksigen terlarut di dasar danau akan menjadi sangat tinggi karena fotosintesis maksimal","Fitoplankton di dasar danau akan berkembang biak dengan sangat cepat (blooming)","Keanekaragaman biota air di dasar danau lebih tinggi daripada di zona permukaan"]},
+
+{id:8,type:"PG",_rc:1,
+stim:"Pembuangan sisa pupuk pertanian yang sarat unsur kimia secara langsung ke Sungai Mentaya telah memicu terjadinya fenomena pengayaan nutrisi (eutrofikasi). Kondisi ini direspons dengan ledakan populasi eceng gondok yang dengan cepat menutupi seluruh permukaan air, sehingga menghalangi cahaya matahari dan menipiskan kadar oksigen terlarut. Untuk menyelamatkan populasi ikan yang mulai mati lemas, penanganan jangka pendek secara fisik harus segera dilakukan dengan cara mengangkat tanaman gulma tersebut dari badan sungai. Selain itu, mutlak diperlukan langkah pencegahan di sektor pertanian agar masuknya sumber polutan dapat dikendalikan dengan ketat.",
+q:"Jika Anda diminta menerapkan konsep rantai makanan dan ekosistem untuk mengatasi masalah kematian ikan ini, tindakan manakah yang paling tepat dan berkelanjutan?",
+opts:["Memanen eceng gondok secara berkala untuk dijadikan kompos dan membatasi penggunaan pupuk kimia","Menyemprotkan herbisida kimia ke seluruh permukaan sungai agar eceng gondok cepat mati","Memasukkan pemangsa alami populasi ikan berkurang sehingga kompetisi oksigen menurun","Mengeruk seluruh dasar sungai agar air dapat menampung sisa limbah lebih banyak","Menghalangi sinar matahari masuk ke sungai agar eceng gondok tidak bisa tumbuh lagi"]},
+
+{id:9,type:"PG",_rc:1,
+stim:"Area bekas penambangan emas ilegal di Kabupaten Gunung Mas meninggalkan hamparan pasir kuarsa yang kritis dan sepenuhnya kehilangan lapisan humus bagian atas (top soil). Lahan yang rusak parah ini tidak bisa langsung ditanami pepohonan besar karena tidak adanya sisa nutrisi penyokong kehidupan di dalam media tanam. Proses pemulihan ekosistem sekunder harus dimulai dari tahapan perintisan dengan memperkenalkan kelompok tumbuhan tingkat rendah terlebih dahulu. Tumbuhan penutup lahan seperti ini mampu bertahan di kondisi tanah yang buruk dan perlahan akan menyumbangkan materi organik ketika mereka mati untuk membentuk struktur tanah yang baru.",
+q:"Agar ekosistem tersebut dapat kembali pulih melalui proses suksesi sekunder, langkah awal apa yang paling tepat diaplikasikan oleh peneliti tersebut terkait penanaman jenis tumbuhan?",
+opts:["Menanam tanaman penutup tanah kelompok legum atau lumut untuk memperbaiki struktur dan nutrisi tanah","Menanam bibit pohon ulin dan meranti yang berkayu keras dan berumur panjang","Menanam pohon kelapa sawit secara masif agar lahan cepat terlihat hijau","Mengosongkan lahan sama sekali tanpa intervensi dan membiarkannya tergenang air hujan hingga menjadi danau","Menanam eceng gondok di atas pasir kering untuk menjaganya tetap lembap sepanjang musim"]},
+
+{id:10,type:"PG",_rc:1,
+stim:"Sebuah piramida jumlah yang ideal dalam suatu ekosistem mengharuskan organisme penyedia makanan utama memiliki jumlah populasi yang jauh lebih masif dari pemangsanya. Di sebuah lahan bekas terbakar, ribuan helai daun ilalang tumbuh menutupi lahan dan menjadi sumber makanan bagi ratusan ekor belalang penjelajah. Belalang-belalang tersebut kemudian diburu oleh puluhan ekor burung kacer yang bersarang di sisa dahan pohon. Pada puncak piramida, hanya tampak satu atau dua ekor elang bido yang sesekali mengintai dari udara untuk memangsa burung-burung kecil tersebut.",
+q:"Jika data biotik ini disusun ke dalam piramida jumlah untuk membentuk ekosistem yang seimbang, urutan makhluk hidup yang tepat dari tingkatan trofik paling dasar hingga puncak adalah...",
+opts:["Ilalang, belalang penjelajah, burung kacer, elang bido","Suhu udara, ilalang, belalang penjelajah, burung kacer","Elang bido, burung kacer, belalang penjelajah, ilalang","Ilalang, burung kacer, belalang penjelajah, elang bido","Sinar matahari, ilalang, belalang penjelajah, burung kacer"]},
+
+{id:11,type:"PGK",_rc:3,
+stim:"Kehidupan di dalam ekosistem Taman Nasional Sebangau tidak hanya disokong oleh interaksi makhluk hidupnya, tetapi sangat bergantung pada kondisi lingkungan fisiknya yang unik. Hamparan lapisan gambut purba yang sangat tebal berfungsi sebagai bantalan air sekaligus medium tumbuh bagi vegetasi hutan lebat di atasnya. Genangan air di seluruh kawasan ini memiliki derajat keasaman (pH) yang tergolong asam kuat dan berwarna gelap pekat akibat terlarutnya getah tanin nabati. Ketiga parameter fisik lingkungan inilah yang menyeleksi secara ketat mengapa hanya organisme khusus yang mampu beradaptasi dan lestari di sana.",
+q:"Manakah di antara unsur berikut yang tergolong sebagai komponen abiotik di ekosistem Taman Nasional Sebangau? (Pilihlah tiga jawaban yang benar!)",
+opts:["Air hitam kaya tanin nabati","Gambut tebal","Derajat keasaman (pH) tanah","Pohon ramin (Gonystylus bancanus)","Jamur pelapuk serasah"]},
+
+{id:12,type:"PGK",_rc:2,
+stim:"Sepanjang daerah aliran Sungai Kahayan menjadi habitat sentral bagi beraneka ragam kumpulan makhluk hidup yang saling berbagi ruang dalam satu kesatuan waktu. Di tepian dangkal dekat dermaga perahu, masyarakat dapat mengamati interaksi antara kelompok ikan lais, gerombolan ikan seluang, serta hamparan tanaman eceng gondok yang tumbuh liar. Pemandangan interaksi yang serupa juga dapat terlihat jelas di muara hilir sungai, yang didominasi oleh tanaman rasau, ikan toman, dan konsentrasi mikroorganisme perairan. Kesatuan dari berbagai populasi beda jenis yang menetap dan hidup berdampingan pada area geografis yang sama inilah yang membentuk apa yang disebut sebagai komunitas ekologi.",
+q:"Manakah pernyataan berikut yang secara tepat menggambarkan tingkat organisasi kehidupan tingkat Komunitas di Sungai Kahayan? (Pilihlah dua jawaban yang benar!)",
+opts:["Seluruh ikan lais, ikan seluang, dan eceng gondok yang hidup bersama di area dermaga","Kumpulan tanaman rasau, ikan toman, dan mikroorganisme air yang mendiami hilir sungai","Seekor ikan toman yang berenang sendirian di bawah jembatan Kahayan","Interaksi timbal balik antara ikan seluang dengan kandungan oksigen terlarut di dalam sungai","Seluruh populasi ikan lais yang mendiami Sungai Kahayan dari hulu ke hilir"]},
+
+{id:13,type:"PGK",_rc:2,
+stim:"Siklus daur ulang nutrisi alamiah di hutan lindung Bukit Tangkiling berputar dengan sangat efektif berkat keterlibatan organisme perombak materi mati. Pada sisa-sisa dahan kayu yang tumbang, koloni serangga seperti rayap bekerja aktif memakan dan menghancurkan wujud fisik kayu tersebut menjadi serpihan-serpihan kecil yang kasar. Serpihan sampah organik ini kemudian dipecah lebih lanjut secara kimiawi hingga lumat oleh hifa jamur saprofit yang tumbuh menjalar di sekitarnya. Kerja sama beruntun antara hewan pemakan serpihan dan mikroorganisme perombak inilah yang menjamin ketersediaan unsur hara di dalam tanah tetap terjaga.",
+q:"Manakah makhluk hidup di kawasan Bukit Tangkiling berikut yang berperan langsung dalam merombak atau memakan material sisa organik (detritus/serasah)? (Pilihlah dua jawaban yang benar!)",
+opts:["Rayap pemakan kayu","Jamur saprofit pada serasah","Tanaman paku","Lumut kerak"]},
+
+{id:14,type:"PGK",_rc:2,
+stim:"Dinamika rantai makanan di danau rawa (danau tewah) bermula dari koloni fitoplankton mikroskopis yang menyumbangkan energi utama berkat kemampuannya melakukan fotosintesis di tingkat dasar. Energi nutrisi tersebut selanjutnya dipindahkan ke organisme herbivora kecil, yakni zooplankton, yang menduduki urutan tingkat konsumsi pertama. Rantai ini terus berlanjut ketika gerombolan ikan seluang secara aktif memangsa populasi zooplankton di area perairan dangkal. Pada akhirnya, ikan toman muncul menempati puncak rantai makanan sebagai predator tingkat lanjut yang mengincar ikan seluang sebagai buruan utamanya.",
+q:"Berdasarkan rantai makanan di danau tewah tersebut, manakah pernyataan hubungan trofik berikut yang bernilai benar? (Pilihlah dua jawaban yang benar!)",
+opts:["Fitoplankton bertindak sebagai produsen pada tingkat trofik I","Zooplankton berada pada tingkat trofik II dan berperan sebagai konsumen primer","Ikan toman berada pada tingkat trofik III dan berperan sebagai konsumen tersier","Ikan seluang menempati tingkat trofik IV sebagai konsumen tersier"]},
+
+{id:15,type:"PGK",_rc:2,
+stim:"Hamparan tanah gambut di wilayah Kabupaten Pulang Pisau mengunci dan menyimpan material karbon organik dari sisa tumbuhan purba dalam skala yang sangat masif. Apabila hamparan lahan basah ini mengering lalu terbakar hebat, gas rumah kaca berupa karbon dioksida yang telah terkurung ribuan tahun akan membumbung dan mencemari udara secara langsung. Di saat yang sama, hangusnya vegetasi hijau di atas permukaan tanah membuat alam kehilangan agen utama yang biasanya bertugas mendaur ulang dan menyerap kembali gas tersebut melalui proses fotosintesis. Kombinasi fatal antara pelepasan karbon secara drastis dan hilangnya kemampuan vegetasi untuk mengikatnya kembali sangat mengancam kestabilan ekosistem global.",
+q:"Bagaimana dampak kebakaran lahan gambut tersebut terhadap siklus karbon dan keseimbangan ekosistem di sekitarnya? (Pilihlah dua jawaban yang benar!)",
+opts:["Kadar karbon dioksida di atmosfer melonjak tajam akibat pelepasan cadangan karbon dari dalam gambut","Proses fiksasi karbon oleh tumbuhan menurun drastis karena rusaknya produsen akibat terbakar","Kandungan karbon di dalam tanah gambut bertambah subur setelah terjadi kebakaran","Siklus karbon berhenti total karena seluruh makhluk hidup di dalam tanah ikut mati"]},
+
+{id:16,type:"PGK",_rc:2,
+stim:"Keanekaragaman spesies di kebun karet rakyat membentuk pola interaksi timbal balik (simbiosis) yang bermacam-macam untuk mempertahankan kelangsungan hidup. Tumbuhan pasilan atau benalu sering ditemukan menempel pada dahan bagian atas, diam-diam menyerap sari makanan serta mineral yang pada akhirnya melemahkan pertumbuhan pohon inangnya. Sebaliknya, kehadiran satwa seperti burung pelatuk memberikan dampak yang sangat positif karena mereka giat membersihkan kulit dahan dari hama ulat yang merusak, sembari mendapatkan nutrisi harian. Kedua bentuk interaksi ini, di mana satu pihak dirugikan sementara yang lain justru diuntungkan dari aktivitas pasangannya, membuktikan rumitnya hubungan antarmakhluk hidup di alam.",
+q:"Manakah analisis bentuk interaksi antarorganisme di kebun karet tersebut yang benar? (Pilihlah dua jawaban yang benar!)",
+opts:["Interaksi antara benalu dan pohon karet merupakan simbiosis parasitisme karena benalu menyerap air dan hara pohon karet","Hubungan antara burung pelatuk dan pohon karet adalah mutualisme karena burung membantu membersihkan hama ulat","Interaksi benalu dengan pohon karet merupakan komensalisme karena benalu hanya menumpang tempat hidup","Burung pelatuk dan ulat mengalami predasi, di mana burung pelatuk bertindak sebagai predator"]},
+
+{id:17,type:"PGK",_rc:2,
+stim:"Tertutupnya permukaan Danau Sabuah oleh pertumbuhan eceng gondok yang tak terkendali menciptakan lapisan kanopi tebal yang memblokir masuknya sinar matahari. Ketiadaan cahaya yang menembus dasar perairan menyebabkan organisme autotrof seperti ganggang gagal menjalankan fotosintesis dan akhirnya mengalami kematian massal. Akumulasi bangkai tumbuhan yang tenggelam memicu perkembangbiakan bakteri pembusuk secara besar-besaran untuk merombak materi organik tersebut. Sayangnya, proses pembusukan oleh bakteri yang melonjak ini menguras habis cadangan oksigen yang ada, sehingga menyebabkan ekosistem air menjadi zona mati (dead zone) bagi ikan dan satwa air lainnya.",
+q:"Apa dampak lanjutan yang akan dirasakan oleh komponen biotik di dalam Danau Sabuah akibat tertutupnya permukaan oleh eceng gondok? (Pilihlah dua jawaban yang benar!)",
+opts:["Tumbuhan dan ganggang di dasar danau mati karena tidak mendapatkan cahaya untuk fotosintesis","Proses dekomposisi tumbuhan mati oleh bakteri meningkat, yang menghabiskan sisa oksigen air","Populasi ikan karnivor meningkat pesat karena kondisi air menjadi gelap untuk bersembunyi","Penetrasi cahaya matahari ke zona limnetik menjadi semakin maksimal"]},
+
+{id:18,type:"PGK",_rc:2,
+stim:"Aktivitas tambang emas liar menyebabkan aliran air Sungai Kurun terkontaminasi limbah lumpur pekat dan partikel zat merkuri yang mematikan. Keruhnya badan air membuat paparan cahaya matahari terhalang, yang seketika menyebabkan populasi produsen dasar seperti plankton anjlok dan memutus rantai aliran energi pertama ke makhluk hidup di atasnya. Pemulihan fungsi ekosistem ini wajib dimulai dari tahap hulu dengan cara menghentikan aliran sedimen limbah tambang, sehingga air kembali jernih dan aktivitas fotosintesis plankton dapat pulih. Selanjutnya, diperlukan penanaman spesies tumbuhan pelindung di sempadan sungai yang secara biologis mampu menyerap dan membersihkan residu logam berat dari endapan tanah.",
+q:"Jika pemerintah daerah ingin melakukan pemulihan ekosistem sungai menggunakan prinsip aliran energi, langkah pengelolaan manakah yang paling tepat diterapkan? (Pilihlah dua jawaban yang benar!)",
+opts:["Menghentikan aktivitas pembuangan limbah tambang agar sedimentasi berkurang dan penetrasi cahaya kembali masuk untuk memulihkan populasi plankton","Menanam tanaman air lokal penyerap logam berat (fitoremediasi) di zona riparian untuk menjernihkan air sebagai langkah awal memulihkan produsen","Mengeruk seluruh dasar sungai dan mematikan semua komponen biotik agar suksesi dimulai dari awal lagi","Memberikan pakan buatan berupa pelet sebanyak-banyaknya ke dalam sungai terbuka untuk menggantikan peran plankton"]},
+
+{id:19,type:"PGK",_rc:2,
+stim:"Sebuah ekosistem sawah pasang surut di Dadahup menunjukkan keseimbangan rantai makanan yang tersusun dari ribuan bibit padi, ratusan ekor belalang, puluhan amfibi (katak), dan diakhiri dengan beberapa ekor karnivora puncak. Posisi katak pada tingkatan konsumsi sekunder ini bertindak krusial untuk menahan laju perkembangbiakan herbivora sekaligus sebagai penyedia energi bagi pemangsanya. Apabila perburuan liar menyebabkan populasi katak musnah sepenuhnya, spesies herbivora di bawahnya tidak akan lagi memiliki musuh alami yang mengontrol pertumbuhan populasi mereka. Bersamaan dengan itu, hewan karnivora di tingkat teratas seperti ular sawah akan menghadapi krisis kelaparan karena terputusnya suplai mangsa utama.",
+q:"Jika terjadi serangan hama di mana populasi katak mendadak habis akibat diburu manusia secara liar, bagaimana prediksi perubahan piramida jumlah pada ekosistem sawah tersebut? (Pilihlah dua jawaban yang benar!)",
+opts:["Tingkatan trofik II (belalang) akan melebar pesat karena kehilangan predator alaminya","Tingkatan trofik IV (ular sawah) akan kekurangan pasokan makanan sehingga populasinya terancam menurun","Rumpun padi pada trofik I akan meningkat jumlahnya karena belalang beralih memakan ular","Ular sawah akan langsung beradaptasi menjadi pemakan padi sebagai produsen utama"]},
+
+{id:20,type:"PGK",_rc:2,
+stim:"Gangguan ekologis berupa pembabatan habis pepohonan di Barito Utara meninggalkan tanah yang gundul, namun substrat tanah aslinya masih relatif terjaga tanpa kerusakan total. Berkat sisa-sisa benih dan nutrisi yang masih terkandung dalam tanah, lahan ini segera ditumbuhi oleh berbagai rumput perintis dan semak belukar liar dalam waktu singkat. Spesies pionir ini memiliki ketahanan tinggi terhadap cuaca panas dan perlahan-lahan membantu melembapkan permukaan tanah yang gersang. Seiring membaiknya unsur hara akibat daun rumput yang membusuk, ekosistem secara berangsur memungkinkan masuknya pepohonan berkayu lunak untuk tumbuh menggantikan vegetasi pendahulunya.",
+q:"Berdasarkan proses perubahan vegetasi di Barito Utara tersebut, manakah kesimpulan yang tepat mengenai gejala ekologi yang sedang terjadi? (Pilihlah dua jawaban yang benar!)",
+opts:["Kawasan tersebut sedang mengalami proses suksesi sekunder menuju terbentuknya komunitas klimaks yang baru","Rumput liar dan semak belukar bertindak sebagai spesies pionir (perintis) yang membuka jalan bagi tumbuhnya pohon besar","Proses tersebut tergolong suksesi primer karena dimulai dari hilangnya pohon-pohon hutan secara menyeluruh","Suksesi akan berhenti total saat pohon berkayu lunak mati karena umurnya yang relatif pendek"]}
+];
+
+/* ── KUNCI JAWABAN (teks benar) – dienkode saat startup, lalu dihapus ── */
+var _rawAns = [
+  ["Orangutan, pohon ramin, dan burung rangkong"],
+  ["Komunitas"],
+  ["Produsen"],
+  ["Energi matahari ditangkap kangkung liar, lalu mengalir ke ikan herbivor, dan berlanjut ke ikan toman"],
+  ["Pelepasan karbon yang tersimpan jutaan tahun di dalam gambut ke atmosfer dalam bentuk gas CO\u2082"],
+  ["Kompetisi interspesifik, karena terjadi persaingan antar spesies yang berbeda"],
+  ["Hewan-hewan di dasar danau sangat bergantung pada detritus yang jatuh dari permukaan"],
+  ["Memanen eceng gondok secara berkala untuk dijadikan kompos dan membatasi penggunaan pupuk kimia"],
+  ["Menanam tanaman penutup tanah kelompok legum atau lumut untuk memperbaiki struktur dan nutrisi tanah"],
+  ["Ilalang, belalang penjelajah, burung kacer, elang bido"],
+  ["Air hitam kaya tanin nabati","Gambut tebal","Derajat keasaman (pH) tanah"],
+  ["Seluruh ikan lais, ikan seluang, dan eceng gondok yang hidup bersama di area dermaga","Kumpulan tanaman rasau, ikan toman, dan mikroorganisme air yang mendiami hilir sungai"],
+  ["Rayap pemakan kayu","Jamur saprofit pada serasah"],
+  ["Fitoplankton bertindak sebagai produsen pada tingkat trofik I","Zooplankton berada pada tingkat trofik II dan berperan sebagai konsumen primer"],
+  ["Kadar karbon dioksida di atmosfer melonjak tajam akibat pelepasan cadangan karbon dari dalam gambut","Proses fiksasi karbon oleh tumbuhan menurun drastis karena rusaknya produsen akibat terbakar"],
+  ["Interaksi antara benalu dan pohon karet merupakan simbiosis parasitisme karena benalu menyerap air dan hara pohon karet","Hubungan antara burung pelatuk dan pohon karet adalah mutualisme karena burung membantu membersihkan hama ulat"],
+  ["Tumbuhan dan ganggang di dasar danau mati karena tidak mendapatkan cahaya untuk fotosintesis","Proses dekomposisi tumbuhan mati oleh bakteri meningkat, yang menghabiskan sisa oksigen air"],
+  ["Menghentikan aktivitas pembuangan limbah tambang agar sedimentasi berkurang dan penetrasi cahaya kembali masuk untuk memulihkan populasi plankton","Menanam tanaman air lokal penyerap logam berat (fitoremediasi) di zona riparian untuk menjernihkan air sebagai langkah awal memulihkan produsen"],
+  ["Tingkatan trofik II (belalang) akan melebar pesat karena kehilangan predator alaminya","Tingkatan trofik IV (ular sawah) akan kekurangan pasokan makanan sehingga populasinya terancam menurun"],
+  ["Kawasan tersebut sedang mengalami proses suksesi sekunder menuju terbentuknya komunitas klimaks yang baru","Rumput liar dan semak belukar bertindak sebagai spesies pionir (perintis) yang membuka jalan bagi tumbuhnya pohon besar"]
+];
+
+
+/* Enkode jawaban ke soal._h (SHA-256 hash), lalu hapus _rawAns dari memori */
+SOAL.forEach(function(s,i){
+  s._h = _rawAns[i].map(function(t){ return _enc(t); });
+});
+_rawAns = null;
+
+/* ── UTILITIES ── */
+function shuffle(a){var b=a.slice();for(var i=b.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=b[i];b[i]=b[j];b[j]=t;}return b;}
+function $(id){return document.getElementById(id);}
+function toast(id,msg,dur){var el=$(id);el.textContent=msg;el.classList.add('show');setTimeout(function(){el.classList.remove('show');},dur||2800);}
+function poin(tries){return tries===1?5:tries===2?4:tries===3?3:tries===4?2:1;}
+
+/* ── BUKA WHATSAPP (kompatibel semua context: https, file://, WKWebView) ──
+   - https:// context  : window.open() bekerja, gunakan itu
+   - file:// context   : window.open() diblokir, pakai window.location.href
+   - WKWebView         : overlay sudah mencegah sampai sini
+   ─────────────────────────────────────────────────────────────────────── */
+window._openWA = function(el){
+  var url = el.dataset.waurl || el.href;
+  if(!url || url === '#' || url === window.location.href) return false;
+  var isFile = window.location.protocol === 'file:';
+  if(isFile){
+    /* file:// context: navigasi langsung, WA terbuka, siswa tap Back untuk kembali */
+    window.location.href = url;
+  } else {
+    /* https:// context: buka tab baru agar halaman hasil tidak hilang */
+    var w = window.open(url, '_blank', 'noopener');
+    if(!w){ window.location.href = url; } /* fallback jika popup diblokir */
+  }
+  return false; /* cegah default <a> behavior */
+};
+
+/* ── LOCAL STORAGE KEY ── */
+var SS_KEY = 'ujian_bio10_v2';
+
+/* ── SAFARI PRIVATE MODE FALLBACK ────────────────────────────────
+   Di Safari Private Mode (iOS & desktop), localStorage.setItem()
+   melempar QuotaExceededError meski storage kosong.
+   Solusi: buat wrapper _store yang otomatis fallback ke in-memory
+   jika localStorage tidak tersedia/diblokir.
+   Dampak: state tetap berfungsi selama sesi, tapi TIDAK bertahan
+   jika halaman di-refresh (sama seperti ujian baru).
+   ────────────────────────────────────────────────────────────── */
+var _lsAvailable = (function(){
+  try{
+    var t = '__ls_test__';
+    localStorage.setItem(t,'1');
+    localStorage.removeItem(t);
+    return true;
+  }catch(e){ return false; }
+})();
+
+/* In-memory fallback store */
+var _memStore = {};
+
+var _store = {
+  getItem: function(key){
+    if(_lsAvailable) return localStorage.getItem(key);
+    return _memStore[key] !== undefined ? _memStore[key] : null;
+  },
+  setItem: function(key, val){
+    if(_lsAvailable){ try{ localStorage.setItem(key, val); }catch(e){ _lsAvailable=false; _memStore[key]=val; } }
+    else _memStore[key] = val;
+  },
+  removeItem: function(key){
+    if(_lsAvailable){ try{ localStorage.removeItem(key); }catch(e){} }
+    delete _memStore[key];
+  }
+};
+
+/* Tampilkan peringatan jika Private Mode terdeteksi */
+if(!_lsAvailable){
+  setTimeout(function(){
+    toast('tWarn','⚠️ Mode Privat terdeteksi. Progress tidak tersimpan jika refresh.',5000);
+  }, 1500);
+}
+
+/* ── HMAC-SHA256 SEDERHANA untuk tanda tangan state ──
+   Siswa yang edit localStorage akan gagal verifikasi
+   karena tidak tahu SECRET_KEY ini                    */
+var _SK = (function(){
+  /* Key dibuat dari hash gabungan: susah ditebak, unik per file */
+  return _sha256('SMABIO10_EKOSISTEM_' + CFG_DURASI_MENIT + '_INTEGRITY_2025');
+})();
+
+function _signState(obj){
+  /* Buat string kanonik dari field kritis, lalu hash bersama secret */
+  var canon = obj.startMs + '|' + obj.totalSecs + '|' + obj.idx + '|' +
+              (obj.student ? obj.student.nama + obj.student.kelas : '') + '|' +
+              JSON.stringify(obj.attempts) + '|' + obj.punish;
+  return _sha256(_SK + canon);
+}
+
+function _verifyState(obj){
+  if(!obj.sig) return false;
+  return obj.sig === _signState(obj);
+}
+
+/* ── STATE ── */
+/* S sengaja tidak di-freeze (perlu diubah saat ujian berjalan),
+   tapi dibungkus dalam closure — tidak bisa diakses dari konsol */
+var S={
+  active:false, idx:0, order:[], attempts:{},
+  student:{}, timerIv:null, secsLeft:0,
+  punish:0, startMs:0
+};
+
+/* ── BEKUKAN window.* YANG BERBAHAYA ──────────────────────────
+   openConfirm/closeConfirm/finishConfirmed dikunci di bawah
+   setelah fungsi aslinya didefinisikan (lihat bagian CONFIRM).  */
+
+/* ── SIMPAN & MUAT STATE (anti-refresh & anti-close browser) ── */
+function saveState(){
+  if(!S.active)return;
+  try{
+    var data = {
+      idx: S.idx,
+      order: S.order,
+      attempts: S.attempts,
+      student: S.student,
+      punish: S.punish,
+      startMs: S.startMs,
+      totalSecs: CFG_DURASI_MENIT * 60
+    };
+    data.sig = _signState(data);   /* ← tanda tangan integritas */
+    _store.setItem(SS_KEY, JSON.stringify(data));
+  }catch(e){}
+}
+function loadState(){
+  try{
+    var raw = _store.getItem(SS_KEY);
+    if(!raw) return false;
+    var d = JSON.parse(raw);
+    if(!d || !d.student) return false;
+
+    /* ── VERIFIKASI INTEGRITAS: tolak jika state diedit manual ── */
+    if(!_verifyState(d)){
+      clearState();
+      /* Tampilkan peringatan keras, jangan diam-diam diabaikan */
+      setTimeout(function(){
+        alert('⚠️ Data ujian terdeteksi telah dimanipulasi.\nSesi dihapus. Hubungi Guru Anda.');
+      }, 300);
+      return false;
+    }
+
+    var elapsedSecs = Math.floor((Date.now() - d.startMs) / 1000);
+    var secsLeft = Math.max(0, d.totalSecs - elapsedSecs);
+    if(secsLeft <= 0){ clearState(); return false; }
+    if(elapsedSecs > d.totalSecs + 1800){ clearState(); return false; }
+    S.idx       = d.idx;
+    S.order     = d.order;
+    S.attempts  = d.attempts;
+    S.student   = d.student;
+    S.punish    = d.punish;
+    S.startMs   = d.startMs;
+    S.secsLeft  = secsLeft;
+    return true;
+  }catch(e){ return false; }
+}
+function clearState(){
+  try{ _store.removeItem(SS_KEY); }catch(e){}
+}
+
+/* ── DETEKSI MULTI-TAB / MULTI-BROWSER ──────────────────────────
+   Cara kerja:
+   • Saat ujian aktif, setiap 1.5 dtk tulis timestamp "heartbeat"
+     ke localStorage dengan sessionId unik tab ini.
+   • Saat tab lain membuka file yang sama & aktif, heartbeat-nya
+     berbeda → tab pertama mendeteksi "ada pesaing" → punish.
+   • Juga: jika storage berubah dari luar (tab lain), event
+     'storage' terpicu di tab ini → punish langsung.
+   ────────────────────────────────────────────────────────────── */
+var _TAB_KEY = 'ujian_bio10_tab';
+var _SESSION_ID = _sha256(Date.now() + Math.random().toString()).substring(0,16);
+var _hbInterval = null;
+
+function _startHeartbeat(){
+  _hbInterval = setInterval(function(){
+    if(!S.active){ clearInterval(_hbInterval); return; }
+    try{
+      var prev = _store.getItem(_TAB_KEY);
+      if(prev && prev !== _SESSION_ID){
+        /* Ada tab/browser lain yang aktif mengerjakan ujian ini */
+        clearInterval(_hbInterval);
+        triggerPunish();
+        toast('tErr','⚠️ Ujian dibuka di tab/browser lain! Terdeteksi.',4000);
+      }
+      _store.setItem(_TAB_KEY, _SESSION_ID);
+    }catch(e){}
+  }, 1500);
+}
+
+function _stopHeartbeat(){
+  clearInterval(_hbInterval);
+  try{ _store.removeItem(_TAB_KEY); }catch(e){}
+}
+
+/* Jika ada tab lain yang menulis ke storage → deteksi langsung */
+window.addEventListener('storage', function(e){
+  if(!S.active) return;
+  if(e.key === _TAB_KEY && e.newValue && e.newValue !== _SESSION_ID){
+    triggerPunish();
+    toast('tErr','⚠️ Tab/browser lain terdeteksi aktif!',4000);
+  }
+  /* Jika state ujian diubah dari luar (tab lain atau DevTools) */
+  if(e.key === SS_KEY && S.active){
+    triggerPunish();
+    toast('tErr','⚠️ Data ujian diubah dari luar! Terdeteksi.',4000);
+  }
+});
+
+/* ── DETEKSI iOS (Safari tidak mendukung Fullscreen API & deteksi online tidak akurat) ── */
+var _isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+             (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+var _isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+var _isIOSSafari = _isIOS || _isSafari;
+
+/* ── FULLSCREEN ── */
+function goFullscreen(){
+  if(_isIOSSafari) return; /* iOS Safari tidak mendukung Fullscreen API, skip */
+  var el=document.documentElement;
+  var fn=el.requestFullscreen||el.webkitRequestFullscreen||el.mozRequestFullScreen||el.msRequestFullscreen;
+  if(fn) try{ fn.call(el).catch(function(){}); }catch(e){}
+}
+
+/* ── TIMER ── */
+function startTimer(){
+  updateTimerDisplay();
+  S.timerIv=setInterval(function(){
+    var elapsed = Math.floor((Date.now() - S.startMs) / 1000);
+    S.secsLeft = Math.max(0, CFG_DURASI_MENIT * 60 - elapsed);
+    saveState();
+    updateTimerDisplay();
+    if(S.secsLeft<=0){clearInterval(S.timerIv);finishQuiz(true);}
+  },1000);
+}
+
+/* ── WATCHDOG — jaga timer & heartbeat agar tidak bisa dimatikan ──
+   Cara kerja:
+   • Setiap 3 detik, watchdog memeriksa apakah timer countdown
+     dan heartbeat masih hidup dengan melihat apakah display
+     timer masih berubah dan _lastHbWrite masih update.
+   • Jika mati (misalnya siswa clearInterval massal dari DevTools),
+     watchdog langsung regenerasi keduanya dan catat pelanggaran.
+   ─────────────────────────────────────────────────────────────── */
+var _lastTimerVal = -1;
+var _lastHbWrite  = Date.now();
+var _wdFrozenCount = 0;
+
+/* Patch _startHeartbeat agar update _lastHbWrite tiap tulis */
+var _origStartHb = _startHeartbeat;
+_startHeartbeat = function(){
+  _hbInterval = setInterval(function(){
+    if(!S.active){ clearInterval(_hbInterval); return; }
+    try{
+      var prev = _store.getItem(_TAB_KEY);
+      if(prev && prev !== _SESSION_ID){
+        clearInterval(_hbInterval);
+        triggerPunish();
+        toast('tErr','⚠️ Ujian dibuka di tab/browser lain! Terdeteksi.',4000);
+      }
+      _store.setItem(_TAB_KEY, _SESSION_ID);
+      _lastHbWrite = Date.now(); /* ← watchdog marker */
+    }catch(e){}
+  }, 1500);
+};
+
+setInterval(function(){
+  if(!S.active) return;
+
+  /* -- Cek timer countdown masih hidup -- */
+  var curVal = S.secsLeft;
+  /* Jika secsLeft tidak bergerak padahal waktu terus berjalan → timer mati */
+  var expectedElapsed = Math.floor((Date.now() - S.startMs) / 1000);
+  var expectedLeft    = Math.max(0, CFG_DURASI_MENIT * 60 - expectedElapsed);
+  var timerDead = Math.abs(curVal - expectedLeft) > 5; /* toleransi 5 dtk */
+
+  /* -- Cek heartbeat masih hidup -- */
+  var hbDead = (Date.now() - _lastHbWrite) > 5000; /* tidak nulis > 5 dtk */
+
+  if(timerDead || hbDead){
+    _wdFrozenCount++;
+
+    /* Regenerasi timer */
+    if(timerDead){
+      clearInterval(S.timerIv);
+      startTimer();
+    }
+
+    /* Regenerasi heartbeat */
+    if(hbDead){
+      clearInterval(_hbInterval);
+      _startHeartbeat();
+    }
+
+    /* Catat sebagai pelanggaran */
+    if(_wdFrozenCount <= 3){ /* max 3 kali punish dari watchdog agar tidak loop */
+      triggerPunish();
+      toast('tErr','⚠️ Manipulasi timer terdeteksi!',4000);
+    }
+  }
+}, 3000);
+function updateTimerDisplay(){
+  var m=Math.floor(S.secsLeft/60),s=S.secsLeft%60;
+  $('dispTimer').textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+  var tw=$('timerWrap');
+  tw.className='';
+  if(S.secsLeft<300)tw.classList.add('danger');
+  else if(S.secsLeft<600)tw.classList.add('warn');
+}
+
+/* ── DETEKSI SPLIT SCREEN / FLOATING WINDOW ── */
+/* CATATAN: Di iOS, keyboard virtual mengubah innerWidth → false positive → dinonaktifkan */
+var _resizeTimer=null;
+var _minWidth = Math.min(window.screen.width, window.screen.height) * 0.38;
+function checkWindowSize(){
+  if(!S.active||_isIOSSafari) return; /* Skip di iOS – layar kecil & keyboard mengubah ukuran */
+  if(window.innerWidth < _minWidth){
+    toast('tErr','⚠️ Layar mengecil terdeteksi! Kembali ke mode layar penuh.',3000);
+    triggerPunish();
+  }
+}
+window.addEventListener('resize', function(){
+  clearTimeout(_resizeTimer);
+  _resizeTimer = setTimeout(checkWindowSize, 500);
+});
+
+/* ── DETEKSI KONEKSI INTERNET (ONLINE) ── */
+/* Ujian ini bersifat offline. Mengaktifkan internet saat ujian dianggap pelanggaran. */
+/* CATATAN: Fitur ini dinonaktifkan di iOS/Safari karena selalu terdeteksi online */
+window.addEventListener('online',function(){
+  if(!S.active||_isIOSSafari)return;
+  S.onlineAt = S.onlineAt || Date.now();
+  S.onlineCount = (S.onlineCount||0) + 1;
+  toast('tErr','⚠️ INTERNET TERDETEKSI AKTIF! Ujian ini bersifat offline.',4000);
+  triggerPunish();
+});
+window.addEventListener('offline',function(){
+  if(!S.active||_isIOSSafari)return;
+  toast('tOk','Koneksi internet dimatikan. Lanjutkan mengerjakan.',2500);
+});
+function checkOnlineStatus(){
+  if(_isIOSSafari) return; /* Skip di iOS Safari – selalu online */
+  if(S.active && navigator.onLine){
+    S.onlineAt = S.onlineAt || Date.now();
+    S.onlineCount = (S.onlineCount||0) + 1;
+    toast('tErr','⚠️ INTERNET AKTIF! Harap matikan data/WiFi untuk memulai.',4000);
+    triggerPunish();
+  }
+}
+
+/* ── ANTI-CHEAT (kompatibel Yandex & Kiwi Browser) ── */
+var _blurTimer=null;
+var _lastActive=Date.now();
+
+/* --- blur: native + polling fallback untuk Yandex/Kiwi --- */
+/* CATATAN: Di iOS Safari, munculnya keyboard virtual memicu blur → dinonaktifkan */
+window.addEventListener('blur',function(){
+  if(!S.active||_isIOSSafari)return;
+  clearTimeout(_blurTimer);
+  _blurTimer=setTimeout(function(){
+    if(!document.hasFocus()&&S.active)triggerPunish();
+  },400);
+});
+
+/* --- visibilitychange: standar + prefixed (Kiwi/lama) --- */
+/* Di iOS Safari, gestur swipe dari bawah (Control Center) bisa memicu ini */
+/* Tambah toleransi waktu lebih panjang untuk mengurangi false positive di iOS */
+var _visHiddenSince = 0;
+function _onVisChange(){
+  var hidden = document.hidden ||
+               document.webkitHidden ||
+               document.mozHidden ||
+               document.msHidden;
+  if(hidden && S.active){
+    _visHiddenSince = Date.now();
+    /* iOS: tunggu lebih lama sebelum punish (min 2 detik tersembunyi) */
+    var delay = _isIOSSafari ? 2000 : 400;
+    setTimeout(function(){
+      var stillHidden = document.hidden || document.webkitHidden;
+      if(stillHidden && S.active && (Date.now() - _visHiddenSince) >= delay){
+        triggerPunish();
+      }
+    }, delay);
+  }
+}
+document.addEventListener('visibilitychange', _onVisChange);
+document.addEventListener('webkitvisibilitychange', _onVisChange); /* Yandex/Kiwi */
+document.addEventListener('mozvisibilitychange', _onVisChange);
+
+/* --- Polling cadangan: setiap 2 dtk cek apakah halaman masih fokus --- */
+/* Ini menangkap kasus Yandex/Kiwi yang tidak selalu memicu event di atas */
+/* Di iOS Safari, keyboard virtual membuat hasFocus() return false – skip cek hasFocus di iOS */
+setInterval(function(){
+  if(!S.active)return;
+  var hidden = document.hidden || document.webkitHidden || document.mozHidden;
+  if(hidden){
+    var now=Date.now();
+    if(now - _lastActive > 2500) triggerPunish();
+  } else if(!_isIOSSafari && !document.hasFocus()){
+    /* Hanya cek hasFocus di non-iOS agar keyboard virtual tidak memicu punish */
+    var now=Date.now();
+    if(now - _lastActive > 2500) triggerPunish();
+  } else {
+    _lastActive=Date.now();
+  }
+}, 2000);
+
+/* --- pageshow/pagehide: menangkap navigasi di Kiwi (back-forward cache) --- */
+window.addEventListener('pagehide', function(){
+  if(S.active) saveState();
+});
+window.addEventListener('pageshow', function(e){
+  /* bfcache = siswa menekan back lalu kembali */
+  if(e.persisted && S.active) triggerPunish();
+});
+
+document.addEventListener('keydown',function(e){
+  var b=e.ctrlKey||e.metaKey;
+  if(e.key==='F12'||(b&&e.shiftKey&&(e.key==='I'||e.key==='i'||e.key==='J'||e.key==='j'))||
+     (b&&(e.key==='u'||e.key==='U'||e.key==='p'||e.key==='P'||e.key==='s'||e.key==='S'))){
+    e.preventDefault();if(S.active)triggerPunish();
+  }
+});
+document.addEventListener('contextmenu',function(e){e.preventDefault();});
+
+/* Tombol Back HP */
+history.pushState(null,null,location.href);
+window.addEventListener('popstate',function(){
+  history.pushState(null,null,location.href);
+  if(S.active)triggerPunish();
+});
+
+/* Cegah refresh saat ujian aktif */
+window.addEventListener('beforeunload',function(e){
+  if(S.active){
+    saveState();
+    e.preventDefault();
+    e.returnValue='Ujian sedang berlangsung. Jika Anda refresh, timer tetap berjalan!';
+  }
+});
+
+function triggerPunish(){
+  if(!S.active)return;
+  if(S.idx < 5 || S.idx > 18)return;
+  S.punish++;
+  var ov=$('violOverlay');
+  $('violCount').textContent=S.punish;
+  ov.classList.add('show');
+  S.idx=CFG_RESET_IDX;
+  saveState();
+  setTimeout(function(){ov.classList.remove('show');loadSoal();},4000);
+}
+
+/* ── PASSWORD TOGGLE ── */
+window.togglePwd=function(){
+  var inp=$('inKode');
+  var icon=$('eyeIcon');
+  if(inp.type==='password'){
+    inp.type='text';
+    icon.innerHTML='<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>';
+  } else {
+    inp.type='password';
+    icon.innerHTML='<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+  }
+};
+
+/* ── RESUME OTOMATIS JIKA ADA STATE TERSIMPAN ── */
+(function checkResume(){
+  if(loadState()){
+    $('pgLogin').classList.remove('on');
+    $('pgQuiz').classList.add('on');
+    S.active=true;
+    goFullscreen();
+    startTimer();
+    _startHeartbeat();   /* ← lanjutkan deteksi multi-tab */
+    loadSoal();
+    toast('tWarn','⚡ Sesi dilanjutkan. Timer tetap berjalan!',3500);
+    setTimeout(checkOnlineStatus, 500);
+  }
+})();
+
+/* ── LOGIN ── */
+window.mulaiUjian=function(){
+  var nama=$('inNama').value.trim();
+  var kelas=$('inKelas').value;
+  var kode=$('inKode').value.trim();
+  if(!nama||!kelas){toast('tErr','Isi Nama dan Kelas terlebih dahulu!');return;}
+  if(!kode){toast('tErr','Masukkan kode akses ujian terlebih dahulu!');return;}
+  if(kode!==CFG_PASS_PLAIN){toast('tErr','Kode akses salah untuk kelas ini. Hubungi Guru Anda.');return;}
+  S.student={nama:nama,kelas:kelas,tgl:new Date().toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'})};
+  for(var i=1;i<=20;i++)S.attempts[i]={tries:0,poin:0};
+
+  /* Acak soal nomor 7–19 (indeks 6–18), soal 1–6 & 20 tetap urutan */
+  var fixedHead=SOAL.slice(0,6);
+  var toShuffle=SOAL.slice(6,19);
+  var fixedTail=SOAL.slice(19);
+  toShuffle=shuffle(toShuffle);
+  S.order=fixedHead.concat(toShuffle).concat(fixedTail).map(function(s){return SOAL.indexOf(s);});
+
+  S.idx=0;S.active=true;S.startMs=Date.now();
+  S.secsLeft=CFG_DURASI_MENIT*60;
+  $('pgLogin').classList.remove('on');
+  $('pgQuiz').classList.add('on');
+  goFullscreen();
+  startTimer();
+  _startHeartbeat();   /* ← mulai deteksi multi-tab */
+  loadSoal();
+  setTimeout(checkOnlineStatus, 500);
+};
+
+/* ── LOAD SOAL ── */
+function loadSoal(){
+  var soal=SOAL[S.order[S.idx]];
+  var id=soal.id;
+  S.attempts[id].tries++;
+  var n=S.idx+1;
+  $('dispSoal').textContent='Soal '+n+' / 20';
+  $('dispQTag').textContent='Soal '+n;
+  $('dispTry').textContent='Percobaan ke-'+S.attempts[id].tries;
+  $('progFill').style.width=(n/20*100)+'%';
+  $('qTxt').textContent=soal.q;
+  $('qHint').textContent=soal.type==='PGK'
+    ?'★ Pilihan Ganda Kompleks – pilih '+soal._rc+' jawaban yang benar'
+    :'▸ Pilihan Ganda – pilih 1 jawaban yang benar';
+  $('stimBox').textContent=soal.stim;
+
+  var mapped=shuffle(soal.opts.map(function(t){return t;}));
+  var box=$('optsBox');box.innerHTML='';
+  mapped.forEach(function(txt){
+    var lbl=document.createElement('label');
+    lbl.className='opt-lbl';
+    var inp=document.createElement('input');
+    inp.type=soal.type==='PG'?'radio':'checkbox';
+    inp.name='qopt';
+    inp.dataset.t=txt;
+    inp.addEventListener('change',function(){
+      box.querySelectorAll('.opt-lbl').forEach(function(l){l.classList.remove('selected');});
+      box.querySelectorAll('input:checked').forEach(function(c){c.parentElement.classList.add('selected');});
+    });
+    lbl.appendChild(inp);
+    lbl.appendChild(document.createTextNode(' '+txt));
+    box.appendChild(lbl);
+  });
+
+  var btn=$('btnKirim');
+  if(S.idx===SOAL.length-1){btn.textContent='Selesai & Kumpulkan ✓';btn.className='btn btn-finish';}
+  else{btn.textContent='Kirim Jawaban →';btn.className='btn btn-primary';}
+  saveState();
+}
+
+/* ── CEK JAWABAN ── */
+window.cekJawaban=function(){
+  var soal=SOAL[S.order[S.idx]];
+  var id=soal.id;
+  var checked=document.querySelectorAll('input[name="qopt"]:checked');
+  if(checked.length===0){toast('tWarn','Pilih minimal satu jawaban terlebih dahulu!');return;}
+  if(checked.length!==soal._rc){
+    toast('tWarn','⚠️ Pilih tepat '+soal._rc+' jawaban untuk soal ini!');return;
+  }
+
+  var selectedEnc=[];
+  checked.forEach(function(inp){selectedEnc.push(_enc(inp.dataset.t));});
+  var ok=selectedEnc.length===soal._h.length&&
+    selectedEnc.every(function(e){return soal._h.indexOf(e)!==-1;});
+
+  if(ok){
+    var p=poin(S.attempts[id].tries);
+    S.attempts[id].poin=p;
+    toast('tOk','✓ Benar! +'+p+' poin',1500);
+    setTimeout(function(){
+      if(S.idx<SOAL.length-1){S.idx++;loadSoal();}
+      else{openConfirm();}
+    },800);
+ } else {
+    // ── 1. NOTIFIKASI POP-UP KUNING ──
+    toast('tWarn', '✗ Jawaban belum tepat, coba lagi dalam 10 detik...');
+    
+    // ── 2. KUNCI TOMBOL UTAMA ──
+    var btn = document.getElementById('btnKirim');
+    btn.disabled = true; // Menonaktifkan tombol agar tidak bisa diklik
+    btn.style.opacity = "0.6"; // Membuat tombol terlihat redup saat terkunci
+    
+    var sisaWaktu = 10; // Durasi jeda diubah menjadi 10 detik
+    btn.textContent = "Tunggu (" + sisaWaktu + "s)";
+    
+    // ── 3. HITUNG MUNDUR TOMBOL ──
+    var hitungMundur = setInterval(function(){
+        sisaWaktu--;
+        if(sisaWaktu > 0) {
+            btn.textContent = "Tunggu (" + sisaWaktu + "s)";
+        } else {
+            clearInterval(hitungMundur); // Hentikan timer internal
+            btn.disabled = false; // Mengaktifkan tombol kembali
+            btn.style.opacity = "1"; // Kembalikan warna tombol asli
+            
+            // Cek apakah ini soal nomor terakhir (Nomor 20)
+            if(S.idx === SOAL.length - 1){
+                btn.textContent = "Selesai & Kumpulkan ✓";
+                btn.className = 'btn btn-finish';
+            } else {
+                btn.textContent = "Kirim Jawaban →";
+                btn.className = 'btn btn-primary';
+            }
+            
+            loadSoal(); // Mengacak kembali posisi opsi jawaban
+        }
+    }, 1000); // Berjalan setiap 1 detik
+ }
+};
+
+/* ── CONFIRM DIALOG ── */
+/* Token sekali-pakai: hanya tombol HTML yang bisa generate, konsol tidak tahu nilainya */
+var _confirmToken = null;
+function openConfirm(){
+  /* Hanya boleh dipanggil jika semua soal sudah dijawab */
+  if(!S.active || S.idx !== SOAL.length - 1) return;
+  _confirmToken = _sha256(Date.now() + _SESSION_ID).substring(0,12);
+  $('confirmOverlay').classList.add('show');
+}
+function closeConfirm(){
+  _confirmToken = null;
+  $('confirmOverlay').classList.remove('show');
+}
+function finishConfirmed(){
+  /* Validasi token — panggilan dari konsol tidak punya token yang benar */
+  if(!_confirmToken) return;
+  var t = _confirmToken;
+  _confirmToken = null;
+  $('confirmOverlay').classList.remove('show');
+  finishQuiz(false);
+}
+/* Expose ke HTML tapi kunci agar tidak bisa di-overwrite dari konsol */
+try{
+  Object.defineProperty(window,'openConfirm',    {value:openConfirm,    writable:false, configurable:false});
+  Object.defineProperty(window,'closeConfirm',   {value:closeConfirm,   writable:false, configurable:false});
+  Object.defineProperty(window,'finishConfirmed',{value:finishConfirmed,writable:false, configurable:false});
+}catch(e){
+  window.openConfirm=openConfirm;
+  window.closeConfirm=closeConfirm;
+  window.finishConfirmed=finishConfirmed;
+}
+
+/* ── FINISH ── */
+function finishQuiz(timeout){
+  clearInterval(S.timerIv);
+  S.active=false;
+  _stopHeartbeat();    /* ← bersihkan kunci multi-tab */
+  clearState();
+  var finishMs=Date.now();
+  var elapsed=Math.floor((finishMs-S.startMs)/1000);
+  var em=Math.floor(elapsed/60),es=elapsed%60;
+  var durStr=(em>0?em+' mnt ':'')+(es)+' dtk'+(timeout?' (waktu habis)':'');
+  var selesaiStr=new Date(finishMs).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  $('rNama').textContent=S.student.nama;
+  $('rKelas').textContent=S.student.kelas;
+  $('rTgl').textContent=S.student.tgl;
+  $('rSelesai').textContent=selesaiStr;
+  $('rDurasi').textContent=durStr;
+  var total=0;
+  var tb=$('resTbody');tb.innerHTML='';
+  var ids=Object.keys(S.attempts).map(Number).sort(function(a,b){return a-b;});
+  ids.forEach(function(id){
+    var a=S.attempts[id];
+    total+=a.poin;
+    var tr=document.createElement('tr');
+    tr.innerHTML='<td>'+id+'</td><td>'+(SOAL[id-1].type==='PG'?'PG Biasa':'PG Kompleks')+'</td><td>'+a.tries+'x</td><td class="'+(a.poin>=4?'pt-hi':'pt-lo')+'">+'+a.poin+'</td>';
+    tb.appendChild(tr);
+  });
+  $('rSkor').textContent=total;
+  var pv=S.punish||0;
+  var pvEl=$('rPelanggaran');
+  pvEl.textContent=pv===0?'Tidak ada ✓':pv+' kali ⚠';
+  pvEl.style.color=pv===0?'var(--ok)':'var(--err)';
+  pvEl.style.fontWeight='700';
+  var integrityStr=S.student.nama+'|'+S.student.kelas+'|'+total+'|'+S.startMs+'|'+finishMs+'|'+pv;
+  /* kode integritas diset di blok TOMBOL KIRIM WA di bawah */
+  $('pgQuiz').classList.remove('on');
+  $('pgResult').classList.add('on');
+  if(timeout)toast('tErr','Waktu habis! Ujian dikumpulkan otomatis.',4000);
+
+  /* ── TOMBOL KIRIM WA ── */
+  /* Hash verifikasi: tidak pakai timestamp agar guru bisa re-verifikasi dari data WA saja */
+  var _VERIFY_SECRET = 'SMABIO10_EKOSISTEM_VERIFY_2025';
+  var verifyStr = S.student.nama + '|' + S.student.kelas + '|' + total + '|' + pv + '|' + _VERIFY_SECRET;
+  var kodeVerif = _sha256(verifyStr).substring(0, 16).toUpperCase();
+  /* Format kode yang ditampilkan: skor tertanam di dalamnya agar mudah dideteksi jika diubah */
+  var kodeIntWA = 'S' + total + 'P' + pv + '-' + kodeVerif;
+  $('rKodeIntegritas').textContent = kodeIntWA;
+  var waMsg =
+    '📋 *HASIL UJIAN BIOLOGI – EKOSISTEM*\n' +
+    '━━━━━━━━━━━━━━━━━━━━\n' +
+    '👤 *Nama*      : ' + S.student.nama + '\n' +
+    '🏫 *Kelas*     : ' + S.student.kelas + '\n' +
+    '📅 *Tanggal*   : ' + S.student.tgl + '\n' +
+    '⏰ *Selesai*   : ' + selesaiStr + '\n' +
+    '⏱ *Durasi*    : ' + durStr + '\n' +
+    '━━━━━━━━━━━━━━━━━━━━\n' +
+    '🏆 *Skor Total : ' + total + ' / 100*\n' +
+    '⚠️ *Pelanggaran: ' + (pv === 0 ? 'Tidak ada ✓' : pv + ' kali') + '*\n' +
+    '━━━━━━━━━━━━━━━━━━━━\n' +
+    '🔐 *Kode Verifikasi*:\n`' + kodeIntWA + '`\n' +
+    '_(S=Skor, P=Pelanggaran — guru wajib verifikasi kode ini)_\n' +
+    '━━━━━━━━━━━━━━━━━━━━\n' +
+    '_Dikirim otomatis dari aplikasi ujian._';
+  var waUrl = 'https://wa.me/6281348354836?text=' + encodeURIComponent(waMsg);
+  var btnWA = document.getElementById('btnWA');
+  if(btnWA) btnWA.dataset.waurl = waUrl; /* simpan di dataset, bukan href langsung */
+
+  /* ── GENERATE QR CODE ── */
+  var kodeInt = kodeIntWA;
+  /* Format data QR: ringkas agar mudah dibaca scanner murah */
+  var qrData = [
+    'NAMA:'+S.student.nama,
+    'KELAS:'+S.student.kelas,
+    'TGL:'+S.student.tgl,
+    'SELESAI:'+selesaiStr,
+    'DURASI:'+durStr,
+    'SKOR:'+total,
+    'LANGGAR:'+pv,
+    'KI:'+kodeInt
+  ].join('|');
+
+  var qrEl = document.getElementById('qrCanvas');
+  qrEl.innerHTML = ''; /* bersihkan jika ada sisa */
+
+  /* Library sudah inline – selalu tersedia 100% offline */
+  new QRCode(qrEl, {
+    text: qrData,
+    width: 210,
+    height: 210,
+    correctLevel: QRCode.CorrectLevel.M
+  });
+}
+
+})();
+</script>
+</body>
+</html>
