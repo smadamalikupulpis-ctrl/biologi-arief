@@ -790,6 +790,60 @@ function _requestMic(onGranted){
   .catch(function(){ document.getElementById('micPermOverlay').classList.remove('show'); _showMicDenied(); });
   };
 }
+async function inisialisasiAplikasi() {
+    try {
+        // Minta akses mikrofon di awal
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        console.log("Akses mikrofon diizinkan. Proteksi aktif.");
+        
+        // Jika diizinkan, baru jalankan ujian seperti biasa
+        mulaiUjian();
+
+    } catch (error) {
+        console.warn("Akses mikrofon ditolak oleh siswa.");
+        
+        // PANGGIL FUNGSI PROTEKSI (Blokir Ujian secara sengaja)
+        aktifkanSistemBlokir("Akses Mikrofon Ditolak! Anda tidak dapat mengikuti ujian tanpa mengaktifkan mikrofon sebagai pemantau.");
+    }
+}
+
+function mulaiUjian() {
+    // Kode Anda untuk menampilkan soal dan mengaktifkan tombol "Selanjutnya"
+    tampilkanSoal();
+    document.getElementById('btnNext').disabled = false; // Pastikan tombol aktif
+}
+
+function aktifkanSistemBlokir(pesan) {
+    // 1. Sembunyikan atau kosongkan area soal agar tidak bisa dibaca/dikerjakan
+    const areaSoal = document.getElementById('area-soal'); // Sesuaikan dengan ID elemen Anda
+    if (areaSoal) {
+        areaSoal.style.display = 'none'; 
+    }
+
+    // 2. Nonaktifkan tombol navigasi secara total
+    const btnNext = document.getElementById('btnNext');
+    if (btnNext) {
+        btnNext.disabled = true;
+    }
+
+    // 3. Tampilkan pesan blokir yang jelas/layar merah di browser
+    // Anda bisa membuat elemen overlay atau memanfaatkan alert/elemen khusus
+    let overlayBlokir = document.getElementById('overlay-blokir');
+    if (!overlayBlokir) {
+        overlayBlokir = document.createElement('div');
+        overlayBlokir.id = 'overlay-blokir';
+        overlayBlokir.style = "position:fixed; top:0; left:0; width:100%; height:100%; bg:red; background:rgba(220,38,38,0.95); color:white; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:9999; font-family:sans-serif; padding:20px; text-align:center;";
+        document.body.appendChild(overlayBlokir);
+    }
+    
+    overlayBlokir.innerHTML = `
+        <h1 style="margin-bottom:20px;">⚠️ PELANGGARAN PROTEKSI</h1>
+        <p style="font-size:18px; max-width:600px; margin-bottom:20px;">${pesan}</p>
+        <p style="font-size:14px; background:rgba(0,0,0,0.2); padding:10px; border-radius:5px;">
+           Cara membuka: Klik ikon gembok di kiri atas alamat URL browser Anda, ubah izin Mikrofon menjadi 'Izinkan (Allow)', kemudian muat ulang (refresh) halaman ini.
+        </p>
+    `;
+}
 function _showMicDenied(){
   var ov = document.getElementById('micPermOverlay');
   document.querySelector('.mic-title').textContent = ' Izin Mikrofon Ditolak';
