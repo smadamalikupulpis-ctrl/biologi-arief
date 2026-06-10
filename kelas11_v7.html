@@ -1,0 +1,1171 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+<title>Ulangan Biologi Sistem Gerak Manusia</title>
+<style>
+:root { --p: #1d4ed8; --p2: #1e40af; --plight: #dbeafe; --ok: #059669; --err: #dc2626; --warn: #d97706; --bg: #f0f4f8; --card: #ffffff; --txt: #1e293b; --muted: #64748b; --bdr: #e2e8f0; --sh: 0 2px 16px rgba(0,0,0,.10); }
+*{box-sizing: border-box; margin:0; padding:0; -webkit-tap-highlight-color: transparent}
+html, body{height: 100%; background: var(--bg); color:var(--txt); font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; user-select: none; -webkit-user-select:none; -webkit-text-size-adjust:100%; text-size-adjust:100%}
+body{display: flex; align-items: flex-start; justify-content:center; padding: 12px; padding-bottom:calc(12px + env(safe-area-inset-bottom)); padding-top:calc(12px + env(safe-area-inset-top))}
+.wrap{width: 100%; max-width:640px}
+.pg{display:none;animation: fadeIn .3s ease}
+.pg.on{display:block}
+@keyframes fadeIn{from{opacity:0;transform: translateY(8px)}to{opacity: 1; transform:none}}
+.card{background: var(--card); border-radius: 14px; box-shadow: var(--sh); padding: 20px; margin-bottom:14px}
+.login-head{text-align:center; margin-bottom:24px}
+.login-head .badge{display:inline-block; background: var(--plight); color:var(--p); font-size:11px; font-weight:700; letter-spacing:.08em; padding: 4px 10px; border-radius: 20px; margin-bottom: 10px; text-transform:uppercase}
+.login-head h1{font-size:20px; font-weight:800;color:var(--p2); line-height:1.3}
+.login-head p{font-size:13px; color:var(--muted); margin-top:4px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:13px;font-weight:600;color:var(--muted); margin-bottom: 6px; text-transform:uppercase; letter-spacing:.05em}
+.field input,.field select{width:100%; padding: 13px 14px; border: 1.5px solid var(--bdr); border-radius: 9px; font-size:16px;color: var(--txt); background:#fff;outline:none;transition: border .25s;-webkit-appearance: none; appearance: none}
+.field input:focus, .field select:focus {border-color:var(--p)}
+.pwd-wrap{position:relative}
+.pwd-wrap input{padding-right:46px}
+.pwd-eye{position:absolute;right: 12px; top:50%; transform: translateY(-50%); background: none; border: none; cursor:pointer; color:var(--muted); padding: 4px; display: flex; align-items:center}
+.pwd-eye:active{color:var(--p)}
+#timerWrap{display: flex; align-items:center; gap: 6px; font-size: 14px; font-weight:700;color:var(--p)}
+#timerWrap svg{width: 18px;height:18px}
+#timerWrap.warn{color:var(--warn)}
+#timerWrap.danger{color:var(--err); animation: pulse 6s infinite alternate}
+@keyframes pulse{to{opacity:.5}}
+.prog-wrap{margin-bottom:18px}
+.prog-label{display: flex; justify-content: space-between; font-size:12px; color:var(--muted); margin-bottom: 5px; font-weight:600}
+.prog-bar{height:7px; background: var(--bdr); border-radius: 99px; overflow:hidden}
+.prog-fill{height: 100%; background: var(--p); border-radius: 99px; transition:width .4s ease}
+.quiz-hd{display: flex; justify-content: space-between; align-items:center; padding-bottom:14px; border-bottom:1.5px solid var(--bdr); margin-bottom:18px}
+.soal-tag{font-weight: 800; font-size:15px;color:var(--p)}
+.try-badge{font-size:12px; color:var(--muted); background: var(--bg); padding:3px 10px; border-radius: 20px}
+.stim{background: var(--plight); border-left: 4px solid var(--p); border-radius:0 8px 8px 0; padding:13px 15px; font-size: 13.5px; line-height:1.7; color:#1e3a5f;margin-bottom: 18px; font-style: italic}
+.q-txt{font-size:16px;font-weight:700; line-height:1.5; margin-bottom: 6px}
+.q-hint{font-size:12px; color:var(--muted); margin-bottom: 18px; font-style: italic}
+.opts{display: flex; flex-direction:column; gap: 10px; margin-bottom:22px}
+.opt-lbl{display: flex; align-items:flex-start; gap:12px;padding: 13px 14px; border:1.5px solid var(--bdr); border-radius: 10px; cursor:pointer;transition: border .15s, background .15s; line-height:1.5; font-size:14.5px}
+.opt-lbl:active{background:#f8faff}
+.opt-lbl input{margin-top:2px; flex-shrink:0;width:17px;height: 17px; accent-color:var(--p); cursor:pointer}
+.opt-lbl.selected{border-color:var(--p); background: var(--plight)}
+.btn{display:block; width: 100%; padding: 14px; border:none; border-radius: 10px; font-size: 15px; font-weight:700; cursor:pointer;transition:opacity .15s, transform .1s}
+.btn:active{transform: scale(.98)}
+.btn-primary{background: var(--p); color:#fff}
+.btn-primary:hover{opacity:.92}
+.btn-finish{background: var(--ok); color:#fff}
+.score-banner{text-align:center; padding: 20px; background: linear-gradient(135deg, var(--p), var(--p2)); border-radius: 12px; color:#fff;margin-bottom:20px}
+.score-banner .label{font-size:12px;opacity:.8; letter-spacing:.08em; text-transform:uppercase; margin-bottom:4px}
+.score-banner .val{font-size: 44px;font-weight: 900; line-height:1}
+.score-banner .sub{font-size: 13px; opacity:.75; margin-top:4px}
+.info-box{background: var(--bg); border:1px solid var(--bdr); border-radius: 10px; padding: 14px; font-size: 13.5px; line-height:1.9; margin-bottom:18px}
+.info-box strong{color:var(--p)}
+.res-table{width:100%;border-collapse:collapse; font-size:13px}
+.res-table th,.res-table td{border:1px solid var(--bdr); padding: 9px 10px; text-align:left}
+.res-table th{background: var(--plight); font-weight:700;color:var(--p2)}
+.res-table tr:nth-child(even) td{background:#f8fafc}
+.pt-hi{font-weight: 700;color:var(--ok)}
+.pt-lo{font-weight:700;color:var(--muted)}
+.toast-wrap{position:fixed; top: 14px; left:50%; transform: translateX(-50%); z-index:9999; display: flex; flex-direction: column; align-items:center; gap:8px; pointer-events:none; width:90%; max-width:420px}
+.toast{padding:13px 20px; border-radius: 10px; font-size: 14px; font-weight:600; text-align:center; box-shadow: 0 4px 20px rgba(0,0,0,.18); animation: slideDown .3s ease; display:none}
+.toast.show{display:block}
+@keyframes slideDown{from{opacity:0;transform: translateY(-12px)}to{opacity:1; transform:none}}
+.t-err{background: var(--err); color:#fff}
+.t-warn{background:#fff;border:2px solid var(--warn); color:var(--warn)}
+.t-ok{background: var(--ok); color:#fff}
+#violOverlay{display: none; position:fixed; inset: 0; background:rgba(220,38,38,.97);z-index:9998; align-items:center; justify-content:center; flex-direction: column; text-align: center; padding:30px; color:#fff}
+#violOverlay.show{display:flex}
+#violOverlay h2{font-size:22px;margin-bottom:10px}
+#violOverlay p{font-size: 14px; opacity:.9; margin-bottom: 20px; line-height:1.6}
+#violOverlay .count{font-size: 48px; font-weight:900;margin:10px 0}
+#violOverlay .sub{font-size: 13px; opacity:.75}
+#confirmOverlay{display:none;position:fixed; inset:0; background: rgba(0,0,0,.55);z-index:9997; align-items:center; justify-content:center; padding:20px}
+#confirmOverlay.show{display: flex}
+.confirm-box{background:#fff;border-radius: 14px; padding: 24px; max-width: 340px;width:100%; text-align:center}
+.confirm-box h3{font-size:17px; font-weight: 800; margin-bottom:10px}
+.confirm-box p{font-size:14px;color:var(--muted); margin-bottom: 20px; line-height:1.6}
+.confirm-btns{display:grid; grid-template-columns:1fr 1fr; gap: 10px}
+.btn-outline{background:#fff;color:var(--p); border:1.5px solid var(--p); border-radius: 9px; padding: 11px; font-size: 14px; font-weight:700; cursor:pointer}
+.btn-yes{background: var(--ok); color:#fff; border: none; border-radius: 9px; padding:11px; font-size:14px; font-weight:700; cursor:pointer}
+.btn-wa{display: flex; align-items:center; justify-content:center; gap: 10px; width: 100%; padding: 15px; border:none; border-radius: 12px; background: #25D366; color:#fff;font-size:16px; font-weight: 800; cursor:pointer; box-shadow:0 4px 14px rgba(37,211, 102,.35); transition:opacity .15s, transform .1s;margin-top:4px;text-decoration:none}
+.btn-wa:active{transform: scale(.98); opacity:.9}
+.btn-wa svg{flex-shrink:0}
+.wa-wrap{margin-top: 18px; padding-top: 16px; border-top:1.5px solid var(--bdr)}
+.qr-section{text-align:center; margin:18px 0 10px}
+.qr-section .qr-title{font-size:12px;font-weight:700;color:var(--muted); text-transform:uppercase;letter-spacing:.06em; margin-bottom:10px}
+.qr-section .qr-title span{color:var(--p)}
+#qrCanvas{display: inline-block;padding: 10px; background:#fff;border:2px solid var(--bdr); border-radius: 10px; box-shadow:var(--sh)}
+#qrCanvas img, #qrCanvas canvas{display:block}
+.qr-note{font-size:11px;color:var(--muted); margin-top:8px; font-style: italic; line-height:1.5}
+#sheetsStatus{border-radius: 10px; padding:13px 16px; font-size: 13.5px;font-weight: 600;text-align:center; margin-bottom: 14px; display:flex; align-items:center; justify-content:center; gap:8px; line-height:1.5}
+#sheetsStatus.sending{background: #eff6ff;color:var(--p); border: 1.5px solid #bfdbfe}
+#sheetsStatus.success{background:#ecfdf5;color:var(--ok); border:1.5px solid #6ee7b7}
+#sheetsStatus.failed{background: #fef2f2;color:var(--err); border:1.5px solid #fca5a5}
+.sheets-spinner{width:16px; height: 16px; border: 2.5px solid currentColor; border-top-color: transparent; border-radius: 50%; animation: spin .7s linear infinite; flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+#wkvOverlay{display:none;position:fixed; inset:0; background:rgba(10, 20, 50,.97);z-index:99999; align-items:center; justify-content:center; padding: 20px; flex-direction:column}
+#wkvOverlay.show{display:flex}
+.wkv-box{background:#fff;border-radius: 20px; padding:26px 20px 22px; max-width: 340px; width: 100%; text-align:center}
+.wkv-icon{font-size:46px; margin-bottom: 6px; line-height:1}
+.wkv-title{font-size:17px; font-weight: 800; color:#1e293b;margin-bottom: 6px}
+.wkv-desc{font-size:13px; color: #64748b; line-height: 1.6; margin-bottom:16px}
+.wkv-step{background:#f1f5f9; border-radius: 10px; padding:11px 14px; margin-bottom: 14px;text-align:left}
+.wkv-step p{font-size:12.5px;color:#475569;margin:0; line-height:1.75}
+.wkv-step strong{color:#1e293b; font-weight:700}
+.wkv-url-box{font-size:11px; font-family:monospace; background: #e2e8f0; padding:7px 10px; border-radius:7px; word-break: break-all; color: #334155; margin-top:8px; display:block;text-align:left}
+.wkv-btns{display: flex; flex-direction: column; gap: 9px}
+.wkv-btn{display: flex; align-items:center; justify-content:center; gap: 9px; padding:13px 16px; border:none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor:pointer;text-decoration: none; width: 100%; letter-spacing:.01em}
+.wkv-safari{background:#0071e3;color:#fff}
+.wkv-chrome{background: #1a73e8;color:#fff}
+.wkv-divider{display: flex; align-items:center; gap:8px; margin:4px 0}
+.wkv-divider span {font-size:11px;color:#94a3b8; white-space:nowrap}
+.wkv-divider hr{flex:1; border: none; border-top: 1px solid #e2e8f0}
+#deviceLockOverlay{display: none; position:fixed; inset: 0; background:#dc2626;z-index:99999; align-items:center; justify-content:center; flex-direction:column; text-align:center;padding:30px;color:#fff}
+#deviceLockOverlay.show{display:flex}
+#deviceLockOverlay h2{font-size: 28px; font-weight: 900; margin-bottom:14px; letter-spacing:.05em}
+#deviceLockOverlay p{font-size: 15px; line-height:1.7; margin-bottom:20px; opacity:.9}
+.reset-form{background:rgba(255,255,255,.15); border-radius: 12px; padding: 18px;width:100%; max-width: 320px; margin-top:10px}
+.reset-form label{font-size: 12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase;opacity:.8;display:block; margin-bottom:8px}
+.reset-form input{width: 100%; padding:12px 14px; border:none; border-radius: 8px; font-size:16px; font-weight:700; text-align:center; letter-spacing:.1em;color:#1e293b;background:#fff; -webkit-appearance: none}
+.reset-form button{margin-top: 10px; width: 100%; padding: 12px; background:#fff;color:#dc2626;border: none; border-radius: 8px; font-size: 15px; font-weight: 800; cursor:pointer}
+#micPermOverlay{display:none;position:fixed; inset:0; background:rgba(15,23,42,.97);z-index:99990; align-items:center; justify-content:center; padding:20px}
+#micPermOverlay.show{display:flex}
+.mic-box{background:#fff;border-radius: 18px; padding:28px 22px 24px; max-width: 340px; width: 100%; text-align:center}
+.mic-icon{font-size:52px;margin-bottom:8px; line-height:1}
+.mic-title{font-size:18px; font-weight:800;color:#1e293b;margin-bottom:8px}
+.mic-desc{font-size:13px; color: #64748b; line-height:1.7;margin-bottom:18px}
+.mic-warn{font-size:12px; color:#dc2626; font-weight: 700; margin-bottom: 18px; padding:10px;background:#fef2f2;border-radius: 8px; line-height:1.6}
+.btn-mic-allow{width:100%; padding: 14px; background: #1d4ed8;color:#fff;border:none;border-radius: 10px; font-size: 15px; font-weight:700; cursor:pointer}
+#noiseBar{display: none; position:fixed; bottom:0;left:0;right:0;z-index: 9000; padding: 8px 16px; align-items:center; gap: 10px; font-size: 13px; font-weight: 700; transition: background .4s; pointer-events:none}
+#noiseBar.show{display: flex}
+#noiseBar.quiet{background: #059669;color:#fff}
+#noiseBar.noisy{background:#dc2626;color:#fff; animation: noisePulse .5s infinite alternate}
+@keyframes noisePulse{to{opacity:.7}}
+#noiseBar .nb-label{flex:1}
+#noiseBar .nb-db{font-size:22px; font-weight: 900; min-width: 44px; text-align:right}
+#noisePenaltyOverlay{display: none; position:fixed; inset:0; background:rgba(220,38,38,.97);z-index:9995; align-items:center; justify-content:center; flex-direction: column; text-align:center; padding:30px;color:#fff}
+#noisePenaltyOverlay.show{display: flex}
+#noisePenaltyOverlay h2{font-size:22px; font-weight: 800; margin-bottom:10px}
+#noisePenaltyOverlay p{font-size: 14px; opacity:.9; line-height:1.7}
+#noisePenaltyOverlay .np-db{font-size:56px; font-weight: 900;margin:14px 0}
+#loginConfirmOverlay{display:none;position:fixed; inset:0; background:rgba(0,0,0,.6);z-index:9997; align-items:center; justify-content:center; padding:20px}
+#loginConfirmOverlay.show{display: flex}
+.lc-box{background:#fff; border-radius: 16px; padding: 26px; max-width:350px;width:100%;text-align:center}
+.lc-box h3{font-size:18px; font-weight:800;color:#1e293b;margin-bottom:12px}
+.lc-detail{background:#eff6ff; border-radius: 10px; padding: 14px; margin-bottom:14px;text-align:left; font-size: 14px; line-height:1.9}
+.lc-detail strong{color:#1d4ed8}
+.lc-note{font-size:13px;color:#64748b;margin-bottom: 18px; line-height:1.6}
+.lc-btns{display:grid; grid-template-columns: 1fr 1fr; gap:10px}
+.btn-lc-batal{background:#fff;color: #1d4ed8;border:1.5px solid #1d4ed8; border-radius: 9px;padding: 12px; font-size: 14px; font-weight:700;cursor:pointer}
+.btn-lc-mulai{background:#059669;color:#fff;border: none; border-radius: 9px; padding: 12px;font-size: 14px; font-weight: 700; cursor:pointer}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+<div id="wkvOverlay">
+  <div class="wkv-box">
+  <div class="wkv-icon">⚠</div>
+  <div class="wkv-title">Buka di Browser Dulu</div>
+  <div class="wkv-desc">Ujian tidak bisa dijalankan di dalam WhatsApp. Ikuti langkah berikut:</div>
+  <div class="wkv-step">
+  <p><strong>Cara 1 — Langsung buka di Safari:</strong><br>Tap ikon <strong>&#8599;</strong> (pojok kanan atas) → pilih <strong>"Open in Safari"</strong></p>
+  </div>
+  <div class="wkv-step">
+  <p><strong>Cara 2 — Simpan lalu buka:</strong><br>Tap ikon <strong>&#8599;</strong> → <strong>"Save to Files"</strong> → buka app <strong>Files</strong> → tap file ujian → otomatis terbuka di Safari</p>
+  </div>
+  <div class="wkv-btns">
+  <a id="wkvSafariBtn" class="wkv-btn wkv-safari" href="#">Buka di Safari</a>
+  <div class="wkv-divider"><hr><span>atau</span><hr></div>
+  <a id="wkvChromeBtn" class="wkv-btn wkv-chrome" href="#">Buka di Chrome</a>
+  </div>
+  <p id="wkvUrlNote" style="font-size:11px;color:#94a3b8;margin-top:12px;line-height:1.5">Atau salin URL berikut dan buka manual di Safari:<br><span id="wkvUrlDisplay" class="wkv-url-box"></span></p>
+  </div>
+</div>
+
+<div class="toast-wrap">
+  <div class="toast t-err" id="tErr"></div>
+  <div class="toast t-warn" id="tWarn"></div>
+  <div class="toast t-ok" id="tOk"></div>
+</div>
+
+<div id="violOverlay">
+  <h2>⚠ PELANGGARAN TERDETEKSI</h2>
+  <p>Berpindah tab, membuka aplikasi lain,<br>atau mencoba menggunakan alat bantu.</p>
+  <div class="count" id="violCount">0</div>
+  <div class="sub">pelanggaran ke-</div>
+  <p style="margin-top:14px;font-size:13px">Ujian direset ke awal soal yang ditentukan.<br>Menutup notifikasi ini dalam 4 detik...</p>
+</div>
+
+<div id="confirmOverlay">
+  <div class="confirm-box">
+  <h3>Selesaikan Ujian?</h3>
+  <p>Anda telah menjawab semua soal.<br>Nilai tidak dapat diubah setelah ini.</p>
+  <div class="confirm-btns">
+  <button class="btn-outline" onclick="closeConfirm()">Periksa Lagi</button>
+  <button class="btn-yes" onclick="finishConfirmed()">Ya, Kumpulkan</button>
+  </div>
+  </div>
+</div>
+
+<div id="deviceLockOverlay">
+  <h2>🔒 PERANGKAT TERKUNCI</h2>
+  <p>Perangkat ini telah terkunci karena ujian sudah dikumpulkan.<br>Hubungi Guru untuk membuka kunci.</p>
+  <div class="reset-form">
+  <label>Kode Reset Guru</label>
+  <input type="password" id="resetInput" placeholder="Masukkan kode reset…" autocomplete="off">
+  <button onclick="cobaReset()">Buka Kunci</button>
+  </div>
+</div>
+
+<div id="micPermOverlay">
+  <div class="mic-box">
+  <div class="mic-icon">🎤</div>
+  <div class="mic-title">Izin Mikrofon Diperlukan</div>
+  <div class="mic-desc">Sistem ujian ini memantau kebisingan ruangan untuk menjaga integritas ujian. Mikrofon <strong>tidak merekam suara</strong> — hanya mengukur tingkat kebisingan dalam desibel.</div>
+  <div class="mic-warn">⚠ Jika izin mikrofon ditolak, lembar soal tidak akan terbuka. Klik "Izinkan" saat browser meminta akses.</div>
+  <button class="btn-mic-allow" id="btnMicAllow">Izinkan Mikrofon & Mulai Ujian</button>
+  </div>
+</div>
+
+<div id="noiseBar">
+  <span class="nb-label" id="nbLabel"> Hening</span>
+  <span class="nb-db" id="nbDb">(0)</span>
+</div>
+
+<div id="noisePenaltyOverlay">
+  <h2>🔇 KEBISINGAN TERDETEKSI!</h2>
+  <p>Harap tenangkan suasana sebelum melanjutkan ujian.<br>Soal akan kembali tampil setelah kondisi hening.</p>
+  <div class="np-db" id="npDb">0</div>
+  <p style="font-size:12px;opacity:.75">desibel terdeteksi — ambang batas 55 dB</p>
+</div>
+
+<div id="loginConfirmOverlay">
+  <div class="lc-box">
+  <h3>✅ Konfirmasi Data Anda</h3>
+  <div class="lc-detail">
+  <strong>Nama &nbsp;:</strong> <span id="lcNama"></span><br>
+  <strong>Kelas &nbsp;:</strong> <span id="lcKelas"></span>
+  </div>
+  <p class="lc-note">Pastikan nama dan kelas sudah benar.<br>Data tidak dapat diubah setelah ujian dimulai.</p>
+  <div class="lc-btns">
+  <button class="btn-lc-batal" onclick="batalLoginConfirm()">← Koreksi</button>
+  <button class="btn-lc-mulai" onclick="konfirmasiMulai()">Benar, Mulai →</button>
+  </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div id="pgLogin" class="pg on">
+    <div class="card">
+    <div class="login-head">
+    <div class="badge">SMA – Kelas 11</div>
+    <h1>Ulangan Sumatif Biologi<br>Sistem Gerak Manusia</h1>
+    <p>Pilih kelas dan nama Anda, lalu masukkan kode akses.</p>
+    </div>
+    <div class="field">
+    <label>Kelas</label>
+    <select id="inKelas" onchange="updateNamaDropdown()">
+    <option value="">— Pilih Kelas Dulu —</option>
+    <option value="11MIPA1">11 MIPA 1</option>
+    <option value="11MIPA2">11 MIPA 2</option>
+    <option value="11IPS">11 IPS</option>
+    </select>
+    </div>
+    <div class="field">
+    <label>Nama Lengkap</label>
+    <select id="inNama">
+    <option value="">— Pilih Kelas Terlebih Dahulu —</option>
+    </select>
+    </div>
+    <div class="field">
+    <label>Kode Akses Ujian</label>
+    <div class="pwd-wrap">
+    <input type="password" id="inKode" placeholder="Masukkan kode dari Guru…" autocomplete="off">
+    <button class="pwd-eye" type="button" onclick="togglePwd()" title="Tampilkan/Sembunyikan">
+    <svg id="eyeIcon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+    </svg>
+    </button>
+    </div>
+    </div>
+    <button class="btn btn-primary" onclick="mulaiUjian()">Mulai Ujian →</button>
+    </div>
+  </div>
+
+  <div id="pgQuiz" class="pg">
+    <div class="card" style="padding-bottom:16px">
+    <div class="prog-wrap">
+    <div class="prog-label">
+    <span id="dispSoal">Soal 1 / 20</span>
+    <div id="timerWrap">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+    <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+    </svg>
+    <span id="dispTimer">90:00</span>
+    </div>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+    </div>
+    <div class="quiz-hd">
+    <span class="soal-tag" id="dispQTag">Soal 1</span>
+    <span class="try-badge" id="dispTry">Percobaan ke-1</span>
+    </div>
+    <div class="stim" id="stimBox"></div>
+    <div class="q-txt" id="qTxt"></div>
+    <div class="q-hint" id="qHint"></div>
+    <div class="opts" id="optsBox"></div>
+    <button class="btn btn-primary" id="btnKirim" onclick="cekJawaban()">Kirim Jawaban →</button>
+    </div>
+  </div>
+
+  <div id="pgResult" class="pg">
+    <div class="card">
+    <div class="score-banner">
+    <div class="label">Nilai Akhir Ujian</div>
+    <div class="val" id="rSkor">0</div>
+    <div class="sub">dari 100</div>
+    </div>
+    <div class="info-box">
+    <strong>Nama &nbsp;&nbsp;&nbsp;:</strong> <span id="rNama"></span><br>
+    <strong>Kelas &nbsp;&nbsp;&nbsp;:</strong> <span id="rKelas"></span><br>
+    <strong>Tanggal :</strong> <span id="rTgl"></span><br>
+    <strong>Selesai &nbsp;:</strong> <span id="rSelesai"></span><br>
+    <strong>Durasi &nbsp;&nbsp;:</strong> <span id="rDurasi"></span><br>
+    <strong>Pelanggaran:</strong> <span id="rPelanggaran"></span><br>
+    <strong>Kode Integritas:</strong> <span id="rKodeIntegritas" style="font-family:monospace;font-size:12px;color:var(--p2);word-break:break-all"></span>
+    </div>
+    
+    <div class="qr-section">
+    <div class="qr-title">📲 Scan QR → Guru &nbsp;<span>(atau screenshot seluruh halaman)</span></div>
+    <div id="qrCanvas"></div>
+    <p class="qr-note">QR berisi: nama, kelas, nilai akhir, kode integritas, dan durasi.<br>Guru cukup scan — tidak perlu ketik manual.</p>
+    </div>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:6px;text-align:center;font-style:italic">⚠ Kode integritas diverifikasi oleh Guru. Jangan ditutup sebelum screenshot.</p>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:14px;text-align:center">Screenshot halaman ini untuk dikirimkan kepada Guru.</p>
+    
+    <table class="res-table">
+    <thead>
+    <tr><th>No.</th><th>Tipe</th><th>Percobaan</th><th>Poin</th></tr>
+    </thead>
+    <tbody id="resTbody"></tbody>
+    </table>
+    
+    <div class="wa-wrap">
+    <div id="sheetsStatus" class="sending">
+    <div class="sheets-spinner"></div>
+    <span>Mengirim data ke server guru…</span>
+    </div>
+    <p style="font-size:12px;color:var(--muted);text-align:center;margin-bottom:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em">Kirim Hasil ke Guru</p>
+    <a id="btnWA" class="btn-wa" href="#" onclick="return _openWA(this)" target="_blank" rel="noopener">
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+    Kirim Hasil ke WhatsApp Guru
+    </a>
+    <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:9px;font-style:italic;line-height:1.5">Klik tombol di atas → WhatsApp terbuka otomatis dengan data hasil ujian.<br>Setelah terkirim, ketuk <strong>Back</strong> di WA untuk kembali &amp; screenshot halaman ini.</p>
+    </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ========================================================
+// SCRIPT BOM WAKTU: OTOMATIS KUNCI FILE JAM 10 MALAM (22:00)
+// ========================================================
+(function() {
+  var sekarang = new Date();
+  var jamSekarang = sekarang.getHours(); 
+  if (jamSekarang >= 22) {
+  document.documentElement.innerHTML = `
+  <div style="background:#0f172a; color:#f8fafc; font-family:'Segoe UI',sans-serif; display:flex; align-items:center; justify-content:center; height:100vh; margin:0; padding:20px; box-sizing:border-box;">
+  <div style="background:#1e293b; border:2px solid #ef4444; padding:30px; border-radius:12px; text-align:center; max-width:450px; box-shadow:0 10px 25px rgba(0,0,0,0.3);">
+  <h2 style="color:#ef4444; margin-bottom:10px; font-weight:700;">AKSES TERKUNCI</h2>
+  <p style="color:#94a3b8; line-height:1.6; margin-bottom:20px; font-size:15px;">
+  File ujian ini telah kedaluwarsa dan menghancurkan fungsinya secara otomatis sejak pukul 22:00 WIB untuk menjaga integritas soal.
+  </p>
+  <div style="background:#0f172a; padding:10px; border-radius:6px; font-size:12px; color:#64748b;">
+  Mode Aman Ujian Aktif • Sesi Hari Ini Selesai
+  </div>
+  </div>
+  </div>
+  `;
+  window.SOAL = null;
+  if (typeof ENCRYPTED_SOAL !== 'undefined') window.ENCRYPTED_SOAL = null;
+  throw new Error("File expired. Ujian telah ditutup.");
+  }
+})();
+
+// ========================================================
+// KONFIGURASI GURU
+// ========================================================
+var CFG_DURASI_MENIT = 90;
+var CFG_PASS_MAP = {
+  "11MIPA1" : "MIPA1BIO11",
+  "11MIPA2" : "MIPA2BIO11",
+  "11IPS" : "IPSBIO11"
+};
+var CFG_RESET_IDX = 5;
+var CFG_ACAK_SOAL = true;
+var CFG_JUMLAH_SOAL = 20; 
+var CFG_RESET_PWD = 'RESET2026';
+var CFG_LOCK_KEY = 'ujian_bio11_device_lock_v2';
+var CFG_SESSION_DATE_KEY = 'ujian_bio11_session_date_v2';
+
+var CFG_NAMA_SISWA = {
+  "11MIPA1": [
+  "Adam Putra Firmansyah","Adinda Rizky Amalia","Ahmad Fauzi Ramadhan","Aini Nurul Hidayah",
+  "Alif Rahmat Saputra","Amelia Putri Santoso","Andi Kurniawan","Anisa Fitri Rahayu",
+  "Arya Dimas Pratama","Ayunda Maharani","Bagas Tri Atmojo","Citra Dewi Permata",
+  "Dafa Ardiansyah","Dela Ayu Lestari","Deni Wahyudi","Dina Safitri",
+  "Dwi Putra Nugraha","Eka Setiyawati","Fajar Sidik","Farida Nur Aini",
+  "Gilang Ramadhan","Hana Maulida","Ilham Budi Santoso","Intan Permatasari",
+  "Jihan Aulia Putri","Kevin Ardianto","Laila Nur Fadillah","Lutfi Hamdani",
+  "Maya Oktaviani","Muhammad Rizal Prasetyo"
+  ],
+  "11MIPA2": [
+  "Agus Hermawan","Aisha Fatimah","Aldi Prayoga","Alfina Nurhaliza",
+  "Andhika Prasetya","Anggi Febriani","Annisa Ramadhanti","Arga Wicaksono",
+  "Bella Safira","Bima Sakti Pratama","Cindy Permata Sari","Dani Setiawan",
+  "Dinda Ayu Kartika","Eko Prasetyo","Elisa Maharani","Fadli Rahmatulloh",
+  "Fahri Alamsyah","Fitria Nur Azizah","Galih Setiawan","Hesti Rahayuningsih",
+  "Ikrar Budiman","Imelda Sartika","Joko Susilo","Karina Dewi",
+  "Luthfi Ardiansyah","Melati Safitri","Nadia Oktaviani","Nur Hidayah",
+  "Putra Pratama","Rahma Aulia"
+  ],
+  "11IPS": [
+  "Aditya Nugraha","Agatha Felicia","Ahmad Zikri","Alda Putri",
+  "Andrian Kusuma","Anggita Rahayu","Ardian Saputra","Asri Wulandari",
+  "Bayu Pramudya","Bella Marissa","Clara Anastasia","Daffa Rizqullah",
+  "Destri Wulandari","Diaz Pratama","Dita Kurniasari","Dzulfikar Rahmat",
+  "Egi Pratama","Erika Puspitasari","Fahrul Arifin","Fanny Oktaviani",
+  "Gilang Pangestu","Hera Puspita","Irfan Hakim","Ismi Nur Rahmah",
+  "Jafar Sodik","Kirana Salsabila","Leo Pratama","Linda Susanti",
+  "Maulana Yusuf","Nita Rahmawati"
+  ]
+};
+
+// ========================================================
+// UTILITIES
+// ========================================================
+function shuffle(a){var b=a.slice();for(var i=b.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=b[i];b[i]=b[j];b[j]=t;}return b;}
+function $(id){return document.getElementById(id);}
+function toast(id,msg,dur){var el=$(id);el.textContent=msg;el.classList.add('show');setTimeout(function(){el.classList.remove('show');},dur||2800);}
+function poin(tries){return tries===1?5:tries===2?4:tries===3?3:tries===4?2:1;}
+
+function _sha256(str){
+  var mathPow=Math.pow; var maxWord=mathPow(2,32); var lengthProperty='length'; var i,j,result=''; var words=[]; var asciiBitLength=str[lengthProperty]*8; var hash=[]; var k=[]; var primes=[]; var candidate=2; var primeCounter=0;
+  function isPrime(n){for(var i=2;i<n;i++){if(!(n%i)){return false;}}return true;}
+  while(primeCounter<64){
+  if(isPrime(candidate)){
+  primes.push(candidate);
+  if(primeCounter<8){hash[primeCounter]=(mathPow(candidate,.5)*maxWord)|0;}
+  k[primeCounter]=(mathPow(candidate,1/3)*maxWord)|0;
+  primeCounter++;
+  }
+  candidate++;
+  }
+  str+='\x80';
+  while(str[lengthProperty]%64-56){str+='\x00';}
+  for(i=0;i<str[lengthProperty];i++){
+  j=str.charCodeAt(i);
+  if(j>>8){return '';}
+  words[i>>2]|=j<<((3-i)%4*8);
+  }
+  words[words[lengthProperty]]=((asciiBitLength/maxWord)|0);
+  words[words[lengthProperty]]=asciiBitLength;
+  for(j=0;j<words[lengthProperty];){
+  var W=words.slice(j,j+=16); var oldHash=hash.slice(0); var a,b,c,d,e,f,g,h;
+  a=hash[0];b=hash[1];c=hash[2];d=hash[3]; e=hash[4];f=hash[5];g=hash[6];h=hash[7];
+  for(i=0;i<64;i++){
+  var w=W[i];
+  if(i<16){W[i]=w;} else{
+  var n=W[i-15],m=W[i-2];
+  W[i]=((n>>>7|n<<25)^(n>>>18|n<<14)^(n>>>3))+(W[i-7]|0)+((m>>>17|m<<15)^(m>>>19|m<<13)^(m>>>10))+(W[i-16]|0);
+  }
+  var t1=h+((e>>>6|e<<26)^(e>>>11|e<<21)^(e>>>25|e<<7))+((e&f)^(~e&g))+k[i]+(W[i]|0);
+  var t2=((a>>>2|a<<30)^(a>>>13|a<<19)^(a>>>22|a<<10))+((a&b)^(a&c)^(b&c));
+  h=g;g=f;f=e;e=(d+t1)|0;d=c;c=b;b=a;a=(t1+t2)|0;
+  }
+  hash=[(hash[0]+a)|0,(hash[1]+b)|0,(hash[2]+c)|0,(hash[3]+d)|0,(hash[4]+e)|0,(hash[5]+f)|0,(hash[6]+g)|0,(hash[7]+h)|0];
+  }
+  for(i=0;i<hash[lengthProperty];i++){
+  for(j=3;j+1;j--){
+  var b2=(hash[i]>>(j*8))&255;
+  result+=(b2<16?'0':'')+b2.toString(16);
+  }
+  }
+  return result;
+}
+function _enc(s){return _sha256(s);}
+
+// ========================================================
+// SOAL & JAWABAN
+// ========================================================
+var _rawAns=[
+  ["Tulang pipih"],
+  ["Sendi peluru"],
+  ["Aktin"],
+  ["Hialin memiliki matriks halus transparan, fibrosa memiliki matriks padat serat kolagen."],
+  ["Fleksi (membengkokkan lengan)"],
+  ["Pita I dan zona H memanjang kembali"],
+  ["Skoliosis"],
+  ["Hipertrofi akibat peningkatan aktivitas otot"],
+  ["Fleksi lalu ekstensi"],
+  ["Tulang anak-anak memiliki kandungan kolagen dan osteosit yang lebih tinggi."],
+  ["Tulang spons mengandung struktur trabekula dan berfungsi meringankan beban total tulang.","Sumsum kuning pada rongga tulang pipa berfungsi sebagai tempat penyimpanan lemak."],
+  ["Sendi engsel berada di antara tulang lengan atas dan tulang ulna (siku).","Sendi pelana berada di antara tulang ibu jari (metakarpal) dan tulang karpal.","Sendi putar berada di antara tulang atlas dan tulang tengkorak oksipital."],
+  ["Miosin adalah protein penyusun filamen tebal yang memiliki kepala pengikat ATP.","Troponin dan tropomiosin adalah protein regulatori yang melekat pada filamen halus."],
+  ["Osteoblas berfungsi mensekresikan matriks organik tulang yang akan mengalami kalsifikasi.","Osteoklas bekerja aktif merombak bagian tengah tulang pipa untuk pembentukan rongga sumsum."],
+  ["Zona H menghilang karena filamen halus saling tumpang tindih di pusat sarkomer.","Jarak translasi spasial antara garis Z yang satu dengan garis Z berikutnya menjadi memendek."],
+  ["Kartilago elastis: Mengandung banyak serat elastin, lentur, terletak pada daun telinga.","Kartilago fibrosa: Mengandung kolagen padat, kaku, terletak pada cakram antarruas tulang belakang."],
+  ["Kebiasaan membawa beban ransel yang berat di satu pundak saja dapat memicu Skoliosis.","Posisi duduk terlalu membungkuk depan membaca buku secara terus-menerus memicu Kifosis.","Posisi duduk dengan membusungkan dada depan secara berlebihan memicu Lordosis."],
+  ["Saat sendi lutut ditekuk (fleksi), otot hamstring berkontraksi dan otot quadriceps berelaksasi.","Saat sendi lutut diluruskan (ekstensi), otot quadriceps berkontraksi dan otot hamstring berelaksasi."],
+  ["Sel otot melakukan lintasan respirasi anaerob yang menghasilkan produk samping asam laktat.","Akumulasi konsentrasi asam laktat intraseluler memicu rasa pegal, nyeri, dan kelelahan."],
+  ["Meningkatkan konsumsi asupan makanan kaya kalsium dan vitamin D untuk asimilasi mineral.","Menjalani terapi hormon pengganti estrogen terkontrol dokter untuk menekan laju osteolisis."]
+];
+
+var SOAL = [
+ {id:1,type:"PG",na:1,
+ stim:"Sel darah merah (eritrosit) di dalam tubuh manusia memiliki masa hidup yang terbatas, yaitu sekitar 120 hari. Setelah melewati waktu tersebut, sel darah merah yang tua akan rusak dan dihancurkan di dalam hati atau limpa. Agar tubuh tidak kekurangan oksigen, tubuh harus terus-menerus memproduksi sel darah merah baru melalui proses yang disebut hematopoiesis. Proses hematopoiesis ini terjadi di dalam sumsum tulang merah. Pada masa kanak-kanak, hampir seluruh jenis tulang aktif memproduksi sel darah. Namun, setelah dewasa, sumsum tulang merah di sebagian besar tulang panjang (tulang pipa) berubah menjadi sumsum kuning (jaringan lemak). Akibatnya, aktivitas pembentukan sel darah merah pada orang dewasa bergeser dan berpusat di tulang-tulang tertentu yang memiliki struktur berongga dan kaya akan sumsum merah, seperti tulang dada (sternum), tulang rusuk (costae), dan tulang panggul (pelvis).",
+ q:"Jenis tulang yang berfungsi utama sebagai tempat pembentukan sel-sel darah merah adalah...",
+ opts:["Tulang pipa","Tulang pendek","Tulang pipih","Tulang sesamoid","Tulang ireguler"]},
+ {id:2,type:"PG",na:1,
+ stim:"Dalam olahraga bisbol, seorang pitcher (pelempar bola) harus mampu melemparkan bola dengan kecepatan tinggi dan akurasi yang tepat. Untuk melakukan lemparan yang melingkar dan kuat, lengan pitcher melakukan gerakan memutar yang sangat luas, mulai dari menarik lengan ke belakang, memutarnya di udara, hingga mengayunkannya ke depan secara penuh. Gerakan kompleks ini melibatkan sistem gerak yang sangat fleksibel, terutama pada titik pertemuan antara tulang lengan atas (humerus) dan gelangan bahu (scapula). Fleksibilitas ini terjadi karena struktur sendi pada bahu memiliki bentuk seperti bonggol bulat yang masuk ke dalam mangkuk sendi, sehingga memungkinkan rotasi dan pergerakan yang sangat bebas.",
+ q:"Nama persendian yang memungkinkan pergerakan bebas ke segala arah adalah...",
+ opts:["Sendi peluru","Sendi engsel","Sendi pelana","Sendi putar","Sendi geser"]},
+ {id:3,type:"PG",na:1,
+ stim:"Kontraksi otot rangka dikendalikan oleh interaksi antara dua jenis protein struktural utama di dalam sarkomer, yaitu unit fungsional terkecil otot. Ketika sel saraf memicu pelepasan ion kalsium, terjadi perubahan struktural yang memungkinkan kepala filamen tebal mengikat filamen halus di dekatnya. Proses ini membentuk cross-bridge (jembatan silang) yang kemudian menarik filamen halus ke arah pusat sarkomer, menyebabkan otot memendek dan berkontraksi. Struktur filamen halus ini sendiri berupa rantai protein ganda berbentuk untaian heliks yang menjadi tempat penempelan utama bagi kepala protein filamen tebal tersebut selama proses kontraksi berlangsung.",
+ q:"Protein spesifik yang menyusun filamen halus pada unit fungsional otot rangka disebut...",
+ opts:["Aktin","Miosin","Kolagen","Elastin","Keratin"]},
+ {id:4,type:"PG",na:1,
+ stim:"Jaringan tulang rawan di dalam tubuh memiliki karakteristik mekanis yang berbeda sesuai dengan fungsi dan lokasinya. Dalam sebuah uji laboratorium, diperoleh data bahwa tulang rawan pada trakea memiliki permukaan yang sangat licin dan mengkilap untuk memperlancar aliran udara. Sementara itu, tulang rawan pada cakram antarruas tulang belakang memiliki struktur yang sangat padat dan kaku agar mampu menahan beban vertikal tubuh yang berat tanpa mudah robek. Perbedaan kemampuan mekanis ini sangat dipengaruhi oleh komponen penyusun matriks ekstraselulernya.",
+ q:"Pernyataan berikut yang paling tepat menjelaskan perbedaan antara tulang rawan hialin dan tulang rawan fibrosa adalah...",
+ opts:["Hialin memiliki matriks halus transparan, fibrosa memiliki matriks padat serat kolagen.","Hialin mengandung banyak kolagen kasar, fibrosa mengandung elastin.","Hialin berwarna gelap keruh, fibrosa berwarna putih kebiruan.","Hialin menyusun daun telinga, fibrosa menyusun trakea.","Hialin tidak memiliki lakuna, fibrosa memiliki banyak lakuna."]},
+ {id:5,type:"PG",na:1,
+ stim:"Saat seseorang melakukan latihan angkat beban menggunakan dumbbell, lengan bawah akan bergerak naik mendekati bahu. Gerakan ini melibatkan sepasang otot lengan atas yang bekerja secara antagonis (berlawanan). Agar lengan bawah dapat terangkat naik membengkok, salah satu otot di bagian depan lengan atas harus mengencang dan memendek, sementara otot di bagian belakang lengan atas harus memanjang dan mengendur.",
+ q:"Ketika otot bisep berkontraksi and otot trisep berelaksasi, gerakan lengan bawah adalah...",
+ opts:["Fleksi (membengkokkan lengan)","Ekstensi (meluruskan lengan)","Abduksi (menjauhi tubuh)","Adduksi (mendekati tubuh)","Supinasi (menengadahkan tangan)"]},
+ {id:6,type:"PG",na:1,
+ stim:"Ketika stimulasi saraf pada sel otot berakhir, ion kalsium akan dipompa kembali ke dalam retikulum sarkoplasma secara aktif. Ketiadaan ion ini menyebabkan jembatan silang antara protein kontraktil terputus sehingga filamen halus bergeser mundur menjauhi pusat sarkomer. Proses penarikan kembali ini membuat daerah-daerah sarkomer yang semula menyusut saat berkontraksi akan merenggang kembali ke ukuran semula. Akibatnya, ruang kosong di bagian tengah serta pita terang di pinggir unit fungsional ini akan tampak melebar kembali seperti sedia kala.",
+ q:"Mekanisme mikro yang terjadi di dalam susunan sarkomer otot saat mengalami fase relaksasi penuh adalah...",
+ opts:["Pita I dan zona H memanjang kembali","Garis Z saling mendekat","Filamen aktin dan miosin saling tumpang tindih total","Zona H menghilang dari pusat sarkomer","Pita A memendek secara drastis"]},
+ {id:7,type:"PG",na:1,
+ stim:"Postur tubuh saat beraktivitas sehari-hari sangat memengaruhi kelengkungan alami dari rangkaian kolom tulang belakang manusia. Kebiasaan membawa beban yang tidak seimbang pada satu sisi bahu atau posisi duduk yang miring secara konstan dapat memaksa vertebrae bergeser dari jalur tengahnya. Tekanan asimetris yang berlangsung selama bertahun-tahun ini memicu perubahan struktural di mana susunan tulang belakang melengkung secara tidak normal ke arah samping kanan atau kiri. Akibatnya, tubuh terlihat tidak simetris dan bahu tampak tinggi sebelah akibat lengkungan lateral yang menyerupai huruf S.",
+ q:"Kelainan struktural tulang belakang yang melengkung parah ke arah samping membentuk huruf 'S' disebut...",
+ opts:["Skoliosis","Lordosis","Kifosis","Osteoporosis","Rakhitis"]},
+ {id:8,type:"PG",na:1,
+ stim:"Otot rangka memiliki kemampuan adaptasi yang luar biasa terhadap beban kerja fisik yang diberikan secara rutin dan terukur. Ketika seseorang melakukan latihan beban yang berat secara konsisten, sel-sel otot akan merespons dengan meningkatkan sintesis protein filamen di dalam setiap serabutnya. Proses fisiologis ini tidak menambah jumlah serabut otot secara keseluruhan, melainkan memperbesar volume dan diameter dari serabut otot yang sudah ada. Fenomena pembesaran jaringan otot akibat peningkatan aktivitas selular dan beban kerja intensif inilah yang membuat massa otot tampak lebih kekar.",
+ q:"Seorang atlet angkat besi melatih lengannya intensif sehingga ototnya membesar. Fenomena ini disebut...",
+ opts:["Hipertrofi akibat peningkatan aktivitas otot","Atrofi akibat otot jarang digunakan","Distrofi akibat kelainan genetik protein otot","Tetanus akibat infeksi bakteri","Tonus akibat kontraksi otot konstan"]},
+ {id:9,type:"PG",na:1,
+ stim:"Aktivitas jalan di tempat memerlukan koordinasi motorik yang dinamis antara persendian kaki bawah dan sepasang otot yang bekerja berlawanan. Fase awal gerakan dimulai ketika paha diangkat ke atas, yang menyebabkan sudut pada persendian lutut mengecil akibat penarikan kaki bagian bawah ke belakang. Setelah mencapai titik tertinggi, kaki bagian bawah tersebut akan didorong kembali ke arah bawah untuk menapak tanah sehingga sudut persendian lutut kembali membesar atau lurus. Kombinasi beruntun antara gerakan membengkokkan sendi dan meluruskannya kembali secara bergantian ini memicu perpindahan posisi kaki yang stabil.",
+ q:"Saat seseorang melakukan gerakan jalan di tempat, urutan gerakan antagonis pada lutut berturut-turut adalah...",
+ opts:["Fleksi lalu ekstensi","Depresi lalu elevasi","Inversi lalu eversi","Abduksi lalu adduksi","Supinasi lalu pronasi"]},
+ {id:10,type:"PG",na:1,
+ stim:"Kemampuan regenerasi jaringan tulang yang mengalami patah (fraktur) sangat bergantung pada efisiensi proses histogenesis di dalam tubuh makhluk hidup. Jaringan tulang pada usia muda memiliki karakteristik biologis yang sangat dinamis karena masih dalam masa pertumbuhan aktif. Matriks tulang mereka kaya akan serat protein fleksibel serta memiliki kerapatan sel-sel tulang hidup yang jauh lebih melimpah dibandingkan dengan jaringan orang dewasa. Kondisi metabolisme seluler yang tinggi dan suplai nutrisi organik inilah yang mempercepat pembentukan kalus pembungkus untuk menyambung kembali fraktur.",
+ q:"Anak-anak mengalami pemulihan fraktur kaki lebih cepat dibandingkan orang dewasa karena...",
+ opts:["Tulang anak-anak memiliki kandungan kolagen dan osteosit yang lebih tinggi.","Tulang anak-anak mengandung lebih banyak kalsium fosfat cair.","Orang dewasa tidak memiliki sel osteoblas di dalam periosteum.","Tulang anak-anak memiliki matriks yang lebih kaku dan padat.","Proses osifikasi intra-membranosa hanya terjadi pada usia anak-anak."]},
+ {id:11,type:"PGK",na:2,
+ stim:"Tulang manusia bukan sekadar benda keras yang mati, melainkan jaringan hidup yang terus mengalami pembaruan. Struktur tulang makroskopis terdiri dari berbagai lapisan dan bagian, seperti periosteum, tulang kompak, tulang spons, endosteum, dan sumsum tulang. Masing-masing bagian memiliki letak dan fungsi yang sangat spesifik dalam menunjang kekuatan serta metabolisme tubuh.",
+ q:"Pilihlah dua (2) pernyataan yang benar mengenai fungsi dari bagian-bagian struktur tulang!",
+ opts:["Periosteum berfungsi sebagai tempat pembentukan sel darah merah secara aktif.","Tulang spons mengandung struktur trabekula dan berfungsi meringankan beban total tulang.","Endosteum adalah lapisan pelindung terluar yang memicu pertumbuhan diameter tulang luar.","Sumsum kuning pada rongga tulang pipa berfungsi sebagai tempat penyimpanan lemak.","Tulang kompak tidak memiliki saluran Havers karena strukturnya sangat padat."]},
+ {id:12,type:"PGK",na:3,
+ stim:"Sendi diartrosis adalah jenis persendian yang memungkinkan terjadinya gerakan bebas. Berdasarkan arah gerakannya, sendi diartrosis dibagi menjadi beberapa jenis, seperti sendi engsel, sendi pelana, sendi peluru, sendi putar, sendi geser, dan sendi kondiloid. Setiap sendi menghubungkan tulang-tulang tertentu pada kerangka manusia.",
+ q:"Manakah dari pasangan jenis sendi dan lokasinya yang tepat? (Pilih tiga (3) jawaban benar!)",
+ opts:["Sendi engsel berada di antara tulang lengan atas dan tulang ulna (siku).","Sendi pelana berada di antara tulang ibu jari (metakarpal) dan tulang karpal.","Sendi putar berada di antara tulang atlas dan tulang tengkorak oksipital.","Sendi peluru berada di antara tulang radius dan tulang ulna pada lengan bawah.","Sendi geser berada di antara tulang dada dan tulang rusuk sejati."]},
+ {id:13,type:"PGK",na:2,
+ stim:"Otot rangka dapat berkontraksi karena adanya interaksi antara protein-protein spesifik di dalam sarkomer. Protein-protein ini menyusun filamen tebal dan filamen halus yang saling bergeser saat otot bekerja mendapat rangsangan. Selain protein utama, terdapat juga protein regulatori yang mengontrol kapan otot boleh berkontraksi.",
+ q:"Pilihlah pernyataan yang benar mengenai nama dan peran protein penyusun otot rangka! (Pilih dua (2) jawaban benar!)",
+ opts:["Miosin adalah protein penyusun filamen tebal yang memiliki kepala pengikat ATP.","Aktin adalah protein penyusun filamen tebal yang berbentuk rantai heliks ganda.","Troponin dan tropomiosin adalah protein regulatori yang melekat pada filamen halus.","Mioglobin adalah protein kontraktil utama yang langsung memendek saat otot berkontraksi."]},
+ {id:14,type:"PGK",na:2,
+ stim:"Proses pembentukan tulang (osifikasi) pada manusia sebagian besar berawal dari tulang rawan (kartilago) hialin yang secara bertahap berubah menjadi tulang keras (osteon). Proses ini melibatkan aktivitas sel-sel tulang seperti osteoblas yang merombak matriks, osteosit sebagai sel tulang dewasa, dan osteoklas yang berfungsi mengikis tulang untuk pembentukan rongga sumsum.",
+ q:"Berdasarkan mekanisme osifikasi, manakah pernyataan berikut yang bernilai benar? (Pilih dua (2) jawaban benar!)",
+ opts:["Osteoblas berfungsi mensekresikan matriks organik tulang yang akan mengalami kalsifikasi.","Osteoklas bekerja aktif merombak bagian tengah tulang pipa untuk pembentukan rongga sumsum.","Rongga tulang rawan terbentuk akibat pembelahan sel-sel osteosit yang sangat cepat.","Pembuluh darah dilarang masuk ke pusat osifikasi agar tulang tidak menjadi lunak."]},
+ {id:15,type:"PGK",na:2,
+ stim:"Sarkomer adalah unit fungsional terkecil dari otot rangka. Saat otot dirangsang untuk berkontraksi, ukuran pita-pita di dalam sarkomer (Pita I, Pita A, dan Zona H) akan mengalami perubahan akibat pergeseran filamen aktin di atas filamen miosin (Teori Sliding Filament).",
+ q:"Pernyataan manakah yang paling tepat menjelaskan kondisi dimensi pita sarkomer saat otot berkontraksi penuh? (Pilih dua (2) jawaban benar!)",
+ opts:["Zona H menghilang karena filamen halus saling tumpang tindih di pusat sarkomer.","Pita A memendek secara drastis hingga ukurannya tersisa setengah dari ukuran awal.","Jarak translasi spasial antara garis Z yang satu dengan garis Z berikutnya menjadi memendek.","Pita I memanjang akibat gaya tarik filamen tebal ke arah luar sarkomer."]},
+ {id:16,type:"PGK",na:2,
+ stim:"Tulang rawan (kartilago) pada tubuh manusia dewasa dikelompokkan menjadi tiga jenis: hialin, elastis, dan fibrosa. Perbedaan ketiganya terletak pada jenis serat dominan yang menyusun matriksnya serta tingkat kelenturan jaringan tersebut dalam menahan tekanan fisik tubuh sehari-hari.",
+ q:"Pasangan struktur, sifat matriks, dan lokasi tulang rawan berikut yang benar adalah... (Pilih dua (2) jawaban benar!)",
+ opts:["Kartilago elastis: Mengandung banyak serat elastin, lentur, terletak pada daun telinga.","Kartilago fibrosa: Mengandung kolagen padat, kaku, terletak pada cakram antarruas tulang belakang.","Kartilago hialin: Sangat kaku tanpa serat, berwarna gelap, terletak pada cuping hidung luar saja.","Kartilago fibrosa: Matriksnya transparan kebiruan, sangat rapuh, terletak pada persendian bahu."]},
+ {id:17,type:"PGK",na:3,
+ stim:"Gaya hidup modern memaksa banyak pelajar dan pekerja duduk di depan meja atau komputer dalam waktu yang lama. Sering kali, posisi duduk yang salah seperti terlalu membungkuk ke depan atau miring ke satu sisi dilakukan berulang-ulang selama bertahun-tahun. Hal ini memicu kelainan kelengkungan tulang belakang (vertebrae) yang menetap.",
+ q:"Manakah pernyataan yang tepat mengenai hubungan posisi tubuh dan kelainan tulang belakang? (Pilih tiga (3) jawaban benar!)",
+ opts:["Kebiasaan membawa beban ransel yang berat di satu pundak saja dapat memicu Skoliosis.","Posisi duduk terlalu membungkuk depan membaca buku secara terus-menerus memicu Kifosis.","Posisi duduk dengan membusungkan dada depan secara berlebihan memicu Lordosis.","Kifosis adalah kelainan di mana tulang belakang melengkung samping membentuk huruf S.","Lordosis menyebabkan tulang belakang bagian pinggang melengkung ekstrem ke arah belakang."]},
+ {id:18,type:"PGK",na:2,
+ stim:"Saat seseorang melakukan olahraga naik-turun tangga, terjadi koordinasi gerakan yang kompleks pada persendian dan otot kaki. Ketika kaki melangkah naik ke anak tangga berikutnya, sendi lutut ditekuk, kemudian diluruskan kembali untuk mengangkat berat tubuh. Gerakan ini melibatkan otot antagonis pada paha, yaitu otot paha depan (quadriceps) dan otot paha belakang (hamstring).",
+ q:"Berdasarkan ilustrasi mekanika gerak naik tangga, analisislah gerakan antagonis paha yang benar! (Pilih dua (2) jawaban benar!)",
+ opts:["Saat sendi lutut ditekuk (fleksi), otot hamstring berkontraksi dan otot quadriceps berelaksasi.","Saat sendi lutut diluruskan (ekstensi), otot quadriceps berkontraksi dan otot hamstring berelaksasi.","Gerakan menekuk dan meluruskan lutut merupakan contoh nyata gerakan abduksi dan adduksi.","Gerakan menurunkan kaki kembali menuju lantai secara anatomi disebut dengan gerakan elevasi."]},
+ {id:19,type:"PGK",na:2,
+ stim:"Seorang pelari maraton tiba-tiba mengalami kram dan nyeri hebat pada otot betisnya saat mendekati garis finis. Secara fisiologis, kram terjadi karena pasokan oksigen ke dalam otot menurun drastis akibat aktivitas yang sangat intens, sementara kebutuhan energi (ATP) tetap tinggi demi melanjutkan kontraksi.",
+ q:"Berdasarkan prinsip metabolisme biokimia otot, fenomena manakah yang memicu kram akut pelari maraton? (Pilih dua (2) jawaban benar!)",
+ opts:["Sel otot melakukan lintasan respirasi anaerob yang menghasilkan produk samping asam laktat.","Akumulasi konsentrasi asam laktat intraseluler memicu rasa pegal, nyeri, dan kelelahan.","Otot kehabisan glikogen sehingga miosin melepaskan diri dari aktin secara permanen tanpa kontrol.","Terjadi lonjakan produksi gas karbon dioksida di dalam sel otot yang membekukan filamen aktin."]},
+ {id:20,type:"PGK",na:2,
+ stim:"Seorang wanita berusia 65 tahun mengeluhkan nyeri punggung kronis dan postur tubuhnya yang semakin pendek. Dokter menyarankannya melakukan uji densitas mineral tulang. Hasil pemindaian menunjukkan bahwa matriks tulang pasien telah kehilangan banyak kalsium, berongga besar, dan sangat rapuh (keropos) akibat penurunan drastis hormon estrogen pasca-menopause.",
+ q:"Berdasarkan kasus osteoporosis wanita pasca-menopause, langkah preventif/medis apa yang paling tepat diterapkan? (Pilih dua (2) jawaban benar!)",
+ opts:["Meningkatkan konsumsi asupan makanan kaya kalsium dan vitamin D untuk asimilasi mineral.","Melakukan olahraga beban intensitas tinggi ekstrim guna memaksa rekrutmen osteoklas tubuh.","Menjalani terapi hormon pengganti estrogen terkontrol dokter untuk menekan laju osteolisis.","Mengurangi konsumsi air putih dan melakukan imobilisasi total di tempat tidur tanpa bergerak."]},
+ {id:21,type:"PGK_LIT",na:2,
+ stim:"Bacalah teks berikut dengan cermat!\n\nSeorang dokter spesialis ortopedi menjelaskan bahwa tulang manusia merupakan jaringan ikat yang aktif secara metabolik. Proses remodeling tulang melibatkan osteoblas yang membentuk tulang baru dan osteoklas yang merombak tulang lama. Keseimbangan kedua sel ini menentukan kepadatan tulang. Ketika osteoklas lebih aktif, massa tulang berkurang dan risiko patah tulang meningkat.",
+ stmts:["Osteoblas berfungsi membentuk matriks tulang baru.","Osteoklas berfungsi merombak tulang yang sudah tua.","Kepadatan tulang tidak dipengaruhi oleh keseimbangan osteoblas-osteoklas.","Ketika osteoklas lebih aktif, massa tulang berkurang."],
+ q:"Berdasarkan teks di atas, pernyataan yang BENAR adalah...",
+ correct_stmts:[0,1]},
+ {id:22,type:"PGK_LIT",na:2,
+ stim:"Bacalah teks berikut dengan cermat!\n\nSaat lari sprint intens, pasokan oksigen tidak cukup memenuhi kebutuhan energi otot. Sel otot beralih ke jalur anaerobik yang menghasilkan ATP lebih cepat namun menghasilkan asam laktat sebagai produk samping. Penumpukan asam laktat menyebabkan otot pegal dan kelelahan. Dalam kondisi aerobik, glukosa dipecah menjadi ATP, air, dan karbon dioksida secara efisien.",
+ stmts:["Jalur anaerob menghasilkan ATP lebih lambat dibandingkan jalur aerob.","Asam laktat adalah produk samping dari metabolisme anaerob otot.","Dalam kondisi aerobik, glukosa dipecah menjadi ATP, air, dan karbon dioksida.","Penumpukan asam laktat tidak berpengaruh terhadap rasa pegal pada otot."],
+ q:"Berdasarkan teks di atas, pernyataan yang BENAR adalah...",
+ correct_stmts:[1,2]},
+ {id:23,type:"PGK_LIT",na:2,
+ stim:"Bacalah teks berikut dengan cermat!\n\nSkoliosis merupakan kelainan tulang belakang dengan kurva lateral abnormal berbentuk S atau C. Kondisi ini sering ditemukan pada remaja perempuan dalam masa pertumbuhan cepat. Faktor risiko meliputi kebiasaan membawa tas ransel berat di satu bahu, duduk miring lama, dan kurang olahraga. Deteksi dini sangat penting karena makin muda terdeteksi, makin besar peluang tata laksana berhasil mencegah progresi kurva.",
+ stmts:["Skoliosis adalah kelainan tulang belakang yang melengkung ke samping.","Skoliosis lebih sering ditemukan pada remaja laki-laki.","Membawa tas ransel berat di satu bahu dapat meningkatkan risiko skoliosis.","Deteksi dini skoliosis tidak berpengaruh pada hasil pengobatan."],
+ q:"Berdasarkan teks di atas, pernyataan yang BENAR adalah...",
+ correct_stmts:[0,2]}
+];
+
+// Menerapkan fix penutupan kurung yang hilang dan mengenkripsi jawaban
+SOAL.forEach(function(s,i){
+  if(s.type === 'PGK_LIT'){
+  s._h = []; /* PGK_LIT: jawaban diverikasi secara dinamis via correct_stmts */
+  } else {
+  s._h = _rawAns[i].map(function(t){ return _enc(t); }); 
+  }
+});
+_rawAns = null;
+
+// ========================================================
+// STATE & ANTI-CHEAT
+// ========================================================
+var SS_KEY = 'ujian_bio11_v2';
+var _lsAvailable = (function(){
+  try{
+  var t = '__ls_test__';
+  localStorage.setItem(t,'1'); localStorage.removeItem(t);
+  return true;
+  }catch(e){ return false; }
+})();
+var _memStore = {};
+var _store = {
+  getItem: function(key){ if(_lsAvailable) return localStorage.getItem(key); return _memStore[key] !== undefined ? _memStore[key] : null; },
+  setItem: function(key, val){ if(_lsAvailable){ try{ localStorage.setItem(key, val); }catch(e){ _lsAvailable=false; _memStore[key]=val; } } else _memStore[key] = val; },
+  removeItem: function(key){ if(_lsAvailable){ try{ localStorage.removeItem(key); }catch(e){} } delete _memStore[key]; }
+};
+
+if(!_lsAvailable){ setTimeout(function(){ toast('tWarn',' Mode Privat terdeteksi. Progress tidak tersimpan jika refresh.',5000); }, 1500); }
+
+var _SK = (function(){ return _sha256('SMABIO11_GERAKOTAK_' + CFG_DURASI_MENIT + '_INTEGRITY_2025'); })();
+function _signState(obj){
+  var canon = obj.startMs + '|' + obj.totalSecs + '|' + obj.idx + '|' + (obj.student ? obj.student.nama + obj.student.kelas : '') + '|' + JSON.stringify(obj.attempts) + '|' + obj.punish;
+  return _sha256(_SK + canon);
+}
+function _verifyState(obj){ if(!obj.sig) return false; return obj.sig === _signState(obj); }
+
+var S={ active:false, idx:0, order:[], attempts:{}, student:{}, timerIv:null, secsLeft:0, punish:0, startMs:0 };
+
+function saveState(){
+  if(!S.active)return;
+  try{
+  var data = { idx: S.idx, order: S.order, attempts: S.attempts, student: S.student, punish: S.punish, startMs: S.startMs, totalSecs: CFG_DURASI_MENIT * 60 };
+  data.sig = _signState(data);
+  _store.setItem(SS_KEY, JSON.stringify(data));
+  }catch(e){}
+}
+function loadState(){
+  try{
+  var raw = _store.getItem(SS_KEY);
+  if(!raw) return false;
+  var d = JSON.parse(raw);
+  if(!d || !d.student) return false;
+  if(!_verifyState(d)){
+    clearState(); setTimeout(function(){ alert(' Data ujian terdeteksi telah dimanipulasi.\nSesi dihapus. Hubungi Guru Anda.'); }, 300); return false;
+  }
+  var elapsedSecs = Math.floor((Date.now() - d.startMs) / 1000);
+  var secsLeft = Math.max(0, d.totalSecs - elapsedSecs);
+  if(secsLeft <= 0 || elapsedSecs > d.totalSecs + 1800){ clearState(); return false; }
+  S.idx = d.idx; S.order = d.order; S.attempts = d.attempts; S.student = d.student; S.punish = d.punish; S.startMs = d.startMs; S.secsLeft = secsLeft;
+  return true;
+  }catch(e){ return false; }
+}
+function clearState(){ try{ _store.removeItem(SS_KEY); }catch(e){} }
+
+var _TAB_KEY = 'ujian_bio11_tab';
+var _SESSION_ID = _sha256(Date.now() + Math.random().toString()).substring(0,16);
+var _hbInterval = null;
+function _startHeartbeat(){
+  _hbInterval = setInterval(function(){
+  if(!S.active){ clearInterval(_hbInterval); return; }
+  try{
+    var prev = _store.getItem(_TAB_KEY);
+    if(prev && prev !== _SESSION_ID){ clearInterval(_hbInterval); triggerPunish(); toast('tErr',' Ujian dibuka di tab/browser lain! Terdeteksi.',4000); }
+    _store.setItem(_TAB_KEY, _SESSION_ID);
+    _lastHbWrite = Date.now();
+  }catch(e){}
+  }, 1500);
+}
+function _stopHeartbeat(){ clearInterval(_hbInterval); try{ _store.removeItem(_TAB_KEY); }catch(e){} }
+
+window.addEventListener('storage', function(e){
+  if(!S.active) return;
+  if((e.key === _TAB_KEY && e.newValue && e.newValue !== _SESSION_ID) || (e.key === SS_KEY && S.active)){ triggerPunish(); toast('tErr',' Anomali terdeteksi!',4000); }
+});
+
+function goFullscreen(){
+  var el=document.documentElement;
+  var fn=el.requestFullscreen||el.webkitRequestFullscreen||el.mozRequestFullScreen||el.msRequestFullscreen;
+  if(fn)fn.call(el).catch(function(){});
+}
+
+function startTimer(){
+  updateTimerDisplay();
+  S.timerIv=setInterval(function(){
+  var elapsed = Math.floor((Date.now() - S.startMs) / 1000);
+  S.secsLeft = Math.max(0, CFG_DURASI_MENIT * 60 - elapsed);
+  saveState(); updateTimerDisplay();
+  if(S.secsLeft<=0){clearInterval(S.timerIv);finishQuiz(true);}
+  },1000);
+}
+
+var _lastHbWrite = Date.now();
+var _wdFrozenCount = 0;
+setInterval(function(){
+  if(!S.active) return;
+  var expectedElapsed = Math.floor((Date.now() - S.startMs) / 1000);
+  var expectedLeft = Math.max(0, CFG_DURASI_MENIT * 60 - expectedElapsed);
+  var timerDead = Math.abs(S.secsLeft - expectedLeft) > 5;
+  var hbDead = (Date.now() - _lastHbWrite) > 5000;
+  if(timerDead || hbDead){
+  _wdFrozenCount++;
+  if(timerDead){ clearInterval(S.timerIv); startTimer(); }
+  if(hbDead){ clearInterval(_hbInterval); _startHeartbeat(); }
+  if(_wdFrozenCount <= 3){ triggerPunish(); toast('tErr',' Manipulasi timer terdeteksi!',4000); }
+  }
+}, 3000);
+
+function updateTimerDisplay(){
+  var m=Math.floor(S.secsLeft/60),s=S.secsLeft%60;
+  $('dispTimer').textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+  var tw=$('timerWrap'); tw.className='';
+  if(S.secsLeft<300)tw.classList.add('danger'); else if(S.secsLeft<600)tw.classList.add('warn');
+}
+
+var _resizeTimer=null;
+var _minWidth = Math.min(window.screen.width, window.screen.height) * 0.38;
+function checkWindowSize(){ if(!S.active) return; if(window.innerWidth < _minWidth){ toast('tErr',' Layar mengecil terdeteksi! Kembali ke mode layar penuh.',3000); triggerPunish(); } }
+window.addEventListener('resize', function(){ clearTimeout(_resizeTimer); _resizeTimer = setTimeout(checkWindowSize, 500); });
+
+window.addEventListener('online',function(){ if(!S.active)return; S.onlineAt = S.onlineAt || Date.now(); S.onlineCount = (S.onlineCount||0) + 1; toast('tErr',' INTERNET TERDETEKSI AKTIF! Ujian ini bersifat offline.',4000); triggerPunish(); });
+window.addEventListener('offline',function(){ if(!S.active)return; toast('tOk','Koneksi internet dimatikan. Lanjutkan mengerjakan.',2500); });
+function checkOnlineStatus(){ if(S.active && navigator.onLine){ S.onlineAt = S.onlineAt || Date.now(); S.onlineCount = (S.onlineCount||0) + 1; toast('tErr',' INTERNET AKTIF! Harap matikan data/WiFi untuk memulai.',4000); triggerPunish(); } }
+
+var _blurTimer=null, _lastActive=Date.now();
+window.addEventListener('blur',function(){ if(!S.active)return; clearTimeout(_blurTimer); _blurTimer=setTimeout(function(){ if(!document.hasFocus()&&S.active)triggerPunish(); },400); });
+function _onVisChange(){ var hidden = document.hidden || document.webkitHidden || document.mozHidden || document.msHidden; if(hidden && S.active) triggerPunish(); }
+document.addEventListener('visibilitychange', _onVisChange); document.addEventListener('webkitvisibilitychange', _onVisChange); document.addEventListener('mozvisibilitychange', _onVisChange);
+setInterval(function(){
+  if(!S.active)return;
+  var hidden = document.hidden || document.webkitHidden || document.mozHidden;
+  if(hidden || !document.hasFocus()){ var now=Date.now(); if(now - _lastActive > 2500) triggerPunish(); } else { _lastActive=Date.now(); }
+}, 2000);
+window.addEventListener('pagehide', function(){ if(S.active) saveState(); });
+window.addEventListener('pageshow', function(e){ if(e.persisted && S.active) triggerPunish(); });
+document.addEventListener('keydown',function(e){ var b=e.ctrlKey||e.metaKey; if(e.key==='F12'||(b&&e.shiftKey&&(e.key==='I'||e.key==='i'||e.key==='J'||e.key==='j'))||(b&&(e.key==='u'||e.key==='U'||e.key==='p'||e.key==='P'||e.key==='s'||e.key==='S'))) { e.preventDefault();if(S.active)triggerPunish(); } });
+document.addEventListener('contextmenu',function(e){e.preventDefault();});
+history.pushState(null,null,location.href);
+window.addEventListener('popstate',function(){ history.pushState(null,null,location.href); if(S.active)triggerPunish(); });
+window.addEventListener('beforeunload',function(e){ if(S.active){ saveState(); e.preventDefault(); e.returnValue='Ujian sedang berlangsung. Jika Anda refresh, timer tetap berjalan!'; } });
+
+function triggerPunish(){
+  if(!S.active)return;
+  if(S.idx<5||S.idx>18)return;
+  S.punish++;
+  var ov=$('violOverlay'); $('violCount').textContent=S.punish;
+  ov.classList.add('show'); S.idx=CFG_RESET_IDX; saveState();
+  setTimeout(function(){ov.classList.remove('show');loadSoal();},4000);
+}
+
+// ========================================================
+// MIKROFON & KEBISINGAN
+// ========================================================
+var _micStream = null, _audioCtx = null, _analyser = null;
+var _NOISE_THRESHOLD_DB = 55, _NOISE_DURATION_MS = 2000, _micGranted = false;
+function _requestMic(onGranted){
+  var ov = document.getElementById('micPermOverlay'); ov.classList.add('show');
+  document.getElementById('btnMicAllow').onclick = function(){
+  navigator.mediaDevices.getUserMedia({audio:true,video:false})
+  .then(function(stream){ ov.classList.remove('show'); _micStream = stream; _micGranted = true; _startNoiseMonitor(); if(onGranted) onGranted(); })
+  .catch(function(){ document.getElementById('micPermOverlay').classList.remove('show'); _showMicDenied(); });
+  };
+}
+async function inisialisasiAplikasi() {
+    try {
+        // Minta akses mikrofon di awal
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        console.log("Akses mikrofon diizinkan. Proteksi aktif.");
+        
+        // Jika diizinkan, baru jalankan ujian seperti biasa
+        mulaiUjian();
+
+    } catch (error) {
+        console.warn("Akses mikrofon ditolak oleh siswa.");
+        
+        // PANGGIL FUNGSI PROTEKSI (Blokir Ujian secara sengaja)
+        aktifkanSistemBlokir("Akses Mikrofon Ditolak! Anda tidak dapat mengikuti ujian tanpa mengaktifkan mikrofon sebagai pemantau.");
+    }
+}
+
+function mulaiUjian() {
+    // Kode Anda untuk menampilkan soal dan mengaktifkan tombol "Selanjutnya"
+    tampilkanSoal();
+    document.getElementById('btnNext').disabled = false; // Pastikan tombol aktif
+}
+
+function aktifkanSistemBlokir(pesan) {
+    // 1. Sembunyikan atau kosongkan area soal agar tidak bisa dibaca/dikerjakan
+    const areaSoal = document.getElementById('area-soal'); // Sesuaikan dengan ID elemen Anda
+    if (areaSoal) {
+        areaSoal.style.display = 'none'; 
+    }
+
+    // 2. Nonaktifkan tombol navigasi secara total
+    const btnNext = document.getElementById('btnNext');
+    if (btnNext) {
+        btnNext.disabled = true;
+    }
+
+    // 3. Tampilkan pesan blokir yang jelas/layar merah di browser
+    // Anda bisa membuat elemen overlay atau memanfaatkan alert/elemen khusus
+    let overlayBlokir = document.getElementById('overlay-blokir');
+    if (!overlayBlokir) {
+        overlayBlokir = document.createElement('div');
+        overlayBlokir.id = 'overlay-blokir';
+        overlayBlokir.style = "position:fixed; top:0; left:0; width:100%; height:100%; bg:red; background:rgba(220,38,38,0.95); color:white; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:9999; font-family:sans-serif; padding:20px; text-align:center;";
+        document.body.appendChild(overlayBlokir);
+    }
+    
+    overlayBlokir.innerHTML = `
+        <h1 style="margin-bottom:20px;">⚠️ PELANGGARAN PROTEKSI</h1>
+        <p style="font-size:18px; max-width:600px; margin-bottom:20px;">${pesan}</p>
+        <p style="font-size:14px; background:rgba(0,0,0,0.2); padding:10px; border-radius:5px;">
+           Cara membuka: Klik ikon gembok di kiri atas alamat URL browser Anda, ubah izin Mikrofon menjadi 'Izinkan (Allow)', kemudian muat ulang (refresh) halaman ini.
+        </p>
+    `;
+}
+function _showMicDenied(){
+  var ov = document.getElementById('micPermOverlay');
+  document.querySelector('.mic-title').textContent = ' Izin Mikrofon Ditolak';
+  document.querySelector('.mic-desc').textContent = 'Anda harus mengizinkan akses mikrofon untuk membuka soal ujian. Refresh halaman dan pilih "Izinkan" saat browser meminta akses mikrofon.';
+  document.querySelector('.mic-warn').textContent = 'Tanpa mikrofon, lembar soal tidak akan terbuka. Hubungi guru jika ada masalah.';
+  document.getElementById('btnMicAllow').textContent = 'Coba Lagi';
+  ov.classList.add('show');
+  document.getElementById('btnMicAllow').onclick = function(){ ov.classList.remove('show'); _requestMic(function(){ startTimer(); _startHeartbeat(); loadSoal(); setTimeout(checkOnlineStatus, 500); }); };
+}
+function _startNoiseMonitor(){
+  if(!_micStream) return;
+  try{
+  var AC = window.AudioContext || window.webkitAudioContext; if(!AC) return;
+  _audioCtx = new AC(); var src = _audioCtx.createMediaStreamSource(_micStream);
+  _analyser = _audioCtx.createAnalyser(); _analyser.fftSize = 256; src.connect(_analyser);
+  var bar = document.getElementById('noiseBar'); bar.classList.add('show');
+  var buf = new Uint8Array(_analyser.frequencyBinCount); var noisyStart = null;
+  (function tick(){
+    if(!_micGranted){ return; } requestAnimationFrame(tick); _analyser.getByteFrequencyData(buf);
+    var sum = 0; for(var i=0;i<buf.length;i++) sum += buf[i]*buf[i];
+    var rms = Math.sqrt(sum / buf.length); var dbVal = rms > 0 ? (20 * Math.log10(rms)) : 0;
+    var db = Math.max(0, Math.min(99, Math.round(dbVal * 1.5)));
+    var nbLabel = document.getElementById('nbLabel'); var nbDb = document.getElementById('nbDb');
+    if(nbLabel) nbLabel.textContent = db >= _NOISE_THRESHOLD_DB ? ' BISING!' : ' Hening';
+    if(nbDb) nbDb.textContent = '(' + db + ')';
+    bar.className = 'show ' + (db >= _NOISE_THRESHOLD_DB ? 'noisy' : 'quiet');
+    if(!S.active) return;
+    if(db >= _NOISE_THRESHOLD_DB){
+    if(!noisyStart) noisyStart = Date.now();
+    if(Date.now() - noisyStart >= _NOISE_DURATION_MS){ noisyStart = null; _triggerNoisePenalty(db); }
+    } else {
+    noisyStart = null; var penOv = document.getElementById('noisePenaltyOverlay');
+    if(penOv.classList.contains('show')){ penOv.classList.remove('show'); }
+    }
+  })();
+  }catch(e){}
+}
+function _triggerNoisePenalty(db){ if(!S.active) return; var ov = document.getElementById('noisePenaltyOverlay'); document.getElementById('npDb').textContent = db; ov.classList.add('show'); S.punish++; saveState(); }
+function _stopNoiseMonitor(){
+  _micGranted = false;
+  try{ if(_audioCtx){ _audioCtx.close(); _audioCtx=null; } if(_micStream){ _micStream.getTracks().forEach(function(t){t.stop();}); _micStream=null; } }catch(e){}
+  var bar = document.getElementById('noiseBar'); if(bar) bar.classList.remove('show');
+}
+
+// ========================================================
+// QUIZ CORE (LOGIN & LOAD & CHECK)
+// ========================================================
+window.togglePwd=function(){
+  var inp=$('inKode'), icon=$('eyeIcon');
+  if(inp.type==='password'){
+    inp.type='text';
+    icon.innerHTML='<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>';
+  } else {
+    inp.type='password';
+    icon.innerHTML='<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+  }
+};
+
+(function cleanStaleSession(){
+  try{
+  var savedDate = _store.getItem(CFG_SESSION_DATE_KEY); var today = new Date().toDateString();
+  if(savedDate && savedDate !== today){ _store.removeItem(SS_KEY); _store.removeItem(_TAB_KEY); }
+  _store.setItem(CFG_SESSION_DATE_KEY, today);
+  }catch(e){}
+})();
+
+(function checkDeviceLock(){
+  try{ var locked = _store.getItem(CFG_LOCK_KEY); if(locked === 'LOCKED'){ document.getElementById('pgLogin').classList.remove('on'); document.getElementById('deviceLockOverlay').classList.add('show'); } }catch(e){}
+})();
+function _lockDevice(){ try{ _store.setItem(CFG_LOCK_KEY, 'LOCKED'); }catch(e){} }
+
+window.updateNamaDropdown = function(){
+  var kelas = document.getElementById('inKelas').value;
+  var sel = document.getElementById('inNama');
+  sel.innerHTML = '<option value="">— Pilih Nama —</option>';
+  if(kelas && CFG_NAMA_SISWA[kelas]){
+    CFG_NAMA_SISWA[kelas].forEach(function(nama){ var opt = document.createElement('option'); opt.value = nama; opt.textContent = nama; sel.appendChild(opt); });
+  }
+};
+
+window.cobaReset = function(){
+  var inp = document.getElementById('resetInput'); if(!inp) return;
+  var val = inp.value.trim().toUpperCase();
+  if(val === CFG_RESET_PWD){
+  try{ _store.removeItem(CFG_LOCK_KEY); }catch(e){}
+  document.getElementById('deviceLockOverlay').classList.remove('show'); document.getElementById('pgLogin').classList.add('on');
+  toast('tOk',' Gembok dibuka. Siswa boleh login kembali.',3000);
+  } else { inp.value=''; toast('tErr','Kode reset salah!',2500); }
+};
+
+window.mulaiUjian = function(){
+  var nama = document.getElementById('inNama').value; var kelas = document.getElementById('inKelas').value; var kode = document.getElementById('inKode').value.trim();
+  if(!nama || !kelas){ toast('tErr','Pilih Kelas dan Nama terlebih dahulu!'); return; }
+  if(!kode){ toast('tErr','Masukkan kode akses ujian terlebih dahulu!'); return; }
+  var kelasPwd = CFG_PASS_MAP[kelas];
+  if(!kelasPwd || kode !== kelasPwd){ toast('tErr','Kode akses salah untuk kelas ini. Hubungi Guru Anda.'); return; }
+  
+  var lcBox = document.getElementById('loginConfirmOverlay');
+  document.getElementById('lcNama').textContent = nama; document.getElementById('lcKelas').textContent = kelas;
+  lcBox.classList.add('show');
+};
+window.batalLoginConfirm = function(){ document.getElementById('loginConfirmOverlay').classList.remove('show'); };
+window.konfirmasiMulai = function(){ document.getElementById('loginConfirmOverlay').classList.remove('show'); _doStartUjian(); };
+
+function _doStartUjian(){
+  var nama = document.getElementById('inNama').value; var kelas = document.getElementById('inKelas').value;
+  S.student = { nama: nama, kelas: kelas, tgl: new Date().toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'}) };
+  
+  var allIdx = SOAL.map(function(_,i){return i;});
+  var shuffled = shuffle(allIdx);
+  var selectedIdx = shuffled.slice(0, Math.min(CFG_JUMLAH_SOAL, SOAL.length));
+  S.order = CFG_ACAK_SOAL ? selectedIdx : selectedIdx.sort(function(a,b){return a-b;});
+  S.totalSoal = S.order.length;
+  SOAL.forEach(function(s){ S.attempts[s.id] = {tries:0, poin:0}; });
+  
+  S.idx = 0; S.active = true; S.startMs = Date.now(); S.secsLeft = CFG_DURASI_MENIT * 60;
+  document.getElementById('pgLogin').classList.remove('on'); document.getElementById('pgQuiz').classList.add('on');
+  goFullscreen();
+  
+  _requestMic(function(){ startTimer(); _startHeartbeat(); loadSoal(); setTimeout(checkOnlineStatus, 500); });
+}
+
+(function checkResume(){
+  if(loadState()){
+  $('pgLogin').classList.remove('on'); $('pgQuiz').classList.add('on'); S.active=true; goFullscreen(); startTimer(); _startHeartbeat(); loadSoal();
+  toast('tWarn',' Sesi dilanjutkan. Timer tetap berjalan dari waktu mulai semula!',4000);
+  setTimeout(checkOnlineStatus, 500);
+  }
+})();
+
+function _renderPGKLit(soal){
+  var stmtIdx = shuffle([0,1,2,3]);
+  var stmtHtml = '<div style="margin-bottom:6px;font-size:13px;font-weight:700;color:var(--p2)"> Bacalah pernyataan berikut:</div>';
+  stmtIdx.forEach(function(origIdx, pos){
+    stmtHtml += '<div style="margin-bottom:5px;font-size:13.5px;line-height:1.7"><strong>(' + (pos+1) + ')</strong> ' + soal.stmts[origIdx] + '</div>';
+  });
+  var posToOrig = stmtIdx;
+  var correctDisplayPositions = soal.correct_stmts.map(function(origIdx){ return posToOrig.indexOf(origIdx) + 1; }).sort(function(a,b){return a-b;});
+  var pairs=[];
+  for(var i=0;i<4;i++) for(var j=i+1;j<4;j++) pairs.push([i+1,j+1]);
+  pairs = shuffle(pairs);
+  return { stmtHtml:stmtHtml, pairs:pairs, correctKey: correctDisplayPositions.join(',') };
+}
+
+function loadSoal(){
+  var soal=SOAL[S.order[S.idx]]; var id=soal.id;
+  S.attempts[id].tries++; var n=S.idx+1;
+  $('dispSoal').textContent='Soal '+n+' / '+S.totalSoal;
+  $('dispQTag').textContent='Soal '+n;
+  $('dispTry').textContent='Percobaan ke-'+S.attempts[id].tries;
+  $('progFill').style.width=(n/S.totalSoal*100)+'%';
+  $('stimBox').textContent=soal.stim; $('stimBox').style.fontStyle='italic';
+  $('qTxt').textContent=soal.q;
+  $('qHint').textContent=soal.type==='PGK'?' Pilihan Ganda Kompleks – pilih '+soal.na+' jawaban yang benar':soal.type==='PGK_LIT'?' PGK Literasi – baca pernyataan di atas, pilih pasangan yang BENAR':'▸ Pilihan Ganda – pilih 1 jawaban yang benar';
+  
+  if(soal.type === 'PGK_LIT'){
+  var litData = _renderPGKLit(soal);
+  $('stimBox').innerHTML = litData.stmtHtml; $('stimBox').style.fontStyle = 'normal';
+  var box=$('optsBox');box.innerHTML='';
+  soal._litCorrectKey = litData.correctKey;
+  litData.pairs.forEach(function(pair){
+    var optTxt = 'Pernyataan (' + pair[0] + ' dan ' + pair[1] + ') benar';
+    var lbl=document.createElement('label'); lbl.className='opt-lbl';
+    var inp=document.createElement('input'); inp.type='radio'; inp.name='qopt'; inp.dataset.txt=optTxt; inp.dataset.litPair=pair[0]+','+pair[1];
+    inp.addEventListener('change',function(){
+    box.querySelectorAll('.opt-lbl').forEach(function(l){l.classList.remove('selected');});
+    box.querySelectorAll('input:checked').forEach(function(c){c.parentElement.classList.add('selected');});
+    });
+    lbl.appendChild(inp); lbl.appendChild(document.createTextNode(' '+optTxt)); box.appendChild(lbl);
+  });
+  } else {
+  var mapped=soal.opts.map(function(txt){return{txt:txt};}); mapped=shuffle(mapped);
+  var box=$('optsBox');box.innerHTML='';
+  mapped.forEach(function(o){
+    var lbl=document.createElement('label'); lbl.className='opt-lbl';
+    var inp=document.createElement('input'); inp.type=soal.type==='PG'?'radio':'checkbox'; inp.name='qopt'; inp.dataset.txt=o.txt;
+    inp.addEventListener('change',function(){
+    box.querySelectorAll('.opt-lbl').forEach(function(l){l.classList.remove('selected');});
+    box.querySelectorAll('input:checked').forEach(function(c){c.parentElement.classList.add('selected');});
+    });
+    lbl.appendChild(inp); lbl.appendChild(document.createTextNode(' '+o.txt)); box.appendChild(lbl);
+  });
+  }
+  var btn=$('btnKirim');
+  if(S.idx===S.totalSoal-1){btn.textContent='Selesai & Kumpulkan';btn.className='btn btn-finish';} else{btn.textContent='Kirim Jawaban →';btn.className='btn btn-primary';}
+  saveState();
+}
+
+window.cekJawaban=function(){
+  var soal=SOAL[S.order[S.idx]]; var id=soal.id;
+  var checked=document.querySelectorAll('input[name="qopt"]:checked');
+  if(checked.length===0){toast('tWarn','Pilih minimal satu jawaban terlebih dahulu!');return;}
+  
+  var selectedTexts=[]; checked.forEach(function(c){ selectedTexts.push(c.dataset.txt); });
+  var ok;
+  if(soal.type === 'PGK_LIT'){
+  var selInp = document.querySelectorAll('input[name="qopt"]:checked'); ok = false;
+  if(selInp.length === 1){ var selectedPair = selInp[0].dataset.litPair; ok = (selectedPair === soal._litCorrectKey); }
+  } else {
+  var selectedEnc=selectedTexts.map(function(t){return _enc(t);});
+  ok=selectedEnc.length===soal._h.length && selectedEnc.every(function(e){return soal._h.indexOf(e)!==-1;});
+  }
+  
+  if(ok){
+  var p=poin(S.attempts[id].tries); S.attempts[id].poin=p; toast('tOk',' Benar! +'+p+' poin',1500);
+  setTimeout(function(){ if(S.idx<S.totalSoal-1){S.idx++;loadSoal();} else{openConfirm();} },800);
+  } else {
+  toast('tWarn', ' Jawaban belum tepat, coba lagi dalam 10 detik...');
+  var btn = document.getElementById('btnKirim'); btn.disabled = true; btn.style.opacity = "0.6";
+  var sisaWaktu = 10; btn.textContent = "Tunggu (" + sisaWaktu + "s)";
+  var hitungMundur = setInterval(function(){
+    sisaWaktu--;
+    if(sisaWaktu > 0) { btn.textContent = "Tunggu (" + sisaWaktu + "s)"; } else {
+    clearInterval(hitungMundur); btn.disabled = false; btn.style.opacity = "1";
+    if(S.idx === S.totalSoal - 1){ btn.textContent = "Selesai & Kumpulkan"; btn.className = 'btn btn-finish'; } else { btn.textContent = "Kirim Jawaban →"; btn.className = 'btn btn-primary'; }
+    loadSoal();
+    }
+  }, 1000);
+  }
+};
+
+var _confirmToken = null;
+function openConfirm(){ if(!S.active || S.idx !== S.totalSoal - 1) return; _confirmToken = _sha256(Date.now() + _SESSION_ID).substring(0,12); $('confirmOverlay').classList.add('show'); }
+function closeConfirm(){ _confirmToken = null; $('confirmOverlay').classList.remove('show'); }
+function finishConfirmed(){ if(!_confirmToken) return; var t = _confirmToken; _confirmToken = null; $('confirmOverlay').classList.remove('show'); finishQuiz(false); }
+
+try{
+  Object.defineProperty(window,'openConfirm', {value:openConfirm, writable:false, configurable:false});
+  Object.defineProperty(window,'closeConfirm', {value:closeConfirm, writable:false, configurable:false});
+  Object.defineProperty(window,'finishConfirmed',{value:finishConfirmed,writable:false, configurable:false});
+}catch(e){ window.openConfirm=openConfirm; window.closeConfirm=closeConfirm; window.finishConfirmed=finishConfirmed; }
+
+window._openWA = function(el){
+  var url = el.dataset.waurl || el.href; if(!url || url === '#' || url === window.location.href) return false;
+  var isFile = window.location.protocol === 'file:';
+  if(isFile){ window.location.href = url; } else { var w = window.open(url, '_blank', 'noopener'); if(!w){ window.location.href = url; } }
+  return false;
+};
+
+// ========================================================
+// SUBMISSION & HASIL
+// ========================================================
+var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwVzNQnGe4HTN7fy31sMrbclePnVCszRBBZzluB2o6RvbdPKpmaqVgCBF-HZZkC3a8Q/exec';
+function kirimKeSheets(payload){
+  var el = document.getElementById('sheetsStatus'); if(!el) return;
+  if(!APPS_SCRIPT_URL || APPS_SCRIPT_URL.indexOf('GANTI') === 0){ el.className = 'failed'; el.innerHTML = ' Server belum dikonfigurasi. Gunakan tombol WA di bawah.'; return; }
+  el.className = 'sending'; el.innerHTML = '<div class="sheets-spinner"></div><span>Mengirim data ke server guru…</span>';
+  var encoded = 'data=' + encodeURIComponent(JSON.stringify(payload));
+  if(typeof fetch !== 'undefined'){
+  fetch(APPS_SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: encoded })
+  .then(function(){ el.className = 'success'; el.innerHTML = ' Data berhasil terkirim ke server guru!'; })
+  .catch(function(){ el.className = 'failed'; el.innerHTML = ' Gagal kirim otomatis. Gunakan tombol WA di bawah sebagai cadangan.'; });
+  } else {
+  var cbName = 'cb_' + Date.now();
+  window[cbName] = function(res){ el.className = (res && res.status === 'ok') ? 'success' : 'failed'; el.innerHTML = (res && res.status === 'ok') ? ' Data berhasil terkirim ke server guru!' : ' Gagal kirim otomatis. Gunakan tombol WA di bawah sebagai cadangan.'; delete window[cbName]; };
+  var s = document.createElement('script'); s.src = APPS_SCRIPT_URL + '?callback=' + cbName + '&data=' + encodeURIComponent(JSON.stringify(payload));
+  s.onerror = function(){ el.className = 'failed'; el.innerHTML = ' Gagal kirim otomatis. Gunakan tombol WA di bawah sebagai cadangan.'; delete window[cbName]; };
+  setTimeout(function(){ if(window[cbName]){ el.className = 'failed'; el.innerHTML = ' Timeout. Gunakan tombol WA di bawah sebagai cadangan.'; delete window[cbName]; } }, 10000);
+  document.head.appendChild(s);
+  }
+}
+
+function finishQuiz(timeout){
+  clearInterval(S.timerIv); S.active=false; _stopHeartbeat(); _stopNoiseMonitor(); _lockDevice(); clearState();
+  var finishMs=Date.now(); var elapsed=Math.floor((finishMs-S.startMs)/1000); var em=Math.floor(elapsed/60),es=elapsed%60;
+  var durStr=(em>0?em+' mnt ':'')+es+' dtk'+(timeout?' (waktu habis)':'');
+  var selesaiStr=new Date(finishMs).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  $('rNama').textContent=S.student.nama; $('rKelas').textContent=S.student.kelas; $('rTgl').textContent=S.student.tgl; $('rSelesai').textContent=selesaiStr; $('rDurasi').textContent=durStr;
+  
+  var total=0; var tb=$('resTbody');tb.innerHTML='';
+  var ids=Object.keys(S.attempts).map(Number).sort(function(a,b){return a-b;});
+  ids.forEach(function(id){
+  var a=S.attempts[id]; total+=a.poin; var tr=document.createElement('tr');
+  tr.innerHTML='<td>'+id+'</td><td>'+(SOAL[id-1].type==='PG'?'PG Biasa':SOAL[id-1].type==='PGK'?'PG Kompleks':'PGK Literasi')+'</td><td>'+a.tries+'x</td><td class="'+(a.poin>=4?'pt-hi':'pt-lo')+'">+'+a.poin+'</td>';
+  tb.appendChild(tr);
+  });
+  
+  var maxPoin = (S.totalSoal || CFG_JUMLAH_SOAL) * 5;
+  var nilaiAkhir = Math.round((total / maxPoin) * 100);
+  $('rSkor').textContent=nilaiAkhir;
+  
+  var pv=S.punish||0; var pvEl=$('rPelanggaran');
+  pvEl.textContent=pv===0?'Tidak ada ':pv+' kali '; pvEl.style.color=pv===0?'var(--ok)':'var(--err)'; pvEl.style.fontWeight='700';
+  
+  $('pgQuiz').classList.remove('on'); $('pgResult').classList.add('on');
+  if(timeout)toast('tErr','Waktu habis! Ujian dikumpulkan otomatis.',4000);
+  
+  var _VERIFY_SECRET = 'SMABIO11_GERAKOTAK_VERIFY_2025';
+  var verifyStr = S.student.nama + '|' + S.student.kelas + '|' + nilaiAkhir + '|' + pv + '|' + _VERIFY_SECRET;
+  var kodeVerif = _sha256(verifyStr).substring(0, 16).toUpperCase();
+  var kodeIntWA = 'S' + nilaiAkhir + 'P' + pv + '-' + kodeVerif;
+  $('rKodeIntegritas').textContent = kodeIntWA;
+  
+  kirimKeSheets({
+  nama : S.student.nama, kelas : S.student.kelas, tanggal : S.student.tgl, selesai : selesaiStr, durasi : durStr,
+  skor : nilaiAkhir, pelanggaran : pv, kode : kodeIntWA, mapel : 'Biologi Kelas 11 – Sistem Gerak Manusia'
+  });
+  
+  var waMsg =
+  ' *HASIL UJIAN BIOLOGI – SISTEM GERAK MANUSIA*\n' +
+  '━━━━━━━━━━━━━━━━━━━━\n' +
+  ' *Nama* : ' + S.student.nama + '\n' +
+  ' *Kelas* : ' + S.student.kelas + '\n' +
+  ' *Tanggal* : ' + S.student.tgl + '\n' +
+  ' *Selesai* : ' + selesaiStr + '\n' +
+  ' *Durasi* : ' + durStr + '\n' +
+  '━━━━━━━━━━━━━━━━━━━━\n' +
+  ' *Skor Total : ' + nilaiAkhir + ' / 100*\n' +
+  ' *Pelanggaran: ' + (pv === 0 ? 'Tidak ada ' : pv + ' kali') + '*\n' +
+  '━━━━━━━━━━━━━━━━━━━━\n' +
+  '* Kode Verifikasi*:\n`' + kodeIntWA + '`\n' +
+  '_(Kode Verifikasi — guru wajib verifikasi kode ini)_\n' +
+  '━━━━━━━━━━━━━━━━━━━━\n' +
+  '_Dikirim otomatis dari aplikasi ujian._';
+  
+  var waUrl = 'https://wa.me/6281348354836?text=' + encodeURIComponent(waMsg);
+  var btnWA = document.getElementById('btnWA'); if(btnWA) btnWA.dataset.waurl = waUrl;
+  
+  var qrData = ['NAMA:'+S.student.nama, 'KELAS:'+S.student.kelas, 'TGL:'+S.student.tgl, 'SELESAI:'+selesaiStr, 'DURASI:'+durStr, 'SKOR:'+nilaiAkhir, 'LANGGAR:'+pv, 'KI:'+kodeIntWA].join('|');
+  var qrEl = document.getElementById('qrCanvas'); qrEl.innerHTML = '';
+  new QRCode(qrEl, { text: qrData, width: 210, height: 210, correctLevel: QRCode.CorrectLevel.M });
+}
+</script>
+</body>
+</html>
