@@ -1,0 +1,1791 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Ulangan Biologi - Sistem Gerak Manusia | Kelas 11</title>
+<style>
+/* ========== RESET & VARIABEL ========== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+:root {
+    --primary: #1d4ed8;
+    --primary-dark: #1e40af;
+    --primary-light: #dbeafe;
+    --success: #059669;
+    --danger: #dc2626;
+    --warning: #d97706;
+    --bg: #f0f4f8;
+    --card: #ffffff;
+    --text: #1e293b;
+    --muted: #64748b;
+    --border: #e2e8f0;
+    --shadow: 0 2px 16px rgba(0,0,0,0.10);
+}
+
+html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    position: fixed;
+    width: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+body {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 12px;
+}
+
+body.landscape-warning::before {
+    content: "⚠ MOHON PUTAR KE MODE PORTRAIT ⚠";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: var(--danger);
+    color: white;
+    text-align: center;
+    padding: 12px;
+    font-weight: bold;
+    z-index: 99999;
+}
+
+.wrap {
+    width: 100%;
+    max-width: 640px;
+}
+
+/* ========== PAGE ========== */
+.page {
+    display: none;
+    animation: fadeIn .3s ease;
+}
+
+.page.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
+}
+
+/* ========== CARD ========== */
+.card {
+    background: var(--card);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    padding: 20px;
+    margin-bottom: 14px;
+}
+
+/* ========== LOGIN ========== */
+.login-head {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.login-head .badge {
+    display: inline-block;
+    background: var(--primary-light);
+    color: var(--primary);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    padding: 4px 10px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.login-head h1 {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--primary-dark);
+    line-height: 1.3;
+}
+
+.login-head p {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 4px;
+}
+
+/* ========== FORM ========== */
+.field {
+    margin-bottom: 16px;
+}
+
+.field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+}
+
+.field input, .field select {
+    width: 100%;
+    padding: 13px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 9px;
+    font-size: 16px;
+    color: var(--text);
+    background: #fff;
+    outline: none;
+    transition: border .25s;
+}
+
+.field input:focus, .field select:focus {
+    border-color: var(--primary);
+}
+
+.pwd-wrap {
+    position: relative;
+}
+
+.pwd-wrap input {
+    padding-right: 46px;
+}
+
+.pwd-eye {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--muted);
+    padding: 4px;
+    font-size: 18px;
+}
+
+/* ========== BUTTON ========== */
+.btn {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity .15s, transform .1s;
+    touch-action: manipulation;
+}
+
+.btn:active { transform: scale(.98); }
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-finish { background: var(--success); color: #fff; }
+
+/* ========== PROGRESS & TIMER ========== */
+.prog-wrap {
+    margin-bottom: 18px;
+}
+
+.prog-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.prog-bar {
+    height: 7px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+}
+
+.prog-fill {
+    height: 100%;
+    background: var(--primary);
+    border-radius: 99px;
+    transition: width .4s ease;
+}
+
+#timerWrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+#timerWrap.warn { color: var(--warning); }
+#timerWrap.danger { color: var(--danger); animation: pulse 1s infinite; }
+
+@keyframes pulse { to { opacity: .5; } }
+
+/* ========== QUIZ HEADER ========== */
+.quiz-hd {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 14px;
+    border-bottom: 1.5px solid var(--border);
+    margin-bottom: 18px;
+}
+
+.soal-tag {
+    font-weight: 800;
+    font-size: 15px;
+    color: var(--primary);
+}
+
+.try-badge {
+    font-size: 12px;
+    color: var(--muted);
+    background: var(--bg);
+    padding: 3px 10px;
+    border-radius: 20px;
+}
+
+/* ========== PERNYATAAN ========== */
+.stmts-box {
+    margin-bottom: 18px;
+}
+
+.stmt-item {
+    display: flex;
+    gap: 10px;
+    padding: 9px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 9px;
+    margin-bottom: 6px;
+    font-size: 13.5px;
+    line-height: 1.6;
+    background: #fff;
+}
+
+.stmt-num {
+    font-weight: 800;
+    color: var(--primary-dark);
+    min-width: 20px;
+}
+
+/* ========== STIMULUS ========== */
+.stim-wrapper {
+    margin-bottom: 18px;
+}
+
+.stim-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--primary-dark);
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    margin-bottom: 6px;
+}
+
+.stim {
+    background: var(--primary-light);
+    border-left: 4px solid var(--primary);
+    border-radius: 0 8px 8px 0;
+    padding: 13px 15px;
+    font-size: 13.5px;
+    line-height: 1.8;
+    color: #1e3a5f;
+}
+
+/* ========== PERTANYAAN ========== */
+.q-txt {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.5;
+    margin-bottom: 6px;
+}
+
+.q-hint {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 18px;
+    font-style: italic;
+}
+
+/* ========== OPSI JAWABAN ========== */
+.opts {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 22px;
+}
+
+.opt-lbl {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 13px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all .15s;
+    font-size: 14.5px;
+    touch-action: manipulation;
+}
+
+.opt-lbl:active { background: #f8faff; }
+.opt-lbl input { margin-top: 2px; width: 17px; height: 17px; accent-color: var(--primary); cursor: pointer; }
+.opt-lbl.selected { border-color: var(--primary); background: var(--primary-light); }
+
+/* ========== HASIL ========== */
+.score-banner {
+    text-align: center;
+    padding: 20px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    border-radius: 12px;
+    color: #fff;
+    margin-bottom: 20px;
+}
+
+.score-banner .label {
+    font-size: 12px;
+    opacity: .8;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.score-banner .val {
+    font-size: 44px;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.info-box {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    font-size: 13.5px;
+    line-height: 1.9;
+    margin-bottom: 18px;
+}
+
+.info-box strong { color: var(--primary); }
+
+.res-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.res-table th, .res-table td {
+    border: 1px solid var(--border);
+    padding: 9px 10px;
+    text-align: left;
+}
+
+.res-table th {
+    background: var(--primary-light);
+    font-weight: 700;
+    color: var(--primary-dark);
+}
+
+.pt-hi { font-weight: 700; color: var(--success); }
+.pt-lo { font-weight: 700; color: var(--muted); }
+
+/* ========== QR & WA ========== */
+.qr-section {
+    text-align: center;
+    margin: 18px 0 10px;
+}
+
+#qrCanvas {
+    display: inline-block;
+    padding: 10px;
+    background: #fff;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+}
+
+.qr-note {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 8px;
+    font-style: italic;
+}
+
+.btn-wa {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    background: #25D366;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    text-decoration: none;
+    margin-top: 4px;
+}
+
+.btn-wa:active { transform: scale(.98); }
+
+/* ========== TOAST ========== */
+.toast-wrap {
+    position: fixed;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    pointer-events: none;
+    width: 90%;
+    max-width: 420px;
+}
+
+.toast {
+    padding: 13px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,.18);
+    animation: slideDown .3s ease;
+    display: none;
+}
+
+.toast.show { display: block; }
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-12px); }
+    to { opacity: 1; transform: none; }
+}
+
+.t-err { background: var(--danger); color: #fff; }
+.t-warn { background: #fff; border: 2px solid var(--warning); color: var(--warning); }
+.t-ok { background: var(--success); color: #fff; }
+
+/* ========== OVERLAY ========== */
+#violOverlay, #confirmOverlay, #loginConfirmOverlay, #deviceLockOverlay, #wkvOverlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+    align-items: center;
+    justify-content: center;
+}
+
+#violOverlay.show, #confirmOverlay.show, #loginConfirmOverlay.show, #deviceLockOverlay.show, #wkvOverlay.show {
+    display: flex;
+}
+
+#violOverlay {
+    background: rgba(220,38,38,.97);
+    flex-direction: column;
+    text-align: center;
+    padding: 30px;
+    color: #fff;
+}
+
+#violOverlay .count { font-size: 48px; font-weight: 900; margin: 10px 0; }
+
+.confirm-box, .lc-box {
+    background: #fff;
+    border-radius: 14px;
+    padding: 24px;
+    max-width: 340px;
+    width: 100%;
+    text-align: center;
+}
+
+.confirm-box h3, .lc-box h3 {
+    font-size: 17px;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+.confirm-btns, .lc-btns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.btn-outline, .btn-lc-batal {
+    background: #fff;
+    color: var(--primary);
+    border: 1.5px solid var(--primary);
+    border-radius: 9px;
+    padding: 11px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.btn-yes, .btn-lc-mulai {
+    background: var(--success);
+    color: #fff;
+    border: none;
+    border-radius: 9px;
+    padding: 11px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+#deviceLockOverlay {
+    background: var(--danger);
+    flex-direction: column;
+    text-align: center;
+    padding: 30px;
+    color: #fff;
+}
+
+#deviceLockOverlay .reset-form {
+    background: rgba(255,255,255,.15);
+    border-radius: 12px;
+    padding: 18px;
+    width: 100%;
+    max-width: 320px;
+    margin-top: 10px;
+}
+
+#deviceLockOverlay .reset-form input {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    text-align: center;
+}
+
+#deviceLockOverlay .reset-form button {
+    margin-top: 10px;
+    width: 100%;
+    padding: 12px;
+    background: #fff;
+    color: var(--danger);
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+#wkvOverlay {
+    background: rgba(10,20,50,.97);
+}
+
+.wkv-box {
+    background: #fff;
+    border-radius: 20px;
+    padding: 26px 20px;
+    max-width: 340px;
+    width: 100%;
+    text-align: center;
+}
+
+.wkv-step {
+    background: #f1f5f9;
+    border-radius: 10px;
+    padding: 11px 14px;
+    margin-bottom: 14px;
+    text-align: left;
+}
+
+.wkv-step p {
+    font-size: 12.5px;
+    color: #475569;
+    line-height: 1.75;
+}
+
+/* ========== SHEETS STATUS ========== */
+#sheetsStatus {
+    border-radius: 10px;
+    padding: 13px 16px;
+    font-size: 13.5px;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 14px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    line-height: 1.5;
+}
+#sheetsStatus.sending { background: #eff6ff; color: var(--primary); border: 1.5px solid #bfdbfe; display: flex; }
+#sheetsStatus.success { background: #ecfdf5; color: var(--success); border: 1.5px solid #6ee7b7; display: flex; }
+#sheetsStatus.failed { background: #fef2f2; color: var(--danger); border: 1.5px solid #fca5a5; display: flex; }
+.sheets-spinner { width: 16px; height: 16px; border: 2.5px solid currentColor; border-top-color: transparent; border-radius: 50%; animation: spin .7s linear infinite; flex-shrink: 0; }
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+
+<div class="wrap">
+    <!-- HALAMAN LOGIN -->
+    <div id="pgLogin" class="page active">
+        <div class="card">
+            <div class="login-head">
+                <div class="badge">SMA – Kelas 11</div>
+                <h1>Ulangan Sumatif Biologi<br>Sistem Gerak Manusia</h1>
+                <p>Pilih kelas dan nama Anda, lalu masukkan kode akses.</p>
+            </div>
+            <div class="field">
+                <label>Kelas</label>
+                <select id="inKelas" onchange="updateNamaDropdown()">
+                    <option value="">— Pilih Kelas Dulu —</option>
+                    <option value="11MIPA1">11 MIPA 1</option>
+                    <option value="11MIPA2">11 MIPA 2</option>
+                    <option value="11IPS">11 IPS</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Nama Lengkap</label>
+                <select id="inNama">
+                    <option value="">— Pilih Kelas Terlebih Dahulu —</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Kode Akses Ujian</label>
+                <div class="pwd-wrap">
+                    <input type="password" id="inKode" placeholder="Masukkan kode dari Guru…" autocomplete="off">
+                    <button class="pwd-eye" type="button" onclick="togglePwd()">👁</button>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="mulaiUjian()">Mulai Ujian →</button>
+        </div>
+    </div>
+
+    <!-- HALAMAN KUIS -->
+    <div id="pgQuiz" class="page">
+        <div class="card">
+            <div class="prog-wrap">
+                <div class="prog-label">
+                    <span id="dispSoal">Soal 1 / 20</span>
+                    <div id="timerWrap">
+                        <span>⏱</span>
+                        <span id="dispTimer">90:00</span>
+                    </div>
+                </div>
+                <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+            </div>
+            <div class="quiz-hd">
+                <span class="soal-tag" id="dispQTag">Soal 1</span>
+                <span class="try-badge" id="dispTry">Percobaan ke-1</span>
+            </div>
+            <!-- PERNYATAAN - ditampilkan pertama -->
+            <div class="stmts-box" id="stmtsBox"></div>
+            <!-- STIMULUS - ditampilkan kedua -->
+            <div class="stim-wrapper">
+                <div class="stim-label">📖 Bacaan</div>
+                <div class="stim" id="stimBox"></div>
+            </div>
+            <!-- PERTANYAAN -->
+            <div class="q-txt" id="qTxt"></div>
+            <div class="q-hint" id="qHint"></div>
+            <!-- OPSI JAWABAN -->
+            <div class="opts" id="optsBox"></div>
+            <button class="btn btn-primary" id="btnKirim" onclick="cekJawaban()">Kirim Jawaban →</button>
+        </div>
+    </div>
+
+    <!-- HALAMAN HASIL -->
+    <div id="pgResult" class="page">
+        <div class="card">
+            <div class="score-banner">
+                <div class="label">Nilai Akhir Ujian</div>
+                <div class="val" id="rSkor">0</div>
+                <div class="sub">dari 100</div>
+            </div>
+            <div class="info-box">
+                <strong>Nama :</strong> <span id="rNama"></span><br>
+                <strong>Kelas :</strong> <span id="rKelas"></span><br>
+                <strong>Tanggal :</strong> <span id="rTgl"></span><br>
+                <strong>Selesai :</strong> <span id="rSelesai"></span><br>
+                <strong>Durasi :</strong> <span id="rDurasi"></span><br>
+                <strong>Pelanggaran:</strong> <span id="rPelanggaran"></span><br>
+                <strong>Kode Integritas:</strong> <span id="rKodeIntegritas" style="font-family:monospace;font-size:12px;"></span>
+            </div>
+            <div class="qr-section">
+                <div class="qr-title">📲 Scan QR → Guru</div>
+                <div id="qrCanvas"></div>
+                <p class="qr-note">QR berisi: nama, kelas, nilai akhir, kode integritas, dan durasi.</p>
+            </div>
+            <div id="sheetsStatus"></div>
+            <table class="res-table">
+                <thead><tr><th>No.</th><th>Tipe</th><th>Percobaan</th><th>Poin</th></tr></thead>
+                <tbody id="resTbody"></tbody>
+            </table>
+            <div class="wa-wrap">
+                <a id="btnWA" class="btn-wa" href="#" onclick="return openWA(this)" target="_blank">
+                    📱 Kirim Hasil ke WhatsApp Guru
+                </a>
+                <p class="qr-note" style="margin-top:12px;text-align:center">Screenshot halaman ini untuk arsip.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-wrap">
+    <div class="toast t-err" id="tErr"></div>
+    <div class="toast t-warn" id="tWarn"></div>
+    <div class="toast t-ok" id="tOk"></div>
+</div>
+
+<!-- OVERLAY PELANGGARAN -->
+<div id="violOverlay">
+    <h2 id="violTitle">⚠ PELANGGARAN TERDETEKSI</h2>
+    <p id="violMsg">Berpindah tab, membuka aplikasi lain,<br>atau mencoba menggunakan alat bantu.</p>
+    <div class="count" id="violCount">0</div>
+    <div class="sub" id="violSub">pelanggaran ke-</div>
+    <p id="violFooter" style="margin-top:14px;font-size:13px">Menutup notifikasi ini dalam 4 detik...</p>
+</div>
+
+<!-- OVERLAY KONFIRMASI SELESAI -->
+<div id="confirmOverlay">
+    <div class="confirm-box">
+        <h3>Selesaikan Ujian?</h3>
+        <p>Anda telah menjawab semua soal.<br>Nilai tidak dapat diubah setelah ini.</p>
+        <div class="confirm-btns">
+            <button class="btn-outline" onclick="closeConfirm()">Periksa Lagi</button>
+            <button class="btn-yes" onclick="finishConfirmed()">Ya, Kumpulkan</button>
+        </div>
+    </div>
+</div>
+
+<!-- OVERLAY KONFIRMASI LOGIN -->
+<div id="loginConfirmOverlay">
+    <div class="lc-box">
+        <h3>✅ Konfirmasi Data Anda</h3>
+        <div class="info-box" style="margin-bottom:14px">
+            <strong>Nama :</strong> <span id="lcNama"></span><br>
+            <strong>Kelas :</strong> <span id="lcKelas"></span>
+        </div>
+        <p class="qr-note" style="margin-bottom:16px">Pastikan nama dan kelas sudah benar.<br>Data tidak dapat diubah setelah ujian dimulai.</p>
+        <div class="lc-btns">
+            <button class="btn-lc-batal" onclick="batalLoginConfirm()">← Koreksi</button>
+            <button class="btn-lc-mulai" onclick="konfirmasiMulai()">Benar, Mulai →</button>
+        </div>
+    </div>
+</div>
+
+<!-- OVERLAY DEVICE LOCK -->
+<div id="deviceLockOverlay">
+    <h2>🔒 PERANGKAT TERKUNCI</h2>
+    <p>Perangkat ini telah terkunci karena ujian sudah dikumpulkan.<br>Hubungi Guru untuk membuka kunci.</p>
+    <div class="reset-form">
+        <label>Kode Reset Guru</label>
+        <input type="password" id="resetInput" placeholder="Masukkan kode reset…" autocomplete="off">
+        <button onclick="cobaReset()">Buka Kunci</button>
+    </div>
+</div>
+
+<!-- OVERLAY WEBVIEW DETECTION -->
+<div id="wkvOverlay">
+    <div class="wkv-box">
+        <div class="wkv-step">
+            <p><strong>⚠ Ujian tidak bisa dijalankan di WhatsApp/Instagram!</strong><br>Tap ikon <strong>⋮</strong> atau <strong>↗</strong> → pilih <strong>"Buka di Chrome/Safari"</strong></p>
+        </div>
+        <div class="wkv-step">
+            <p><strong>Atau copy link ini dan buka di browser:</strong><br><span id="wkvUrlDisplay" style="font-size:11px;word-break:break-all"></span></p>
+        </div>
+        <button class="btn-primary" onclick="document.getElementById('wkvOverlay').classList.remove('show')" style="margin-top:10px">Saya sudah pindah ke browser</button>
+    </div>
+</div>
+
+<script>
+// ============================================================
+// PROTEKSI LENGKAP Versi B + BLOKIR DEVTOOLS TOTAL
+// Soal Versi A (model pernyataan + stimulus)
+// Sistem 3 peringatan sebelum reset
+// Google Sheets dengan CORS proper
+// ============================================================
+
+// ==================== BLOKIR TOTAL DEVTOOLS (PERTAMA, SEBELUM APAPUN) ====================
+(function blockDevTools() {
+    // 1. Blokir tombol keyboard
+    document.addEventListener('keydown', function(e) {
+        // F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C, Ctrl+U, Ctrl+S, Ctrl+P
+        if (e.key === 'F12' ||
+            (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) ||
+            (e.ctrlKey && (e.key === 'u' || e.key === 'U' || e.key === 's' || e.key === 'S' || e.key === 'p' || e.key === 'P'))) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        }
+    });
+    
+    // 2. Blokir klik kanan
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        return false;
+    });
+    
+    // 3. Override console
+    if (window.console) {
+        var noop = function(){};
+        console.log = noop;
+        console.info = noop;
+        console.warn = noop;
+        console.error = noop;
+        console.debug = noop;
+        console.table = noop;
+        console.trace = noop;
+        console.dir = noop;
+    }
+    
+    // 4. Deteksi DevTools via debugger (interval hemat baterai, bukan rAF)
+    setInterval(function() {
+        var t0 = performance.now();
+        (function(){})['constructor']('debugger')();
+        var diff = performance.now() - t0;
+        if (diff > 80 && window.S && window.S.active) {
+            if (window.triggerPunish) window.triggerPunish();
+        }
+    }, 3000);
+    
+    // 5. Blokir file protocol
+    if (window.location.protocol === 'file:') {
+        document.body.innerHTML = '<div style="background:#dc2626;color:white;display:flex;align-items:center;justify-content:center;height:100vh;text-align:center;padding:20px;"><div><h2>⛔ AKSES DITOLAK</h2><p>Ujian tidak bisa dijalankan dari file lokal.<br>Harap buka melalui server HTTP/HTTPS.</p></div></div>';
+        throw new Error('File protocol not allowed');
+    }
+})();
+
+// ==================== SHA-256 ====================
+function sha256(str) {
+    function rightRotate(value, amount) {
+        return (value >>> amount) | (value << (32 - amount));
+    }
+    var mathPow = Math.pow;
+    var maxWord = mathPow(2, 32);
+    var lengthProperty = 'length';
+    var i, j;
+    var result = '';
+    var words = [];
+    var asciiBitLength = str[lengthProperty] * 8;
+    var hash = [];
+    var k = [];
+    var primeCounter = 0;
+    var isComposite = {};
+    for (var candidate = 2; primeCounter < 64; candidate++) {
+        if (!isComposite[candidate]) {
+            for (var i2 = candidate * candidate; i2 < 512; i2 += candidate) {
+                isComposite[i2] = true;
+            }
+            if (primeCounter < 8) {
+                hash[primeCounter] = (mathPow(candidate, 0.5) * maxWord) | 0;
+            }
+            k[primeCounter] = (mathPow(candidate, 1 / 3) * maxWord) | 0;
+            primeCounter++;
+        }
+    }
+    str += '\x80';
+    while (str[lengthProperty] % 64 - 56) { str += '\x00'; }
+    for (i = 0; i < str[lengthProperty]; i++) {
+        j = str.charCodeAt(i);
+        if (j >> 8) return '';
+        words[i >> 2] |= j << ((3 - i % 4) * 8);
+    }
+    words[words[lengthProperty]] = ((asciiBitLength / maxWord) | 0);
+    words[words[lengthProperty]] = asciiBitLength;
+    for (j = 0; j < words[lengthProperty];) {
+        var w = words.slice(j, j += 16);
+        var oldHash = hash.slice(0);
+        var a = hash[0], b = hash[1], c = hash[2], d = hash[3];
+        var e = hash[4], f = hash[5], g = hash[6], h = hash[7];
+        for (i = 0; i < 64; i++) {
+            var wTemp = w[i];
+            if (i < 16) {
+                w[i] = wTemp;
+            } else {
+                var n = w[i - 15];
+                var m = w[i - 2];
+                w[i] = ((n >>> 7 | n << 25) ^ (n >>> 18 | n << 14) ^ (n >>> 3)) + w[i - 7] + ((m >>> 17 | m << 15) ^ (m >>> 19 | m << 13) ^ (m >>> 10)) + w[i - 16];
+            }
+            var s1 = ((e >>> 6 | e << 26) ^ (e >>> 11 | e << 21) ^ (e >>> 25 | e << 7));
+            var ch = (e & f) ^ (~e & g);
+            var temp1 = h + s1 + ch + k[i] + (w[i] | 0);
+            var s0 = ((a >>> 2 | a << 30) ^ (a >>> 13 | a << 19) ^ (a >>> 22 | a << 10));
+            var maj = (a & b) ^ (a & c) ^ (b & c);
+            var temp2 = s0 + maj;
+            h = g; g = f; f = e; e = (d + temp1) | 0; d = c; c = b; b = a; a = (temp1 + temp2) | 0;
+        }
+        hash[0] = (hash[0] + a) | 0;
+        hash[1] = (hash[1] + b) | 0;
+        hash[2] = (hash[2] + c) | 0;
+        hash[3] = (hash[3] + d) | 0;
+        hash[4] = (hash[4] + e) | 0;
+        hash[5] = (hash[5] + f) | 0;
+        hash[6] = (hash[6] + g) | 0;
+        hash[7] = (hash[7] + h) | 0;
+    }
+    for (i = 0; i < hash[lengthProperty]; i++) {
+        for (j = 3; j + 1; j--) {
+            var byte = (hash[i] >> (j * 8)) & 255;
+            result += (byte < 16 ? '0' : '') + byte.toString(16);
+        }
+    }
+    return result;
+}
+
+// ==================== KONFIGURASI ====================
+var CFG_DURASI_MENIT = 90;
+var CFG_JUMLAH_SOAL = 20;
+var CFG_RESET_PWD = 'RESET2026';
+var CFG_LOCK_KEY = 'ujian_bio11_lock';
+var CFG_SESSION_KEY = 'ujian_bio11_session';
+var CFG_ACAK_SOAL = true;
+
+var CFG_PASS_MAP = {
+    "11MIPA1": "MIPA1BIO11",
+    "11MIPA2": "MIPA2BIO11",
+    "11IPS": "IPSBIO11"
+};
+
+var CFG_NAMA_SISWA = {
+    "11MIPA1": [
+        "Adam Putra Firmansyah","Adinda Rizky Amalia","Ahmad Fauzi Ramadhan","Aini Nurul Hidayah",
+        "Alif Rahmat Saputra","Amelia Putri Santoso","Andi Kurniawan","Anisa Fitri Rahayu",
+        "Arya Dimas Pratama","Ayunda Maharani","Bagas Tri Atmojo","Citra Dewi Permata"
+    ],
+    "11MIPA2": [
+        "Agus Hermawan","Aisha Fatimah","Aldi Prayoga","Alfina Nurhaliza",
+        "Andhika Prasetya","Anggi Febriani","Annisa Ramadhanti","Arga Wicaksono",
+        "Bella Safira","Bima Sakti Pratama","Cindy Permata Sari","Dani Setiawan"
+    ],
+    "11IPS": [
+        "Aditya Nugraha","Agatha Felicia","Ahmad Zikri","Alda Putri",
+        "Andrian Kusuma","Anggita Rahayu","Ardian Saputra","Asri Wulandari",
+        "Bayu Pramudya","Bella Marissa","Clara Anastasia","Daffa Rizqullah"
+    ]
+};
+
+// ==================== BANK SOAL (Versi A) ====================
+var BANK_SOAL = [
+    {id:1,stim:"Tulang manusia bukan sekadar rangka yang kaku. Ia merupakan jaringan hidup yang terus mengalami pembaruan (remodeling). Proses ini melibatkan dua jenis sel utama: osteoblas yang bertugas membentuk matriks tulang baru, dan osteoklas yang merombak tulang lama. Keseimbangan keduanya menentukan kepadatan tulang. Apabila aktivitas osteoklas melebihi osteoblas—misalnya akibat penurunan estrogen pasca-menopause—massa tulang berkurang secara bertahap sehingga tulang menjadi keropos dan rentan patah. Kondisi ini dikenal sebagai osteoporosis.",stmts:["Osteoblas bertugas membentuk matriks tulang baru.","Osteoklas berfungsi membentuk sel darah merah di sumsum tulang.","Ketika aktivitas osteoklas melebihi osteoblas, massa tulang berkurang.","Osteoporosis tidak ada kaitannya dengan kadar hormon estrogen."],correct:[0,2],q:"Berdasarkan teks di atas, dua pernyataan yang BENAR adalah..."},
+    {id:2,stim:"Kontraksi otot rangka dikendalikan oleh mekanisme sliding filament. Ketika saraf motorik memicu pelepasan ion kalsium (Ca²⁺) dari retikulum sarkoplasma, ion tersebut berikatan dengan troponin pada filamen tipis (aktin). Ikatan ini menggeser tropomiosin sehingga tempat aktif aktin terbuka dan kepala miosin dapat menempel membentuk jembatan silang.",stmts:["Ion kalsium berperan memicu terbukanya tempat aktif aktin.","Miosin adalah protein penyusun filamen tipis yang menarik aktin.","Saat relaksasi, tropomiosin kembali menutupi tempat aktif aktin.","Tanpa stimulasi saraf, sarkomer tetap memendek secara spontan."],correct:[0,2],q:"Berdasarkan teks di atas, dua pernyataan yang BENAR adalah..."},
+    {id:3,stim:"Tulang belakang manusia memiliki empat kelengkungan alami: lordosis serviks (leher), kifosis torakal (dada), lordosis lumbar (pinggang), dan kifosis sakral (panggul). Kelengkungan ini berfungsi sebagai peredam kejutan dan menjaga keseimbangan tubuh saat berdiri tegak. Skoliosis adalah deviasi lateral tulang belakang berbentuk S atau C yang paling sering ditemukan pada remaja putri.",stmts:["Tulang belakang normal memiliki empat kelengkungan alami yang berfungsi sebagai peredam kejutan.","Skoliosis adalah kelengkungan tulang belakang ke arah depan yang menyebabkan postur bungkuk.","Lordosis berlebihan menyebabkan perut dan panggul tampak menonjol ke depan.","Kelengkungan tulang belakang yang normal justru membahayakan keseimbangan tubuh."],correct:[0,2],q:"Berdasarkan teks di atas, dua pernyataan yang BENAR adalah..."},
+    {id:4,stim:"Sendi diartrosis adalah persendian yang memungkinkan gerak bebas. Terdapat beberapa jenisnya berdasarkan arah gerak: sendi engsel (gerak satu arah, seperti lutut), sendi peluru (gerak ke segala arah, seperti bahu), sendi pelana (dua arah, seperti pangkal ibu jari), sendi putar (rotasi, seperti antara radius dan ulna), dan sendi geser (gerak bergeser, seperti antartulang karpal).",stmts:["Sendi peluru memungkinkan gerak ke segala arah dan terdapat pada persendian bahu.","Sendi engsel hanya memungkinkan gerak satu arah dan terdapat pada siku serta lutut.","Cairan sinovial berfungsi sebagai pelumas untuk mengurangi gesekan antartulang.","Sendi putar terdapat pada pangkal ibu jari dan memungkinkan gerak dua arah."],correct:[0,1,2],q:"Berdasarkan teks di atas, tiga pernyataan yang BENAR adalah..."},
+    {id:5,stim:"Saat seseorang berlari maraton, pasokan oksigen ke sel otot tidak mencukupi kebutuhan energi yang tinggi. Sel otot kemudian beralih ke jalur anaerobik yang menghasilkan ATP lebih cepat namun tidak efisien—setiap molekul glukosa hanya menghasilkan 2 ATP. Produk sampingan dari jalur anaerobik adalah asam laktat yang menyebabkan nyeri otot.",stmts:["Jalur anaerobik menghasilkan lebih banyak ATP per glukosa dibandingkan jalur aerobik.","Asam laktat adalah produk samping respirasi anaerobik yang menyebabkan nyeri otot.","Penumpukan asam laktat menurunkan pH intraseluler dan menghambat enzim kontraktil.","Setelah olahraga, asam laktat langsung dibuang melalui keringat tanpa daur ulang."],correct:[1,2],q:"Berdasarkan teks di atas, dua pernyataan yang BENAR adalah..."}
+];
+
+// Duplikat soal untuk mencapai 20 soal
+while (BANK_SOAL.length < 20) {
+    var copy = JSON.parse(JSON.stringify(BANK_SOAL[BANK_SOAL.length % 5]));
+    copy.id = BANK_SOAL.length + 1;
+    copy.stim = copy.stim + " (Variasi " + Math.floor(BANK_SOAL.length/5 + 1) + ")";
+    BANK_SOAL.push(copy);
+}
+
+// Hash untuk setiap jawaban benar (enkripsi)
+BANK_SOAL.forEach(function(s) {
+    s._correctHashes = s.correct.map(function(idx) { return sha256(s.stmts[idx]); });
+});
+
+// ==================== STORAGE dengan FALLBACK Private Mode ====================
+var _lsAvailable = (function() {
+    try { var t = '__ls_test__'; localStorage.setItem(t, '1'); localStorage.removeItem(t); return true; } 
+    catch(e) { return false; }
+})();
+
+var _memStore = {};
+var _store = {
+    getItem: function(k) {
+        if (_lsAvailable) return localStorage.getItem(k);
+        return _memStore[k] !== undefined ? _memStore[k] : null;
+    },
+    setItem: function(k, v) {
+        if (_lsAvailable) {
+            try { localStorage.setItem(k, v); } 
+            catch(e) { _lsAvailable = false; _memStore[k] = v; }
+        } else { _memStore[k] = v; }
+    },
+    removeItem: function(k) {
+        if (_lsAvailable) { try { localStorage.removeItem(k); } catch(e) {} }
+        delete _memStore[k];
+    }
+};
+
+if (!_lsAvailable) {
+    setTimeout(function() {
+        toast('tWarn', '⚠️ Mode Privat terdeteksi. Progress tidak tersimpan jika refresh.', 5000);
+    }, 1500);
+}
+
+// ==================== HMAC Signature untuk State ====================
+var _SK = sha256('SMABIO11_GERAK_' + CFG_DURASI_MENIT + '_INTEGRITY_2025');
+
+function _signState(obj) {
+    var canon = obj.startMs + '|' + obj.totalSecs + '|' + obj.idx + '|' + 
+                (obj.student ? obj.student.nama + obj.student.kelas : '') + '|' + 
+                JSON.stringify(obj.attempts) + '|' + obj.punish + '|' + (obj.punishWarning || 0);
+    return sha256(_SK + canon);
+}
+
+function _verifyState(obj) {
+    if (!obj.sig) return false;
+    return obj.sig === _signState(obj);
+}
+
+// ==================== STATE ====================
+var S = {
+    active: false,
+    idx: 0,
+    order: [],
+    attempts: {},
+    student: null,
+    timerIv: null,
+    secsLeft: 0,
+    punish: 0,
+    punishWarning: 0,
+    startMs: 0,
+    totalSoal: 0
+};
+
+function saveState() {
+    if (!S.active) return;
+    try {
+        var data = {
+            idx: S.idx,
+            order: S.order,
+            attempts: S.attempts,
+            student: S.student,
+            punish: S.punish,
+            punishWarning: S.punishWarning,
+            startMs: S.startMs,
+            totalSecs: CFG_DURASI_MENIT * 60,
+            totalSoal: S.totalSoal
+        };
+        data.sig = _signState(data);
+        _store.setItem(CFG_SESSION_KEY, JSON.stringify(data));
+    } catch(e) {}
+}
+
+function loadState() {
+    try {
+        var raw = _store.getItem(CFG_SESSION_KEY);
+        if (!raw) return false;
+        var d = JSON.parse(raw);
+        if (!d || !d.student) return false;
+        if (!_verifyState(d)) {
+            clearState();
+            setTimeout(function() { alert('Data ujian terdeteksi telah dimanipulasi.\nSesi dihapus. Hubungi Guru Anda.'); }, 300);
+            return false;
+        }
+        var elapsedSecs = Math.floor((Date.now() - d.startMs) / 1000);
+        var secsLeft = Math.max(0, d.totalSecs - elapsedSecs);
+        if (secsLeft <= 0 || elapsedSecs > d.totalSecs + 1800) {
+            clearState();
+            return false;
+        }
+        S.idx = d.idx;
+        S.order = d.order;
+        S.attempts = d.attempts;
+        S.student = d.student;
+        S.punish = d.punish;
+        S.punishWarning = d.punishWarning || 0;
+        S.startMs = d.startMs;
+        S.secsLeft = secsLeft;
+        S.totalSoal = d.totalSoal || CFG_JUMLAH_SOAL;
+        return true;
+    } catch(e) { return false; }
+}
+
+function clearState() {
+    try { _store.removeItem(CFG_SESSION_KEY); } catch(e) {}
+}
+
+// ==================== DETEKSI MULTI TAB ====================
+var _TAB_KEY = 'ujian_bio11_tab';
+var _SESSION_ID = sha256(Date.now() + Math.random().toString()).substring(0, 16);
+var _hbInterval = null;
+var _lastHbWrite = Date.now();
+
+function _startHeartbeat() {
+    _hbInterval = setInterval(function() {
+        if (!S.active) { clearInterval(_hbInterval); return; }
+        try {
+            var prev = _store.getItem(_TAB_KEY);
+            if (prev && prev !== _SESSION_ID) {
+                clearInterval(_hbInterval);
+                triggerPunish();
+                toast('tErr', 'Ujian dibuka di tab/browser lain! Terdeteksi.', 4000);
+            }
+            _store.setItem(_TAB_KEY, _SESSION_ID);
+            _lastHbWrite = Date.now();
+        } catch(e) {}
+    }, 1500);
+}
+
+function _stopHeartbeat() {
+    clearInterval(_hbInterval);
+    try { _store.removeItem(_TAB_KEY); } catch(e) {}
+}
+
+window.addEventListener('storage', function(e) {
+    if (!S.active) return;
+    if ((e.key === _TAB_KEY && e.newValue && e.newValue !== _SESSION_ID) || (e.key === CFG_SESSION_KEY && S.active)) {
+        triggerPunish();
+        toast('tErr', 'Anomali terdeteksi!', 4000);
+    }
+});
+
+// ==================== FULLSCREEN ====================
+function goFullscreen() {
+    var el = document.documentElement;
+    var fn = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+    if (fn) fn.call(el).catch(function() {});
+}
+
+// ==================== TIMER & WATCHDOG ====================
+function startTimer() {
+    updateTimerDisplay();
+    S.timerIv = setInterval(function() {
+        var elapsed = Math.floor((Date.now() - S.startMs) / 1000);
+        S.secsLeft = Math.max(0, CFG_DURASI_MENIT * 60 - elapsed);
+        saveState();
+        updateTimerDisplay();
+        if (S.secsLeft <= 0) {
+            clearInterval(S.timerIv);
+            finishQuiz(true);
+        }
+    }, 1000);
+}
+
+setInterval(function() {
+    if (!S.active) return;
+    var expectedElapsed = Math.floor((Date.now() - S.startMs) / 1000);
+    var expectedLeft = Math.max(0, CFG_DURASI_MENIT * 60 - expectedElapsed);
+    var timerDead = Math.abs(S.secsLeft - expectedLeft) > 5;
+    var hbDead = (Date.now() - _lastHbWrite) > 5000;
+    if (timerDead || hbDead) {
+        if (timerDead) { clearInterval(S.timerIv); startTimer(); }
+        if (hbDead) { clearInterval(_hbInterval); _startHeartbeat(); }
+        triggerPunish();
+        toast('tErr', 'Manipulasi timer terdeteksi!', 4000);
+    }
+}, 3000);
+
+function updateTimerDisplay() {
+    var m = Math.floor(S.secsLeft / 60);
+    var s = S.secsLeft % 60;
+    $('dispTimer').textContent = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+    var tw = $('timerWrap');
+    tw.className = '';
+    if (S.secsLeft < 300) tw.classList.add('danger');
+    else if (S.secsLeft < 600) tw.classList.add('warn');
+}
+
+// ==================== DETEKSI SPLIT SCREEN ====================
+var _resizeTimer = null;
+var _minWidth = Math.min(window.screen.width, window.screen.height) * 0.38;
+function checkWindowSize() {
+    if (!S.active) return;
+    if (window.innerWidth < _minWidth) {
+        toast('tErr', 'Layar mengecil terdeteksi! Kembali ke mode layar penuh.', 3000);
+        triggerPunish();
+    }
+}
+window.addEventListener('resize', function() {
+    clearTimeout(_resizeTimer);
+    _resizeTimer = setTimeout(checkWindowSize, 500);
+});
+
+// ==================== DETEKSI PINDAH TAB/BLUR ====================
+var _leaveTimer = null;
+var _lastActive = Date.now();
+var _punishScheduled = false;
+
+// iOS: sentuhan apapun = siswa masih aktif di halaman
+document.addEventListener('touchstart', function() { _cancelPunish(); }, { passive: true });
+document.addEventListener('touchend',   function() { _cancelPunish(); }, { passive: true });
+
+function _schedulePunish(src) {
+    if (!S.active || _punishScheduled) return;
+    _punishScheduled = true;
+    // iOS butuh jeda lebih panjang karena peralihan sistem sering picu blur sesaat
+    var delay = /iPhone|iPad|iPod/i.test(navigator.userAgent) ? 3500 : 2000;
+    _leaveTimer = setTimeout(function() {
+        _punishScheduled = false;
+        var hidden = document.hidden || document.webkitHidden || false;
+        if ((hidden || !document.hasFocus()) && S.active) {
+            triggerPunish();
+        }
+    }, delay);
+}
+
+function _cancelPunish() {
+    _punishScheduled = false;
+    clearTimeout(_leaveTimer);
+    _lastActive = Date.now();
+}
+
+window.addEventListener('blur', function() { if (S.active) _schedulePunish('blur'); });
+window.addEventListener('focus', function() { _cancelPunish(); });
+
+function _onVisChange() {
+    var hidden = document.hidden || document.webkitHidden || document.mozHidden || document.msHidden;
+    if (hidden && S.active) { _schedulePunish('vis'); }
+    else { _cancelPunish(); }
+}
+document.addEventListener('visibilitychange', _onVisChange);
+document.addEventListener('webkitvisibilitychange', _onVisChange);
+
+setInterval(function() {
+    if (!S.active) return;
+    var hidden = document.hidden || document.webkitHidden || document.mozHidden;
+    if (hidden || !document.hasFocus()) {
+        var now = Date.now();
+        if (now - _lastActive > 4000 && !_punishScheduled) triggerPunish();
+    } else { _lastActive = Date.now(); }
+}, 2000);
+
+// pagehide/pageshow: iOS Home button & BFCache
+window.addEventListener('pagehide', function() { if (S.active) saveState(); });
+window.addEventListener('pageshow', function(e) {
+    // e.persisted = true artinya halaman dikembalikan dari BFCache (iOS buka lagi dari background)
+    if (e.persisted && S.active) {
+        // Beri toleransi 1 detik agar layar sempat muncul dulu
+        setTimeout(function() { if (S.active) triggerPunish(); }, 1000);
+    }
+});
+
+// Peringatan sebelum refresh
+window.addEventListener('beforeunload', function(e) {
+    if (S.active) {
+        saveState();
+        e.preventDefault();
+        e.returnValue = 'Ujian sedang berlangsung. Jika Anda refresh, timer tetap berjalan!';
+    }
+});
+
+// ==================== DETEKSI LONG PRESS ====================
+function preventLongPress() {
+    document.querySelectorAll('.opt-lbl, .btn, .stmt-item').forEach(function(el) {
+        el.addEventListener('contextmenu', function(e) {
+            if (S.active) { e.preventDefault(); triggerPunish(); return false; }
+        });
+        var lpTimer;
+        el.addEventListener('touchstart', function() {
+            if (!S.active) return;
+            lpTimer = setTimeout(function() {
+                triggerPunish();
+                toast('tErr', 'Long press tidak diizinkan!', 2000);
+            }, 900);  // dinaikkan 500→900ms agar scroll normal tidak salah terdeteksi
+        });
+        el.addEventListener('touchend', function() { clearTimeout(lpTimer); });
+        el.addEventListener('touchcancel', function() { clearTimeout(lpTimer); });
+    });
+}
+
+// ==================== CEK ORIENTASI ====================
+function checkOrientation() {
+    if (!S.active) return;
+    if (window.innerWidth > window.innerHeight) {
+        document.body.classList.add('landscape-warning');
+        triggerPunish();
+        toast('tErr', 'Mohon putar ke mode portrait!', 3000);
+    } else {
+        document.body.classList.remove('landscape-warning');
+    }
+}
+setInterval(checkOrientation, 2000);
+window.addEventListener('resize', checkOrientation);
+window.addEventListener('orientationchange', checkOrientation);
+
+// ==================== DETEKSI WEBVIEW ====================
+(function detectWebView() {
+    var ua = navigator.userAgent || '';
+    var isWebView = /FBAN|FBAV|Instagram|WhatsApp|wv\)|WebView/i.test(ua) || (/(iPhone|iPod|iPad).*AppleWebKit(?!.*Safari)/i.test(ua));
+    if (isWebView) {
+        var cur = window.location.href;
+        $('wkvUrlDisplay').textContent = cur;
+        $('wkvOverlay').classList.add('show');
+    }
+})();
+
+// ==================== UTILITIES ====================
+function shuffle(a) {
+    var b = a.slice();
+    for (var i = b.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var t = b[i];
+        b[i] = b[j];
+        b[j] = t;
+    }
+    return b;
+}
+
+function $(id) { return document.getElementById(id); }
+
+function toast(id, msg, dur) {
+    var el = $(id);
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(function() { el.classList.remove('show'); }, dur || 2800);
+}
+
+function poin(tries) {
+    if (tries === 1) return 5;
+    if (tries === 2) return 4;
+    if (tries === 3) return 3;
+    if (tries === 4) return 2;
+    return 1;
+}
+
+// ==================== LOGIN ====================
+function togglePwd() {
+    var inp = $('inKode');
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+function updateNamaDropdown() {
+    var kelas = $('inKelas').value;
+    var sel = $('inNama');
+    sel.innerHTML = '<option value="">— Pilih Nama —</option>';
+    if (kelas && CFG_NAMA_SISWA[kelas]) {
+        CFG_NAMA_SISWA[kelas].forEach(function(nama) {
+            var opt = document.createElement('option');
+            opt.value = nama;
+            opt.textContent = nama;
+            sel.appendChild(opt);
+        });
+    }
+}
+
+function cobaReset() {
+    var inp = $('resetInput');
+    if (!inp) return;
+    var val = inp.value.trim().toUpperCase();
+    if (val === CFG_RESET_PWD) {
+        try { _store.removeItem(CFG_LOCK_KEY); } catch(e) {}
+        $('deviceLockOverlay').classList.remove('show');
+        $('pgLogin').classList.add('active');
+        toast('tOk', 'Gembok dibuka. Siswa boleh login kembali.', 3000);
+    } else {
+        inp.value = '';
+        toast('tErr', 'Kode reset salah!', 2500);
+    }
+}
+
+function mulaiUjian() {
+    var nama = $('inNama').value;
+    var kelas = $('inKelas').value;
+    var kode = $('inKode').value.trim();
+    if (!nama || !kelas) { toast('tErr', 'Pilih Kelas dan Nama terlebih dahulu!'); return; }
+    if (!kode) { toast('tErr', 'Masukkan kode akses ujian terlebih dahulu!'); return; }
+    var kelasPwd = CFG_PASS_MAP[kelas];
+    if (!kelasPwd || kode !== kelasPwd) { toast('tErr', 'Kode akses salah untuk kelas ini. Hubungi Guru Anda.'); return; }
+    $('lcNama').textContent = nama;
+    $('lcKelas').textContent = kelas;
+    $('loginConfirmOverlay').classList.add('show');
+}
+
+function batalLoginConfirm() { $('loginConfirmOverlay').classList.remove('show'); }
+function konfirmasiMulai() { $('loginConfirmOverlay').classList.remove('show'); _doStartUjian(); }
+
+function _doStartUjian() {
+    var nama = $('inNama').value;
+    var kelas = $('inKelas').value;
+    S.student = {
+        nama: nama,
+        kelas: kelas,
+        tgl: new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+    };
+    var shuffled = shuffle(BANK_SOAL.map(function(_, i) { return i; }));
+    var selected = shuffled.slice(0, Math.min(CFG_JUMLAH_SOAL, BANK_SOAL.length));
+    S.order = CFG_ACAK_SOAL ? selected : selected.sort(function(a, b) { return a - b; });
+    S.totalSoal = S.order.length;
+    BANK_SOAL.forEach(function(s) { S.attempts[s.id] = { tries: 0, poin: 0 }; });
+    S.idx = 0;
+    S.active = true;
+    S.startMs = Date.now();
+    S.secsLeft = CFG_DURASI_MENIT * 60;
+    $('pgLogin').classList.remove('active');
+    $('pgQuiz').classList.add('active');
+    goFullscreen();
+    startTimer();
+    _startHeartbeat();
+    preventLongPress();
+    loadSoal();
+}
+
+// Cek session yang tersimpan
+(function checkResume() {
+    var locked = _store.getItem(CFG_LOCK_KEY);
+    if (locked === 'LOCKED') {
+        $('deviceLockOverlay').classList.add('show');
+        return;
+    }
+    if (loadState()) {
+        S.active = true;
+        $('pgLogin').classList.remove('active');
+        $('pgQuiz').classList.add('active');
+        goFullscreen();
+        startTimer();
+        _startHeartbeat();
+        preventLongPress();
+        loadSoal();
+        toast('tWarn', 'Sesi dilanjutkan. Timer tetap berjalan dari waktu mulai semula!', 4000);
+    }
+})();
+
+// ==================== LOAD SOAL ====================
+function loadSoal() {
+    var soal = BANK_SOAL[S.order[S.idx]];
+    var id = soal.id;
+    S.attempts[id].tries++;
+    var n = S.idx + 1;
+    $('dispSoal').textContent = 'Soal ' + n + ' / ' + S.totalSoal;
+    $('dispQTag').textContent = 'Soal ' + n;
+    $('dispTry').textContent = 'Percobaan ke-' + S.attempts[id].tries;
+    $('progFill').style.width = (n / S.totalSoal * 100) + '%';
+    
+    var stmtOrder = shuffle([0, 1, 2, 3]);
+    soal._stmtDisplayOrder = stmtOrder;
+    var stmtsHtml = '';
+    stmtOrder.forEach(function(origIdx, pos) {
+        stmtsHtml += '<div class="stmt-item"><span class="stmt-num">(' + (pos + 1) + ')</span><span>' + soal.stmts[origIdx] + '</span></div>';
+    });
+    $('stmtsBox').innerHTML = stmtsHtml;
+    $('stimBox').textContent = soal.stim;
+    $('qTxt').textContent = soal.q;
+    var jumlahBenar = soal.correct.length;
+    $('qHint').textContent = '▸ PG Literasi – pilih ' + jumlahBenar + ' pernyataan yang BENAR berdasarkan bacaan di atas.';
+    
+    var correctDisplayPositions = soal.correct.map(function(origIdx) {
+        return stmtOrder.indexOf(origIdx) + 1;
+    }).sort(function(a, b) { return a - b; });
+    var combinations = [];
+    function combine(arr, k, start, current) {
+        if (current.length === k) { combinations.push(current.slice()); return; }
+        for (var i = start; i <= arr.length - 1; i++) {
+            current.push(arr[i]);
+            combine(arr, k, i + 1, current);
+            current.pop();
+        }
+    }
+    combine([1, 2, 3, 4], jumlahBenar, 0, []);
+    combinations = shuffle(combinations);
+    var correctKey = correctDisplayPositions.join(',');
+    soal._correctKey = correctKey;
+    var box = $('optsBox');
+    box.innerHTML = '';
+    combinations.forEach(function(combo) {
+        var comboKey = combo.join(',');
+        var label = combo.length === 1 ? 'Pernyataan (' + combo[0] + ') benar' : 'Pernyataan (' + combo.join(' dan ') + ') benar';
+        var lbl = document.createElement('label');
+        lbl.className = 'opt-lbl';
+        var inp = document.createElement('input');
+        inp.type = 'radio';
+        inp.name = 'qopt';
+        inp.dataset.comboKey = comboKey;
+        inp.addEventListener('change', function() {
+            box.querySelectorAll('.opt-lbl').forEach(function(l) { l.classList.remove('selected'); });
+            box.querySelectorAll('input:checked').forEach(function(c) { c.parentElement.classList.add('selected'); });
+        });
+        lbl.appendChild(inp);
+        lbl.appendChild(document.createTextNode(' ' + label));
+        box.appendChild(lbl);
+    });
+    var btn = $('btnKirim');
+    if (S.idx === S.totalSoal - 1) {
+        btn.textContent = 'Selesai & Kumpulkan';
+        btn.className = 'btn btn-finish';
+    } else {
+        btn.textContent = 'Kirim Jawaban →';
+        btn.className = 'btn btn-primary';
+    }
+    saveState();
+}
+
+// ==================== CEK JAWABAN ====================
+function cekJawaban() {
+    var soal = BANK_SOAL[S.order[S.idx]];
+    var id = soal.id;
+    var checked = document.querySelectorAll('input[name="qopt"]:checked');
+    if (checked.length === 0) { toast('tWarn', 'Pilih jawaban terlebih dahulu!'); return; }
+    var selectedKey = checked[0].dataset.comboKey;
+    var ok = (selectedKey === soal._correctKey);
+    if (ok) {
+        var p = poin(S.attempts[id].tries);
+        S.attempts[id].poin = p;
+        toast('tOk', '✓ Benar! +' + p + ' poin', 1500);
+        setTimeout(function() {
+            if (S.idx < S.totalSoal - 1) { S.idx++; loadSoal(); }
+            else { openConfirm(); }
+        }, 800);
+    } else {
+        toast('tWarn', 'Jawaban belum tepat, coba lagi dalam 10 detik...');
+        var btn = $('btnKirim');
+        btn.disabled = true;
+        btn.style.opacity = '0.6';
+        var sisa = 10;
+        btn.textContent = 'Tunggu (' + sisa + 's)';
+        var cd = setInterval(function() {
+            sisa--;
+            if (sisa > 0) { btn.textContent = 'Tunggu (' + sisa + 's)'; }
+            else {
+                clearInterval(cd);
+                btn.disabled = false;
+                btn.style.opacity = '1';
+                if (S.idx === S.totalSoal - 1) {
+                    btn.textContent = 'Selesai & Kumpulkan';
+                    btn.className = 'btn btn-finish';
+                } else {
+                    btn.textContent = 'Kirim Jawaban →';
+                    btn.className = 'btn btn-primary';
+                }
+                loadSoal();
+            }
+        }, 1000);
+    }
+}
+
+// ==================== PELANGGARAN (Sistem 3 Peringatan) ====================
+window.triggerPunish = function() {
+    if (!S.active) return;
+    
+    S.punish++;
+    S.punishWarning++;
+    
+    var doReset = false;
+    var warningMsg = '';
+    
+    if (S.punishWarning === 1) {
+        warningMsg = '⚠️ PERINGATAN 1/3: Jangan tinggalkan halaman ujian!';
+        doReset = false;
+    } else if (S.punishWarning === 2) {
+        warningMsg = '⚠️ PERINGATAN 2/3: Terakhir! Jika melanggar lagi, jawaban akan direset!';
+        doReset = false;
+    } else if (S.punishWarning >= 3) {
+        warningMsg = '❌ SANKSI: Anda telah melanggar 3 kali! Jawaban soal ini direset!';
+        doReset = true;
+        S.punishWarning = 0;
+    }
+    
+    var ov = $('violOverlay');
+    var countEl = $('violCount');
+    var msgEl = $('violMsg');
+    var titleEl = $('violTitle');
+    var subEl = $('violSub');
+    
+    if (titleEl) titleEl.textContent = doReset ? '❌ SANKSI DITERAPKAN' : '⚠️ PERINGATAN';
+    if (msgEl) msgEl.innerHTML = doReset ? 'Anda telah melakukan 3x pelanggaran!<br>Jawaban untuk soal ini akan direset.' : warningMsg;
+    if (countEl) countEl.textContent = S.punishWarning;
+    if (subEl) subEl.textContent = doReset ? 'sanksi ke-' + S.punish : 'peringatan ke-';
+    
+    ov.classList.add('show');
+    
+    if (doReset) {
+        var currentSoalId = BANK_SOAL[S.order[S.idx]].id;
+        var currentAttempt = S.attempts[currentSoalId];
+        currentAttempt.tries = 0;
+        currentAttempt.poin = 0;
+        toast('tErr', '❌ Jawaban direset karena 3x pelanggaran!', 4000);
+    } else {
+        toast('tWarn', warningMsg, 3500);
+    }
+    
+    saveState();
+    
+    setTimeout(function() {
+        ov.classList.remove('show');
+        if (S.active) {
+            loadSoal();
+        }
+    }, 4000);
+};
+
+// ==================== FINISH ====================
+var _confirmToken = null;
+function openConfirm() {
+    if (!S.active || S.idx !== S.totalSoal - 1) return;
+    _confirmToken = sha256(Date.now() + _SESSION_ID).substring(0, 12);
+    $('confirmOverlay').classList.add('show');
+}
+function closeConfirm() { _confirmToken = null; $('confirmOverlay').classList.remove('show'); }
+function finishConfirmed() {
+    if (!_confirmToken) return;
+    _confirmToken = null;
+    $('confirmOverlay').classList.remove('show');
+    finishQuiz(false);
+}
+function openWA(el) {
+    var url = el.dataset.waurl || el.href;
+    if (!url || url === '#' || url === window.location.href) return false;
+    window.open(url, '_blank');
+    return false;
+}
+
+// ==================== APPS SCRIPT CONFIG (Ganti dengan URL Anda) ====================
+var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxgPNxaWcZXqqlsDMhXGXnAOAoZn1wA7_0-Kac75zWFMlz5iNrbPDvDcJ9md5mJKzxR/exec';
+
+function kirimKeSheets(payload) {
+    var el = document.getElementById('sheetsStatus');
+    if (!el) return;
+    
+    if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.indexOf('script.google') === -1) {
+        el.style.display = 'none';
+        return;
+    }
+    
+    el.style.display = 'flex';
+    el.className = 'sending';
+    el.innerHTML = '<div class="sheets-spinner"></div><span>Mengirim data ke server guru…</span>';
+    
+    var _maxRetry = 3;
+    var _attempt = 0;
+
+    function doFetch() {
+        _attempt++;
+        if (typeof fetch === 'undefined') { onFail(); return; }
+        fetch(APPS_SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        })
+        .then(function(response) {
+            if (response && response.ok) {
+                el.className = 'success';
+                el.innerHTML = '✅ Data berhasil terkirim ke server guru!';
+                setTimeout(function() { el.style.display = 'none'; }, 3000);
+            } else {
+                throw new Error('Server error: ' + (response ? response.status : 'unknown'));
+            }
+        })
+        .catch(function() {
+            if (_attempt < _maxRetry) {
+                el.innerHTML = '<div class="sheets-spinner"></div><span>Mencoba ulang… (' + _attempt + '/' + _maxRetry + ')</span>';
+                setTimeout(doFetch, 2000);
+            } else {
+                onFail();
+            }
+        });
+    }
+
+    function onFail() {
+        el.className = 'failed';
+        el.innerHTML = '❌ Gagal kirim otomatis. <strong>Wajib kirim via tombol WhatsApp di bawah!</strong>';
+        // Buat tombol WA berkedip sebagai pengingat
+        var btnWA = document.getElementById('btnWA');
+        if (btnWA) {
+            btnWA.style.animation = 'pulse 1s infinite';
+            btnWA.textContent = '📱 KIRIM SEKARANG ke WhatsApp Guru ⬅';
+        }
+    }
+
+    doFetch();
+}
+
+function finishQuiz(timeout) {
+    clearInterval(S.timerIv);
+    S.active = false;
+    _stopHeartbeat();
+    clearState();
+    var finishMs = Date.now();
+    var elapsed = Math.floor((finishMs - S.startMs) / 1000);
+    var em = Math.floor(elapsed / 60);
+    var es = elapsed % 60;
+    var durStr = (em > 0 ? em + ' mnt ' : '') + es + ' dtk' + (timeout ? ' (waktu habis)' : '');
+    var selesaiStr = new Date(finishMs).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    try { _store.setItem(CFG_LOCK_KEY, 'LOCKED'); } catch(e) {}
+    $('rNama').textContent = S.student.nama;
+    $('rKelas').textContent = S.student.kelas;
+    $('rTgl').textContent = S.student.tgl;
+    $('rSelesai').textContent = selesaiStr;
+    $('rDurasi').textContent = durStr;
+    var total = 0;
+    var tb = $('resTbody');
+    tb.innerHTML = '';
+    S.order.forEach(function(soalIdx, pos) {
+        var s = BANK_SOAL[soalIdx];
+        var a = S.attempts[s.id];
+        total += a.poin;
+        var tr = document.createElement('tr');
+        tr.innerHTML = '<td>' + (pos + 1) + '</td><td>PG Literasi</td><td>' + a.tries + 'x</td><td class="' + (a.poin >= 4 ? 'pt-hi' : 'pt-lo') + '">+' + a.poin + '</td>';
+        tb.appendChild(tr);
+    });
+    var maxPoin = S.totalSoal * 5;
+    var nilaiAkhir = Math.round((total / maxPoin) * 100);
+    $('rSkor').textContent = nilaiAkhir;
+    var pv = S.punish || 0;
+    var pvEl = $('rPelanggaran');
+    pvEl.textContent = pv === 0 ? 'Tidak ada' : pv + ' kali';
+    pvEl.style.color = pv === 0 ? 'var(--success)' : 'var(--danger)';
+    pvEl.style.fontWeight = '700';
+    $('pgQuiz').classList.remove('active');
+    $('pgResult').classList.add('active');
+    if (timeout) toast('tErr', 'Waktu habis! Ujian dikumpulkan otomatis.', 4000);
+    
+    var _VERIFY_SECRET = 'SMABIO11_GERAKOTAK_VERIFY_2025';
+    var verifyStr = S.student.nama + '|' + S.student.kelas + '|' + nilaiAkhir + '|' + pv + '|' + _VERIFY_SECRET;
+    var kodeVerif = sha256(verifyStr).substring(0, 16).toUpperCase();
+    var kodeIntWA = 'S' + nilaiAkhir + 'P' + pv + '-' + kodeVerif;
+    $('rKodeIntegritas').textContent = kodeIntWA;
+    
+    var waMsg = '📋 *HASIL UJIAN BIOLOGI – SISTEM GERAK MANUSIA*\n' +
+                '━━━━━━━━━━━━━━━━━━━━\n' +
+                '👤 *Nama* : ' + S.student.nama + '\n' +
+                '🏫 *Kelas* : ' + S.student.kelas + '\n' +
+                '📅 *Tanggal* : ' + S.student.tgl + '\n' +
+                '🕐 *Selesai* : ' + selesaiStr + '\n' +
+                '⏱ *Durasi* : ' + durStr + '\n' +
+                '━━━━━━━━━━━━━━━━━━━━\n' +
+                '🎯 *Skor Total : ' + nilaiAkhir + ' / 100*\n' +
+                '⚠ *Pelanggaran: ' + (pv === 0 ? 'Tidak ada' : pv + ' kali') + '*\n' +
+                '━━━━━━━━━━━━━━━━━━━━\n' +
+                '🔐 *Kode Verifikasi*:\n`' + kodeIntWA + '`\n' +
+                '━━━━━━━━━━━━━━━━━━━━\n' +
+                '_Dikirim otomatis dari aplikasi ujian._';
+    var waUrl = 'https://wa.me/6281348354836?text=' + encodeURIComponent(waMsg);
+    var btnWA = $('btnWA');
+    if (btnWA) btnWA.dataset.waurl = waUrl;
+    
+    kirimKeSheets({
+        nama: S.student.nama,
+        kelas: S.student.kelas,
+        tanggal: S.student.tgl,
+        selesai: selesaiStr,
+        durasi: durStr,
+        skor: nilaiAkhir,
+        pelanggaran: pv,
+        kode: kodeIntWA,
+        mapel: 'Biologi Kelas 11 – Sistem Gerak Manusia'
+    });
+    
+    var qrData = ['NAMA:' + S.student.nama, 'KELAS:' + S.student.kelas, 'TGL:' + S.student.tgl, 'SELESAI:' + selesaiStr, 'DURASI:' + durStr, 'SKOR:' + nilaiAkhir, 'LANGGAR:' + pv, 'KI:' + kodeIntWA].join('|');
+    var qrEl = $('qrCanvas');
+    qrEl.innerHTML = '';
+    if (typeof QRCode !== 'undefined') {
+        new QRCode(qrEl, { text: qrData, width: 200, height: 200, correctLevel: QRCode.CorrectLevel.M });
+    }
+}
+</script>
+</body>
+</html>
