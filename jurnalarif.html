@@ -1,0 +1,561 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Jurnal Pembelajaran Guru</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #f0f4f8;
+            padding: 16px;
+            padding-bottom: 40px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Card / Form Container */
+        .card {
+            background: white;
+            border-radius: 24px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            font-size: 1.6rem;
+            color: #1e3a5f;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #5a6e7c;
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+            border-left: 3px solid #3b82f6;
+            padding-left: 12px;
+        }
+
+        label {
+            font-weight: 600;
+            display: block;
+            margin-top: 16px;
+            margin-bottom: 6px;
+            color: #1e293b;
+            font-size: 0.9rem;
+        }
+
+        label .required {
+            color: #e53e3e;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 14px;
+            font-size: 1rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 16px;
+            background: white;
+            transition: 0.2s;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+        }
+
+        /* Photo area */
+        .photo-area {
+            margin-top: 8px;
+            border: 2px dashed #cbd5e1;
+            border-radius: 20px;
+            padding: 12px;
+            text-align: center;
+            background: #fafcff;
+        }
+
+        .photo-label {
+            background: #eef2ff;
+            padding: 10px;
+            border-radius: 40px;
+            display: inline-block;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+
+        .photo-preview {
+            margin-top: 12px;
+            max-width: 100%;
+            border-radius: 16px;
+            display: none;
+            border: 1px solid #e2e8f0;
+        }
+
+        /* siswa area */
+        .search-box {
+            margin: 12px 0;
+        }
+
+        .siswa-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            max-height: 380px;
+            overflow-y: auto;
+            padding: 8px 4px;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            background: #ffffff;
+        }
+
+        .siswa-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            background: #f8fafc;
+            padding: 8px 10px;
+            border-radius: 40px;
+        }
+
+        .siswa-item input {
+            width: 22px;
+            height: 22px;
+            margin: 0;
+            accent-color: #3b82f6;
+        }
+
+        .stat-hadir {
+            background: #e6f7e6;
+            padding: 10px 14px;
+            border-radius: 40px;
+            margin: 12px 0;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        button {
+            background: #1e3a5f;
+            color: white;
+            border: none;
+            padding: 14px;
+            width: 100%;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 40px;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:active {
+            transform: scale(0.97);
+            background: #0f2b44;
+        }
+
+        .info-text {
+            font-size: 0.75rem;
+            color: #5a6e7c;
+            margin-top: 8px;
+            text-align: center;
+        }
+
+        @media (max-width: 500px) {
+            .siswa-grid {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+        }
+    </style>
+    <!-- Compressor JS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/compressorjs@1.3.0/dist/compressor.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="card">
+        <h1>📓 Jurnal Mengajar</h1>
+        <div class="subtitle">Arief Rachman</div>
+
+        <!-- Pilih Kelas (10 kelas + fleksibel nambah) -->
+        <label>🏫 Pilih Kelas <span class="required">*</span></label>
+        <select id="kelasSelect">
+            <option value="">-- Pilih Kelas --</option>
+        </select>
+
+        <!-- Tanggal & Waktu -->
+        <label>📅 Tanggal <span class="required">*</span></label>
+        <input type="date" id="tanggal">
+
+        <label>⏰ Waktu (mulai)</label>
+        <input type="time" id="waktu">
+
+        <label>📖 Materi Pembelajaran <span class="required">*</span></label>
+        <input type="text" id="materi" placeholder="Misal: Operasi hitung pecahan">
+
+        <!-- Daftar siswa dinamis + checkbox + pencarian -->
+        <label>📋 Daftar Siswa (centang yang TIDAK HADIR / ABSEN)</label>
+        <div class="search-box">
+            <input type="text" id="searchSiswa" placeholder="🔍 Cari nama siswa..." style="border-radius: 40px;">
+        </div>
+        <div id="siswaContainer" class="siswa-grid">
+            <!-- akan diisi javascript -->
+        </div>
+        <div id="statHadir" class="stat-hadir">✅ Jumlah Hadir: 0 / 0</div>
+
+        <!-- Foto -->
+        <label>📸 Foto Saat Mengajar</label>
+        <div class="photo-area">
+            <input type="file" id="fotoMengajar" accept="image/*" capture="environment" style="display:none;">
+            <button type="button" class="photo-label" onclick="document.getElementById('fotoMengajar').click()">📷 Ambil Foto</button>
+            <img id="previewMengajar" class="photo-preview">
+        </div>
+
+        <label>🏃 Foto Kegiatan Siswa</label>
+        <div class="photo-area">
+            <input type="file" id="fotoSiswa" accept="image/*" capture="environment" style="display:none;">
+            <button type="button" class="photo-label" onclick="document.getElementById('fotoSiswa').click()">📷 Ambil Foto</button>
+            <img id="previewSiswa" class="photo-preview">
+        </div>
+
+        <label>📝 Catatan / Refleksi</label>
+        <textarea rows="3" id="catatan" placeholder="Kesan, kendala, atau catatan khusus..."></textarea>
+
+        <button id="submitBtn">💾 Simpan Jurnal ke Google Sheet</button>
+        <div class="info-text">* Foto akan otomatis dikompres kecil (seperti WA) sebelum disimpan</div>
+    </div>
+</div>
+
+<script>
+    // --------------------------------------------------------------
+    // DATA KELAS (10 KELAS + FLEKSIBEL NAMBAH NANTI)
+    // Format: setiap kelas punya array daftarSiswa (contoh 3 siswa saja)
+    // Anda bisa tambah sendiri nanti di bawah.
+    // --------------------------------------------------------------
+const dataKelas = {
+  "11 F1": {
+    siswa: [
+      "Aentalinda", "Ahmad Saidi", "Ahmad Tirta", "ALVIAN NUR RAHMAN", "ANDRE",
+      "Apriyadi", "Aulia Pitri", "Aulia Rahmi", "C'RIZ AMELINDA", "DIAN ALDY SAPUTRA",
+      "DINA", "DIONYSIUS BUDI PRASETYO", "Jason", "Jesica Amanda", "Laura",
+      "M. Rizkiy Maulana", "Mohammad Norkoyim", "Nadia handayani", "Pirana", "RAFI MAULANA",
+      "Raudah", "Rehan Al Gonjales", "RIKI ANDIKA", "Riska Pebriana", "Tirsa Pebriana",
+      "VIEN JANIDA WINEY", "WIWI WIDYA", "ZAHRATUL MONA"
+    ]
+  },
+  "12 F1": {
+    siswa: [
+      "ADI BAGASKORO", "Alan", "ANANDA", "BONDAN RIZKY SETIAWAN", "CANTIKA",
+      "Chairul Anbiya", "Cintya Noor Aini", "DAVA FADILA PRATAMA", "DESI CITRA LESTARI", "Devita Alviani",
+      "Dimas Aldino", "Dotti Gladis Yuliani", "Ersa Meilani", "GANDA RISKIONO", "MIRZA ZAHWAN",
+      "Muhammad Alip Saputra", "Muhammad Jainudin", "Muhammad Rofi'i", "Nour Sucy", "Ramadani",
+      "RENDY FEBRI ALDIAN", "RISMA ARYANI", "SAFA APRIL LIA", "SELVY ANA SARI", "Siti Rahma Wati",
+      "Sofiana Zahra", "Soni", "TAUFIK NOVIANTO", "Yuke Yulistianti"
+    ]
+  },
+  "12 F2": {
+    siswa: [
+      "AHMAD AGUS KURNIAWAN", "ARDIANTO", "AYU DWI SEPTIANI", "Azzahra Zaskia Pratiwi", "DAMAR DWI ANDIKA",
+      "DHEA AJUA PUSPITASARI", "ERICK EXHSAN SAFATIR", "GUNTUR FEBRIAN ADI SAPUTRA", "I MADE TRIESNA", "ILHAM ADI SAPUTRA",
+      "jeki Siam Handoyo", "Jeky Nor Rifa'i", "KEZIA INDRI APRILIA SARI", "KHOIRUL FAHRI", "Lulianita Dwi Nuraini",
+      "MAYSARAH", "Muhammad Abiezat E Tewek", "NOVITA DIYAH WULAN SARI", "Oktaviana Melan", "RISTIA DWI NANDA",
+      "RIZKY HIDAYAT", "Rizky Kartika Sari", "SAM SAECO MAULANA", "SEFIANA PUTRI WIDYA NINGSIH", "Syifa",
+      "VERONIKA JULIANI", "VIONA NUR RAHMAH", "Wahyu Alghazali"
+    ]
+  },
+  "12 F3": {
+    siswa: [
+      "ALMIRA DEVIONA PUTERI", "Andika Pratama", "ANITA", "Dony Sebastian", "EDI SAPUTRA",
+      "GUSTI MUHAMMAD ALDI", "HAFIS NURKARIM", "Irwan Renaldi", "IVAN BASTIAN", "Jaripah",
+      "M. ARIADI", "Marsel Kurniawan", "Maysha Umayrah", "Muhammad fadlu Rabi", "MUHAMMAD SAFIUL QOLBI",
+      "Nadela Putri", "NOVA PRADIPTA", "NOVA PUJIANTI", "RANDHIKA FAJAR RIZQULLAH", "REVA ANJANI",
+      "REVVA PRATAMA OKTAVIANO", "Rizky Alfiansyah", "SIDIA PUANITA", "Silva Rahayu", "SINDY NOVITA",
+      "TIKA FEBRIANI", "TIWI KHARISMAWATI", "YULI MUSLIANAH", "YUSUF HARYADI"
+    ]
+  },
+  "11 F2": { siswa: ["Mega Wulandari", "Nanda Prakoso", "Oktavia Ramadhani"] },
+  "11 F3": { siswa: ["Putri Ayu", "Qori Fadillah", "Raka Saputra"] },
+  "10 E1": { siswa: ["Sari Puspita", "Teguh Santoso", "Umar Hidayat"] },
+  "10 E2": { siswa: ["Vina Melinda", "Wahyu Nugroho", "Xena Olivia"] },
+  "10 E3": { siswa: ["Yoga Pratama", "Zahra Nisrina", "Agus Salim"] },
+  "5B": { siswa: ["Bella Safira", "Candra Wijaya", "Dinda Kirana"] }
+};
+
+    // === FUNGSI UNTUK NAMBAH KELAS DI MASA DEPAN ===
+    // CARA: tinggal edit object dataKelas di atas, bisa tambah "6A": { siswa: [...] }
+    // Tidak perlu ubah kode lain.
+    // ---------------------------------------------------
+
+    let currentSiswaList = [];     // menyimpan daftar siswa yang tampil (setelah filter)
+    let absenSet = new Set();      // menyimpan nama siswa yang TIDAK HADIR
+
+    // DOM Elements
+    const kelasSelect = document.getElementById("kelasSelect");
+    const siswaContainer = document.getElementById("siswaContainer");
+    const searchInput = document.getElementById("searchSiswa");
+    const statHadirDiv = document.getElementById("statHadir");
+    const tanggalInput = document.getElementById("tanggal");
+    const waktuInput = document.getElementById("waktu");
+    const materiInput = document.getElementById("materi");
+    const catatanInput = document.getElementById("catatan");
+    const fotoMengajarInput = document.getElementById("fotoMengajar");
+    const fotoSiswaInput = document.getElementById("fotoSiswa");
+    const previewMengajar = document.getElementById("previewMengajar");
+    const previewSiswa = document.getElementById("previewSiswa");
+    const submitBtn = document.getElementById("submitBtn");
+
+    // === INISIALISASI DROPDOWN KELAS ===
+    function loadKelasToDropdown() {
+        kelasSelect.innerHTML = '<option value="">-- Pilih Kelas --</option>';
+        for (let kelas in dataKelas) {
+            let option = document.createElement("option");
+            option.value = kelas;
+            option.textContent = kelas;
+            kelasSelect.appendChild(option);
+        }
+    }
+
+    // RENDER CHECKBOX SISWA BERDASARKAN currentSiswaList DAN update status centang dari absenSet
+    function renderSiswaList() {
+        if (!currentSiswaList.length) {
+            siswaContainer.innerHTML = '<div style="padding:20px; text-align:center; color:gray;">Pilih kelas terlebih dahulu</div>';
+            updateStatHadir();
+            return;
+        }
+
+        let html = "";
+        currentSiswaList.forEach(siswa => {
+            const isChecked = absenSet.has(siswa) ? "checked" : "";
+            html += `
+                <label class="siswa-item">
+                    <input type="checkbox" value="${escapeHtml(siswa)}" ${isChecked} onchange="toggleAbsen('${escapeHtml(siswa)}', this.checked)">
+                    <span>${escapeHtml(siswa)}</span>
+                </label>
+            `;
+        });
+        siswaContainer.innerHTML = html;
+        updateStatHadir();
+    }
+
+    // Fungsi global untuk toggle (dipanggil dari onclick checkbox)
+    window.toggleAbsen = function(nama, isChecked) {
+        if (isChecked) {
+            absenSet.add(nama);
+        } else {
+            absenSet.delete(nama);
+        }
+        updateStatHadir();
+    };
+
+    function updateStatHadir() {
+        const totalSiswa = currentSiswaList.length;
+        const totalTidakHadir = absenSet.size;
+        const hadir = totalSiswa - totalTidakHadir;
+        statHadirDiv.innerHTML = `✅ Jumlah Hadir: ${hadir} / ${totalSiswa}  (Tidak hadir: ${totalTidakHadir})`;
+    }
+
+    // Filter siswa berdasarkan search
+    function filterSiswa() {
+        const keyword = searchInput.value.toLowerCase().trim();
+        if (!keyword) {
+            currentSiswaList = [...(dataKelas[KelasSelect.value]?.siswa || [])];
+        } else {
+            const semuaSiswa = dataKelas[KelasSelect.value]?.siswa || [];
+            currentSiswaList = semuaSiswa.filter(s => s.toLowerCase().includes(keyword));
+        }
+        // Reset absenSet hanya ketika pindah kelas atau reset filter? Biar konsisten: saat ganti kelas reset.
+        // TAPI jika hanya search, sebaiknya tidak merusak centang yang sudah ada.
+        // Agar tidak kacau: Kita perlu sync ulang centang berdasarkan currentSiswaList.
+        // Hapus dari absenSet nama siswa yang tidak ada di currentSiswaList (karena filter)
+        const newAbsenSet = new Set();
+        for (let nama of absenSet) {
+            if (currentSiswaList.includes(nama)) {
+                newAbsenSet.add(nama);
+            }
+        }
+        absenSet = newAbsenSet;
+        renderSiswaList();
+    }
+
+    // Escape HTML untuk keamanan
+    function escapeHtml(str) {
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    // Reset semua form ketika ganti kelas
+    function resetFormOnKelasChange() {
+        const selectedKelas = kelasSelect.value;
+        if (!selectedKelas) {
+            currentSiswaList = [];
+            absenSet.clear();
+            renderSiswaList();
+            return;
+        }
+        const siswaAwal = dataKelas[selectedKelas]?.siswa || [];
+        currentSiswaList = [...siswaAwal];
+        absenSet.clear();           // reset checklist absen
+        searchInput.value = "";     // reset search
+        renderSiswaList();
+    }
+
+    // === KOMPRESI FOTO (seperti WA) ===
+    function compressAndGetBase64(file, quality = 0.65, maxWidth = 1024) {
+        return new Promise((resolve, reject) => {
+            if (!file) return resolve(null);
+            new Compressor(file, {
+                quality: quality,
+                maxWidth: maxWidth,
+                maxHeight: maxWidth,
+                mimeType: 'image/jpeg',
+                success(result) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve(e.target.result);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(result);
+                },
+                error(err) {
+                    console.warn("Compressor error:", err);
+                    // fallback: baca asli
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve(e.target.result);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+    }
+
+    // Preview foto lokal
+    function setupPreview(inputEl, previewImg) {
+        inputEl.addEventListener("change", (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    previewImg.src = ev.target.result;
+                    previewImg.style.display = "block";
+                };
+                reader.readAsDataURL(file);
+            } else {
+                previewImg.style.display = "none";
+            }
+        });
+    }
+
+    // === SUBMIT KE GOOGLE SHEETS (via APPS SCRIPT) ===
+    // GANTI URL_INI dengan link web app punya Anda nanti
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyNGqHgsG64t-8738kI_UlrLReBga4C3PWaMSVxDfHrLIR03ukGEpMFr6GM5gNPhdVY/exec";  // <-- GANTI
+
+    async function submitToSheet(data) {
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
+            method: "POST",
+            mode: "no-cors",   // supaya tidak kena CORS, tapi response tidak bisa dibaca JSON
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams(data)
+        });
+        return { success: true };
+    }
+
+    submitBtn.addEventListener("click", async () => {
+        const kelas = kelasSelect.value;
+        const tanggal = tanggalInput.value;
+        const waktu = waktuInput.value;
+        const materi = materiInput.value.trim();
+        const catatan = catatanInput.value;
+
+        if (!kelas) { alert("Pilih kelas terlebih dahulu"); return; }
+        if (!tanggal) { alert("Isi tanggal"); return; }
+        if (!materi) { alert("Isi materi pembelajaran"); return; }
+
+        // data absensi
+        const totalSiswa = currentSiswaList.length;
+        const tidakHadirArray = Array.from(absenSet);
+        const jumlahHadir = totalSiswa - tidakHadirArray.length;
+
+        // proses kompresi foto
+        submitBtn.innerText = "Memproses foto...";
+        submitBtn.disabled = true;
+
+        const fotoMengajarFile = fotoMengajarInput.files[0];
+        const fotoSiswaFile = fotoSiswaInput.files[0];
+
+        let fotoMengajarBase64 = "";
+        let fotoSiswaBase64 = "";
+
+        if (fotoMengajarFile) {
+            fotoMengajarBase64 = await compressAndGetBase64(fotoMengajarFile, 0.6, 1024);
+        }
+        if (fotoSiswaFile) {
+            fotoSiswaBase64 = await compressAndGetBase64(fotoSiswaFile, 0.6, 1024);
+        }
+
+        // Data yang akan dikirim
+        const payload = {
+            action: "addJurnal",
+            kelas: kelas,
+            tanggal: tanggal,
+            waktu: waktu,
+            materi: materi,
+            jumlahHadir: jumlahHadir,
+            siswaTidakHadir: tidakHadirArray.join(", "),
+            catatan: catatan,
+            fotoMengajar: fotoMengajarBase64,
+            fotoSiswa: fotoSiswaBase64,
+            timestamp: new Date().toISOString()
+        };
+
+        submitBtn.innerText = "Mengirim ke Sheet...";
+        try {
+            await submitToSheet(payload);
+            alert("✅ Jurnal berhasil disimpan! Data + foto kecil sudah masuk Google Sheet.");
+            // optional: reset foto
+            fotoMengajarInput.value = "";
+            fotoSiswaInput.value = "";
+            previewMengajar.style.display = "none";
+            previewSiswa.style.display = "none";
+        } catch (err) {
+            console.error(err);
+            alert("❌ Gagal menyimpan. Cek koneksi atau URL Apps Script.");
+        } finally {
+            submitBtn.innerText = "💾 Simpan Jurnal ke Google Sheet";
+            submitBtn.disabled = false;
+        }
+    });
+
+    // Event listener kelas & search
+    kelasSelect.addEventListener("change", () => {
+        resetFormOnKelasChange();
+    });
+    searchInput.addEventListener("input", filterSiswa);
+
+    // Preview foto
+    setupPreview(fotoMengajarInput, previewMengajar);
+    setupPreview(fotoSiswaInput, previewSiswa);
+
+    // SET DEFAUL DATE TODAY
+    const today = new Date().toISOString().split('T')[0];
+    tanggalInput.value = today;
+
+    // START
+    loadKelasToDropdown();
+    resetFormOnKelasChange();
+</script>
+</body>
+</html>
