@@ -1,0 +1,690 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PErtumbuhan Perkembangan - Kuis PGK & Susun Kata</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@500;600;700&display=swap');
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { 
+    width:100%; height:100%; overflow:hidden; 
+    font-family: 'Rajdhani', sans-serif;
+    background:#060c14; user-select: none; 
+}
+
+ *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ :root {
+ --col1: #1a3a5c; --col2: #0f6e56; --col3: #853d1e; --col4: #5a1e6e;
+ --col1-mid: #2a6fa8; --col2-mid: #1d9e75; --col3-mid: #c2591e; --col4-mid: #8b35b0;
+ --header-h: 65px;
+ }
+ html, body { width:100%; height:100%; overflow:hidden; font-family:'Nunito',sans-serif; background:#0d1b2a; user-select: none; }
+ #header {
+ height:var(--header-h);
+ background:linear-gradient(90deg,#0d1b2a 0%,#1a3a5c 40%,#0f2d44 60%,#0d1b2a 100%);
+ border-bottom:2px solid #f0c040;
+ display:flex; align-items:center; justify-content:center; z-index:10;
+ }
+ #header h1 { font-family:'Baloo 2',cursive; font-size:26px; font-weight:800; color:#f0c040; letter-spacing:2px; text-transform:uppercase; text-shadow:0 0 20px rgba(240,192,64,0.5); }
+ #header .sub { font-size:14px; color:#a0c0e0; font-weight:400; margin-left:12px; letter-spacing:1px; }
+ 
+ #arena { display:flex; height:calc(100vh - var(--header-h)); width:100%; }
+ .panel { flex:1; display:flex; flex-direction:column; overflow:hidden; border-right:2px solid rgba(255,255,255,0.08); position:relative; }
+ .panel:last-child { border-right:none; }
+ .panel-header { padding:10px 14px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
+ .panel[data-p="0"] .panel-header { background:var(--col1); }
+ .panel[data-p="1"] .panel-header { background:var(--col2); }
+ .panel[data-p="2"] .panel-header { background:var(--col3); }
+ .panel[data-p="3"] .panel-header { background:var(--col4); }
+ .player-name { font-family:'Baloo 2',cursive; font-size:16px; font-weight:700; color:#fff; letter-spacing:1px; }
+ .score-badge { background:rgba(255,255,255,0.2); border-radius:20px; padding:3px 14px; font-size:14px; font-weight:700; color:#fff; }
+ .progress-bar { height:5px; width:100%; flex-shrink:0; }
+ .panel[data-p="0"] .progress-bar { background:#0a2540; }
+ .panel[data-p="1"] .progress-bar { background:#082b20; }
+ .panel[data-p="2"] .progress-bar { background:#3d1a0a; }
+ .panel[data-p="3"] .progress-bar { background:#2a0c38; }
+ .progress-fill { height:100%; background:#f0c040; transition:width 0.4s ease; }
+ .panel-body { flex:1; overflow-y:auto; overflow-x:hidden; padding:12px; display:flex; flex-direction:column; position: relative; }
+ .panel[data-p="0"] .panel-body { background:#0f2035; }
+ .panel[data-p="1"] .panel-body { background:#091e18; }
+ .panel[data-p="2"] .panel-body { background:#1e0e06; }
+ .panel[data-p="3"] .panel-body { background:#150920; }
+ 
+ /* Penyesuaian Font untuk IFP Layar Besar */
+ .q-info { display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+ .q-num { font-size:12px; font-weight:700; color:#f0c040; background:rgba(240,192,64,0.15); border-radius:4px; padding:2px 8px; }
+ .q-type { font-size:11px; color:#8ab4d0; font-weight:600; background:rgba(138,180,208,0.1); border-radius:4px; padding:2px 7px; }
+ .q-attempts { margin-left:auto; font-size:11px; color:#8ab4d0; }
+ .q-text { font-size:15px; line-height:1.5; color:#e0ecf5; font-weight:600; margin-bottom:10px; flex-shrink:0; }
+ .q-instruction { font-size:12px; color:#8ab4d0; font-style:italic; margin-bottom:10px; flex-shrink:0; }
+ .options { display:flex; flex-direction:column; gap:8px; }
+ .opt-btn {
+ display:flex; align-items:flex-start; gap:0; padding:10px 14px; border-radius:8px; cursor:pointer;
+ transition:all 0.15s ease; border:1.5px solid rgba(255,255,255,0.08); background:rgba(255,255,255,0.04); text-align:left; width:100%; font-family:'Nunito',sans-serif;
+ }
+ .opt-btn:hover:not(:disabled):not(.locked) { background:rgba(255,255,255,0.09); border-color:rgba(255,255,255,0.2); }
+ .opt-btn:disabled { cursor:default; }
+ .opt-btn.locked { opacity:0.5; pointer-events:none; }
+ .opt-text { font-size:13.5px; color:#c8dff0; line-height:1.4; font-weight:600; }
+ .opt-btn.correct-selected { background:rgba(22,163,74,0.25); border-color:#16a34a; }
+ .opt-btn.correct-selected .opt-text { color:#86efac; }
+ .opt-btn.wrong-selected { background:rgba(220,38,38,0.25); border-color:#dc2626; animation:shake 0.4s ease; }
+ .opt-btn.wrong-selected .opt-text { color:#fca5a5; }
+ .opt-btn.revealed { background:rgba(22,163,74,0.1); border-color:rgba(22,163,74,0.4); }
+ .opt-btn.revealed .opt-text { color:#86efac; }
+ 
+ /* Gaya CSS Tambahan untuk Fitur Kuis Susun Kata */
+ .wordgame-container { display: flex; flex-direction: column; height: 100%; justify-content: center; align-items: center; width:100%; }
+ .wordgame-title { font-family: 'Baloo 2', cursive; font-size: 15px; color: #f0c040; text-align: center; margin-bottom: 4px; text-transform: uppercase; }
+ .wordgame-instruction { font-size: 11px; color: #8ab4d0; text-align: center; margin-bottom: 12px; font-style: italic; }
+ .sentence-slots { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; width:100%; max-width:340px; margin:0 auto 14px auto; min-height:80px; }
+ .sentence-slot-item {
+ min-width:70px; min-height:38px; padding:8px 10px; border-radius:8px; display:flex; align-items:center; justify-content:center;
+ text-align:center; font-size:13px; font-weight:700; transition:all 0.2s ease;
+ }
+ .sentence-slot-item.empty { border:2px dashed rgba(255,255,255,0.2); background:rgba(255,255,255,0.03); }
+ .sentence-slot-item.filled { background:#1b2e44; border:2px solid rgba(255,255,255,0.15); color:#e0ecf5; cursor:pointer; }
+ .sentence-slot-item.filled:hover { filter:brightness(1.15); }
+ .sentence-slot-item.correct { background:rgba(22,163,74,0.25) !important; border-color:#16a34a !important; color:#86efac !important; cursor:default; }
+ .sentence-slot-item.wrong { background:rgba(220,38,38,0.25) !important; border-color:#dc2626 !important; color:#fca5a5 !important; animation:shake 0.4s ease; cursor:default; }
+ .word-options { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; width:100%; max-width:340px; margin:0 auto; }
+ .word-chip {
+ padding:8px 14px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.12); background:rgba(255,255,255,0.06);
+ color:#c8dff0; font-size:12.5px; font-weight:700; cursor:pointer; font-family:'Nunito',sans-serif; transition:all 0.15s ease;
+ }
+ .word-chip:hover:not(:disabled) { background:rgba(255,255,255,0.12); border-color:rgba(255,255,255,0.25); }
+ .word-chip:disabled { opacity:0.25; cursor:default; }
+ .wordgame-feedback { font-size:12px; font-weight:700; text-align:center; margin-bottom:10px; }
+ .wordgame-feedback.correct { color:#86efac; }
+ .wordgame-feedback.wrong { color:#fca5a5; }
+
+ /* Gaya CSS untuk Tes Ishihara (Game Pembuka) */
+ .ishihara-plates { display:flex; gap:14px; justify-content:center; align-items:center; margin-bottom:12px; flex-wrap:wrap; }
+ .ishihara-plate { width:120px; height:120px; border-radius:50%; overflow:hidden; box-shadow:0 2px 10px rgba(0,0,0,0.4); flex-shrink:0; }
+ .ishihara-plate svg { width:100%; height:100%; display:block; }
+ .ishihara-plus { font-family:'Baloo 2',cursive; font-size:22px; color:#8ab4d0; font-weight:800; }
+ .ishihara-inputrow { display:flex; gap:10px; width:100%; max-width:320px; margin:4px auto 0 auto; justify-content:center; flex-wrap:wrap; }
+ .ishihara-opt-btn {
+ flex:1; min-width:80px; padding:14px 10px; border-radius:10px; border:1.5px solid rgba(255,255,255,0.15);
+ background:rgba(255,255,255,0.06); color:#e0ecf5; font-size:20px; font-weight:800;
+ font-family:'Baloo 2','Nunito',sans-serif; cursor:pointer; transition:all 0.15s ease;
+ }
+ .ishihara-opt-btn:hover { background:rgba(255,255,255,0.14); border-color:#f0c040; transform:translateY(-2px); }
+ .ishihara-opt-btn:active { transform:translateY(0); }
+ 
+ @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+ .cooldown-bar { height:4px; border-radius:2px; margin-top:10px; background:rgba(220,38,38,0.3); overflow:hidden; display:none; }
+.cooldown-fill { 
+  height: 100%; 
+  background: #dc2626; 
+  width: 100%;
+}
+@keyframes cooldown {
+  from { width: 100%; }
+  to { width: 0%; }
+}
+ .cooldown-msg { font-size:11px; color:#fca5a5; text-align:center; margin-top:6px; display:none; font-weight:700; }
+ .next-btn {
+ margin-top:12px; padding:10px 16px; border-radius:8px; border:none; cursor:pointer;
+ font-family:'Nunito',sans-serif; font-size:13px; font-weight:800; letter-spacing:0.5px;
+ display:none; width:100%; text-transform:uppercase; transition:transform 0.1s,filter 0.1s;
+ }
+ .panel[data-p="0"] .next-btn { background:var(--col1-mid); color:#fff; }
+ .panel[data-p="1"] .next-btn { background:var(--col2-mid); color:#fff; }
+ .panel[data-p="2"] .next-btn { background:var(--col3-mid); color:#fff; }
+ .panel[data-p="3"] .next-btn { background:var(--col4-mid); color:#fff; }
+ .next-btn:hover { filter:brightness(1.15); transform:translateY(-1px); }
+ .restart-btn {
+ padding:8px 24px; border-radius:8px; border:none; cursor:pointer; font-family:'Nunito',sans-serif; font-size:12px; font-weight:800;
+ text-transform:uppercase; letter-spacing:1px; background:rgba(255,255,255,0.1); color:#e0ecf5; transition:background 0.2s;
+ }
+ .restart-btn:hover { background:rgba(255,255,255,0.2); }
+ .stat-row { display:flex; justify-content:space-between; font-size:12px; color:#c8dff0; padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.06); }
+ .stat-row:last-child { border-bottom:none; }
+ .stat-val { font-weight:700; color:#f0c040; }
+ @keyframes toastPop { 0%{opacity:0;transform:translate(-50%,-50%) scale(0.6)} 40%{opacity:1;transform:translate(-50%,-50%) scale(1.1)} 70%{transform:translate(-50%,-50%) scale(0.97)} 85%{opacity:1} 100%{opacity:0;transform:translate(-50%,-60%) scale(1)} }
+</style>
+</head>
+<body>
+<div id="header">
+ <h1>PERTUMBUHAN PERKEMBANGAN</h1>
+ <span class="sub">oleh Arief Rachman</span>
+</div>
+<div id="arena">
+ <div class="panel" data-p="0" id="panel-0"></div>
+ <div class="panel" data-p="1" id="panel-1"></div>
+ <div class="panel" data-p="2" id="panel-2"></div>
+</div>
+<script>
+// ===================== BANK SOAL LENGKAP & UTUH =====================
+const ALL_QUESTIONS = [
+    // ==========================================
+    // BAGIAN 1: DEFINISI & TAHAPAN PERKECAMBAHAN
+    // ==========================================
+  { level:"C1", text:"Proses awal perkembangan embrio di dalam biji menjadi tumbuhan baru disebut...", options:["Dormansi","Perkecambahan","Fotosintesis","Penyerbukan"], answers:[1] },
+  { level:"C1", text:"Masuknya air ke dalam biji pada awal perkecambahan disebut proses...", options:["Oksidasi","Imbibisi","Evaporasi","Transpirasi"], answers:[1] },
+  { level:"C1", text:"Zat apa yang masuk ke dalam biji untuk memicu aktifnya hormon pertumbuhan...", options:["Tanah","Udara","Air","Cahaya"], answers:[2] },
+  { level:"C1", text:"Hormon yang menjadi aktif akibat proses imbibisi air adalah...", options:["Giberelin","Auksin","Sitokinin","Etilen"], answers:[0] },
+  { level:"C1", text:"Enzim hidrolitik yang aktif saat proses imbibisi contohnya adalah...", options:["Lipase","Amilase","Pepsin","Tripsin"], answers:[1] },
+  { level:"C1", text:"Fungsi air pada awal perkecambahan adalah mengaktifkan...", options:["Hormon giberelin","Enzim hidrolitik","Hormon auksin","Klorofil biji"], answers:[0,1] },
+
+    // ==========================================
+    // BAGIAN 2: TIPE PERKECAMBAHAN EPIGEAL
+    // ==========================================
+  { level:"C1", text:"Tipe perkecambahan yang ditandai dengan kotiledon terangkat ke atas tanah disebut...", options:["Hipogeal","Epigeal","Primer","Sekunder"], answers:[1] },
+  { level:"C1", text:"Pada perkecambahan epigeal, bagian yang terangkat ke atas permukaan tanah adalah...", options:["Akar","Batang","Kotiledon","Daun lembaga"], answers:[2,3] },
+  { level:"C1", text:"Kotiledon dapat terangkat ke atas permukaan tanah akibat pemanjangan...", options:["Hipokotil","Epikotil","Koleoptil","Radikula"], answers:[0] },
+  { level:"C1", text:"Berikut ini yang merupakan contoh tumbuhan dengan perkecambahan epigeal adalah...", options:["Kacang tanah","Kacang hijau","Jagung","Kacang kapri"], answers:[0,1] },
+  { level:"C1", text:"Kacang hijau dan kacang tanah memiliki tipe perkecambahan yang sama, yaitu...", options:["Hipogeal","Epigeal","Udara","Dalam tanah"], answers:[1] },
+
+    // ==========================================
+    // BAGIAN 3: TIPE PERKECAMBAHAN HIPOGEAL
+    // ==========================================
+  { level:"C1", text:"Tipe perkecambahan yang kotiledonnya tetap berada di bawah tanah disebut...", options:["Epigeal","Hipogeal","Samping","Permukaan"], answers:[1] },
+  { level:"C1", text:"Pada tipe perkecambahan hipogeal, posisi kotiledon berada di...", options:["Atas tanah","Bawah tanah","Udara","Pucuk batang"], answers:[1] },
+  { level:"C1", text:"Kotiledon tetap berada di bawah tanah pada tipe hipogeal akibat pemanjangan...", options:["Hipokotil","Epikotil","Koleoriza","Batang bawah"], answers:[1] },
+  { level:"C1", text:"Berikut ini contoh tumbuhan yang mengalami perkecambahan hipogeal adalah...", options:["Kacang tanah","Kacang hijau","Jagung","Kacang kapri"], answers:[2,3] },
+  { level:"C1", text:"Tumbuhan jagung memiliki tipe perkecambahan yang disebut...", options:["Epigeal","Hipogeal","Primer","Dorman"], answers:[1] },
+
+    // ==========================================
+    // BAGIAN 4: ANALISIS & PERBANDINGAN TIPE
+    // ==========================================
+  { level:"C1", text:"Perbedaan utama antara perkecambahan epigeal dan hipogeal terletak pada posisi...", options:["Akar","Daun sejati","Kotiledon","Bunga"], answers:[2] },
+  { level:"C1", text:"Pasangan struktur tumbuhan dan tipe pemanjangannya yang benar adalah...", options:["Hipokotil pada epigeal","Epikotil pada hipogeal","Epikotil pada epigeal","Hipokotil pada hipogeal"], answers:[0,1] },
+  { level:"C1", text:"Kacang kapri berbeda dengan kacang hijau karena kacang kapri mengalami pemanjangan...", options:["Hipokotil","Epikotil","Kotiledon","Radikula"], answers:[1] }
+];
+
+// ===================== KONFIGURASI KUIS SUSUN KATA =====================
+// Setiap paket berisi 6 potongan kata/frasa yang jika diurutkan dengan benar
+// akan membentuk sebuah kalimat pernyataan yang sesuai dengan materi pada bank soal.
+const WORD_QUIZ_SETS = [
+  ["Perkecambahan", "adalah", "proses", "awal", "perkembangan", "embrio"],
+  ["Masa", "dormansi", "biji", "berakhir", "saat", "berkecambah"],
+  ["Proses", "imbibisi", "merupakan", "peristiwa", "masuknya", "air"],
+  ["Air", "memicu", "aktifnya", "hormon", "dan", "enzim"],
+  ["Hormon", "giberelin", "aktif", "setelah", "proses", "imbibisi"],
+  ["Tipe", "perkecambahan", "terbagi", "menjadi", "dua", "jenis"],
+  ["Perkecambahan", "epigeal", "membuat", "kotiledon", "terangkat", "keatas"],
+  ["Pemanjangan", "hipokotil", "terjadi", "pada", "tipe", "epigeal"],
+  ["Contoh", "epigeal", "adalah", "perkecambahan", "kacang", "tanah"],
+  ["Kacang", "hijau", "termasuk", "contoh", "perkecambahan", "epigeal"],
+  ["Perkecambahan", "hipogeal", "membuat", "kotiledon", "tetap", "dibawah"],
+  ["Pemanjangan", "epikotil", "terjadi", "pada", "tipe", "hipogeal"],
+  ["Contoh", "hipogeal", "adalah", "biji", "tanaman", "jagung"],
+  ["Kacang", "kapri", "mengalami", "tipe", "perkecambahan", "hipogeal"],
+  ["Biji", "memerlukan", "air", "untuk", "memulai", "perkecambahan"],
+  ["Hipokotil", "dan", "epikotil", "mengalami", "proses", "pemanjangan"],
+  ["Struktur", "biji", "berubah", "selama", "proses", "perkecambahan"]
+];
+
+const PLAYERS = ["Kelompok 1","Kelompok 2","Kelompok 3"];
+const Q_PER_PLAYER = 10;
+const COOLDOWN_MS = 10000;
+// ===================== STATUS AWAL PERMAINAN =====================
+const states = PLAYERS.map((name, pi) => ({
+ name, pi, qOrder:[], wordOrder:[], current:0, score:0, totalQ:Q_PER_PLAYER, done:false,
+ attempts:0, correctClicks:0, selectedCorrect:[], shuffledOpts:[],
+ cooldown:false, cooldownTimer:null, questionScores:[],
+ stage:'ishihara', ishihara:null, ishiharaWrong:false,
+ wordItems: [], selectedOrder: [], wordFeedback: null
+}));
+
+function shuffle(arr){ const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+
+function dealQuestions(){
+ const all = shuffle([...ALL_QUESTIONS.keys()]);
+ states.forEach((st,pi)=>{
+ st.qOrder=[];
+ const start=(pi*Q_PER_PLAYER)%all.length;
+ for(let i=0;i<Q_PER_PLAYER;i++) st.qOrder.push(all[(start+i)%all.length]);
+ st.qOrder=shuffle(st.qOrder);
+ st.wordOrder=shuffle([...Array(WORD_QUIZ_SETS.length).keys()]);
+ st.stage='ishihara';
+ newIshiharaChallenge(pi);
+ });
+}
+
+// ===================== GENERATOR PLATE TES ISHIHARA (GAME PEMBUKA) =====================
+// Setiap plate dibuat secara acak (posisi & warna titik berbeda setiap kali dipanggil)
+// dengan angka tersembunyi yang dirender lewat canvas, sehingga selalu unik di tiap panel.
+function generateIshiharaPlate(number){
+ const size=200;
+ const cvs=document.createElement('canvas');
+ cvs.width=size; cvs.height=size;
+ const ctx=cvs.getContext('2d');
+ ctx.fillStyle='#000';
+ ctx.fillRect(0,0,size,size);
+ ctx.fillStyle='#fff';
+ ctx.font="bold 140px Arial, 'Nunito', sans-serif";
+ ctx.textAlign='center';
+ ctx.textBaseline='middle';
+ ctx.fillText(String(number), size/2, size/2+6);
+ const img=ctx.getImageData(0,0,size,size).data;
+ function isFg(x,y){
+ x=Math.round(x); y=Math.round(y);
+ if(x<0||y<0||x>=size||y>=size) return false;
+ return img[(y*size+x)*4] > 128;
+ }
+ const bgColors=['#e05a4e','#d9483e','#e8935a','#f2a65a','#f2b56b','#f28fa0','#c2401e','#e2694a','#f0954f'];
+ const fgColors=['#3ecf8e','#35c2a3','#52e0b0','#2fae8a','#4fd9a0','#43cf9e'];
+ const cx=100, cy=100, R=95;
+ const dots=[];
+ let attempts=0;
+ while(dots.length<620 && attempts<5000){
+ attempts++;
+ const ang=Math.random()*Math.PI*2;
+ const rad=Math.sqrt(Math.random())*R;
+ const x=cx+Math.cos(ang)*rad;
+ const y=cy+Math.sin(ang)*rad;
+ const r=3.5+Math.random()*5.3;
+ let ok=true;
+ for(let i=Math.max(0,dots.length-45); i<dots.length; i++){
+ const d=dots[i];
+ const dist=Math.hypot(d.x-x,d.y-y);
+ if(dist<(d.r+r)*0.72){ ok=false; break; }
+ }
+ if(!ok) continue;
+ const fg=isFg(x,y);
+ const palette=fg?fgColors:bgColors;
+ const color=palette[Math.floor(Math.random()*palette.length)];
+ dots.push({x,y,r,color});
+ }
+ let svg=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="99" fill="#f4f1ea"/>`;
+ dots.forEach(d=>{ svg+=`<circle cx="${d.x.toFixed(1)}" cy="${d.y.toFixed(1)}" r="${d.r.toFixed(1)}" fill="${d.color}"/>`; });
+ svg+=`</svg>`;
+ return svg;
+}
+
+function newIshiharaChallenge(pi){
+ const st=states[pi];
+ const a=1+Math.floor(Math.random()*9);
+ const b=1+Math.floor(Math.random()*9);
+ const correct=a+b;
+ // Buat 2 pengecoh yang berbeda dari jawaban benar dan dari satu sama lain
+ const distractors=[];
+ while(distractors.length<2){
+ const offset=(1+Math.floor(Math.random()*25))*(Math.random()<0.5?-1:1);
+ const val=correct+offset;
+ if(val>0 && val!==correct && !distractors.includes(val)) distractors.push(val);
+ }
+ const opts=shuffle([correct, ...distractors]);
+ st.ishihara={ a, b, correct, opts, svg1:generateIshiharaPlate(a), svg2:generateIshiharaPlate(b) };
+ st.ishiharaWrong=false;
+}
+
+function checkIshihara(pi, val){
+ const st=states[pi];
+ if(val===st.ishihara.correct){
+ st.stage='word';
+ initWordGame(pi);
+ renderPanel(pi);
+ } else {
+ newIshiharaChallenge(pi);
+ st.ishiharaWrong=true;
+ renderPanel(pi);
+ }
+}
+
+function renderIshiharaStage(pi, panel, progress){
+ const st=states[pi];
+ const ih=st.ishihara;
+ const msgHtml=st.ishiharaWrong ? '<div class="wordgame-feedback wrong">✗ Jawaban salah! Plate baru dimunculkan, coba lagi.</div>' : '';
+ const optsHtml=ih.opts.map(v=>`<button class="ishihara-opt-btn" onclick="checkIshihara(${pi},${v})">${v}</button>`).join('');
+ panel.innerHTML=`
+ <div class="panel-header">
+ <span class="player-name">👤 ${st.name}</span>
+ <span class="score-badge">Skor: ${st.score}</span>
+ </div>
+ <div class="progress-bar"><div class="progress-fill" style="width:${progress}%"></div></div>
+ <div class="panel-body" id="body-${pi}">
+ <div class="wordgame-container">
+ <div class="wordgame-title">👁️ Tes Buta Warna Ishihara</div>
+ <div class="wordgame-instruction">Baca angka pada kedua plate, lalu klik hasil penjumlahan yang benar</div>
+ <div class="ishihara-plates">
+ <div class="ishihara-plate">${ih.svg1}</div>
+ <span class="ishihara-plus">+</span>
+ <div class="ishihara-plate">${ih.svg2}</div>
+ </div>
+ ${msgHtml}
+ <div class="ishihara-inputrow">${optsHtml}</div>
+ </div>
+ </div>`;
+}
+
+function getQ(st){ return ALL_QUESTIONS[st.qOrder[st.current]]; }
+
+function shuffleOptions(st){
+ const q=getQ(st);
+ const opts=q.options.map((text,i)=>({origIdx:i,text}));
+ st.shuffledOpts=shuffle(opts);
+ st.selectedCorrect=[];
+ st.correctClicks=0;
+}
+
+function initWordGame(pi){
+ const st = states[pi];
+ st.selectedOrder = [];
+ st.wordFeedback = null;
+
+ // Ambil paket kalimat berdasarkan urutan acak khusus panel ini (berbeda tiap panel)
+ const idxSet = st.wordOrder[st.current % st.wordOrder.length];
+ const paketDipilih = WORD_QUIZ_SETS[idxSet];
+
+ // Beri urutan indeks yang benar (0..5), lalu acak posisi tampilnya di layar
+ const withIdx = paketDipilih.map((text, correctIdx) => ({ text, correctIdx }));
+ st.wordItems = shuffle(withIdx).map((item, id) => ({ ...item, id }));
+}
+
+function clickWord(pi, id){
+ const st = states[pi];
+ if(st.wordFeedback) return;
+ if(st.selectedOrder.includes(id)) return;
+ if(st.selectedOrder.length >= 6) return;
+ st.selectedOrder.push(id);
+ if(st.selectedOrder.length === 6){
+  checkWordAnswer(pi);
+ } else {
+  renderPanel(pi);
+ }
+}
+
+function removeWord(pi, slotIdx){
+ const st = states[pi];
+ if(st.wordFeedback) return;
+ st.selectedOrder.splice(slotIdx, 1);
+ renderPanel(pi);
+}
+
+function checkWordAnswer(pi){
+ const st = states[pi];
+ const isCorrect = st.selectedOrder.every((id, idx) => {
+  const item = st.wordItems.find(w => w.id === id);
+  return item.correctIdx === idx;
+ });
+ st.wordFeedback = isCorrect ? 'correct' : 'wrong';
+ renderPanel(pi);
+ if(isCorrect){
+  setTimeout(() => {
+   st.stage = 'quiz';
+   st.wordFeedback = null;
+   renderPanel(pi);
+  }, 900);
+ } else {
+  setTimeout(() => {
+   st.selectedOrder = [];
+   st.wordFeedback = null;
+   renderPanel(pi);
+  }, 900);
+ }
+}
+
+function calcPoints(st){
+ const a=st.attempts;
+ if(a===0) return 10;
+ if(a===1) return 8;
+ if(a===2) return 6;
+ return 5;
+}
+function renderOptions(pi){
+ const st=states[pi];
+ return st.shuffledOpts.map((opt,si)=>{
+ const isSelectedCorrect=st.selectedCorrect.includes(opt.origIdx);
+ let cls=isSelectedCorrect?'correct-selected':'';
+ return `<button class="opt-btn ${cls}" id="opt-${pi}-${si}" onclick="clickOpt(${pi},${si})" ${isSelectedCorrect?'disabled':''}>
+ <span class="opt-text">${opt.text}</span>
+ </button>`;
+ }).join('');
+}
+
+function renderPanel(pi){
+ const st=states[pi];
+ if(st.done){ renderResult(pi); return; }
+ 
+ const panel=document.getElementById(`panel-${pi}`);
+ const progress=Math.round((st.current/st.totalQ)*100);
+
+ // Render Tes Ishihara (Game Pembuka)
+ if(st.stage==='ishihara'){
+  renderIshiharaStage(pi, panel, progress);
+  return;
+ }
+ 
+ // Render Kuis Susun Kata
+ if(st.stage==='word') {
+  const slotsHtml = Array.from({length:6}).map((_, slotIdx) => {
+   const id = st.selectedOrder[slotIdx];
+   if(id !== undefined){
+    const item = st.wordItems.find(w => w.id === id);
+    let cls = 'filled';
+    if(st.wordFeedback === 'correct') cls += ' correct';
+    else if(st.wordFeedback === 'wrong') cls += ' wrong';
+    return `<div class="sentence-slot-item ${cls}" onclick="removeWord(${pi},${slotIdx})">${item.text}</div>`;
+   }
+   return `<div class="sentence-slot-item empty">&nbsp;</div>`;
+  }).join('');
+
+  const chipsHtml = st.wordItems.map(item => {
+   const used = st.selectedOrder.includes(item.id);
+   return `<button class="word-chip" ${used ? 'disabled' : ''} onclick="clickWord(${pi},${item.id})">${item.text}</button>`;
+  }).join('');
+
+  let feedbackHtml = '';
+  if(st.wordFeedback === 'correct') feedbackHtml = '<div class="wordgame-feedback correct">✓ Benar! Lanjut ke soal PGK...</div>';
+  else if(st.wordFeedback === 'wrong') feedbackHtml = '<div class="wordgame-feedback wrong">✗ Urutan belum tepat, coba lagi...</div>';
+
+  panel.innerHTML = `
+  <div class="panel-header">
+   <span class="player-name">👤 ${st.name}</span>
+   <span class="score-badge">Skor: ${st.score}</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" style="width:${progress}%"></div></div>
+  <div class="panel-body" id="body-${pi}">
+   <div class="wordgame-container">
+    <div class="wordgame-title">✏️ Kuis Susun Kata</div>
+    <div class="wordgame-instruction">Pilih dan urutkan 6 kata di bawah menjadi kalimat yang benar</div>
+    <div class="sentence-slots">${slotsHtml}</div>
+    ${feedbackHtml}
+    <div class="word-options">${chipsHtml}</div>
+   </div>
+  </div>`;
+  return;
+ }
+
+ // Render Soal Kuis Utama
+ const q=getQ(st);
+ panel.innerHTML=`
+ <div class="panel-header">
+ <span class="player-name">👤 ${st.name}</span>
+ <span class="score-badge">Skor: ${st.score}</span>
+ </div>
+ <div class="progress-bar"><div class="progress-fill" style="width:${progress}%"></div></div>
+ <div class="panel-body" id="body-${pi}">
+ <div class="q-info">
+ <span class="q-num">Soal ${st.current+1}/${st.totalQ}</span>
+ <span class="q-type">${q.level} · PGK</span>
+ <span class="q-attempts" id="attempts-${pi}">${st.attempts>0?st.attempts+'x salah':''}</span>
+ </div>
+ <div class="q-text">${q.text}</div>
+ <div class="q-instruction">Pilih <strong>2 jawaban yang benar</strong> dari 4 pilihan di bawah ini.</div>
+ <div class="options" id="opts-${pi}">${renderOptions(pi)}</div>
+ <div class="cooldown-bar" id="cd-bar-${pi}"><div class="cooldown-fill" id="cd-fill-${pi}"></div></div>
+ <div class="cooldown-msg" id="cd-msg-${pi}">⏳Tunggu 10 detik sebelum menjawab kembali...</div>
+ <button class="next-btn" id="next-${pi}" onclick="nextQ(${pi})">Soal Berikutnya →</button>
+ </div>`;
+ if(st.cooldown) lockOptions(pi);
+}
+
+function renderResult(pi){
+ const st=states[pi];
+ const panel=document.getElementById(`panel-${pi}`);
+ const maxScore=Q_PER_PLAYER*10;
+ const pct=Math.round((st.score/maxScore)*100);
+ let grade,gradeColor;
+ if(pct>=90){grade='A';gradeColor='#16a34a';}
+ else if(pct>=75){grade='B';gradeColor='#2a6fa8';}
+ else if(pct>=60){grade='C';gradeColor='#d97706';}
+ else{grade='D';gradeColor='#dc2626';}
+ const trophyMap={A:'🏆',B:'🥈',C:'🥉',D:'✨'};
+ const totalCorrect=st.questionScores.filter(s=>s>0).length;
+ const scoreColors=['var(--col1-mid)','var(--col2-mid)','var(--col3-mid)','var(--col4-mid)'];
+ panel.innerHTML=`
+ <div class="panel-header">
+ <span class="player-name">👤 ${st.name}</span>
+ <span class="score-badge">Selesai!</span>
+ </div>
+ <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+ <div class="panel-body" style="align-items:center;justify-content:center;display:flex;flex-direction:column;text-align:center;padding:12px;">
+ <div style="font-size:44px;margin-bottom:6px;">${trophyMap[grade]}</div>
+ <div style="font-family:'Baloo 2',cursive;font-size:14px;font-weight:800;color:#f0c040;margin-bottom:2px;text-transform:uppercase;letter-spacing:1px;">Kuis Selesai!</div>
+ <div style="font-size:11px;color:#8ab4d0;margin-bottom:10px;">${st.name}</div>
+ <div style="font-family:'Baloo 2',cursive;font-size:50px;font-weight:900;line-height:1;color:${scoreColors[pi]};margin-bottom:2px;">${st.score}</div>
+ <div style="font-size:10px;color:#8ab4d0;margin-bottom:10px;">dari ${maxScore} poin</div>
+ <div style="font-family:'Baloo 2',cursive;font-size:24px;font-weight:900;padding:4px 18px;border-radius:8px;margin-bottom:10px;color:${gradeColor};border:2px solid ${gradeColor};background:${gradeColor}18;">Nilai: ${grade} (${pct}%)</div>
+ <div style="width:100%;background:rgba(255,255,255,0.05);border-radius:10px;padding:8px 10px;margin-bottom:10px;">
+ <div class="stat-row"><span>Soal dijawab</span><span class="stat-val">${st.totalQ}</span></div>
+ <div class="stat-row"><span>Jawaban benar</span><span class="stat-val">${totalCorrect}</span></div>
+ <div class="stat-row"><span>Skor tertinggi/soal</span><span class="stat-val">${Math.max(...st.questionScores,0)}</span></div>
+ <div class="stat-row"><span>Persentase</span><span class="stat-val">${pct}%</span></div>
+ </div>
+ <button class="restart-btn" onclick="restartPlayer(${pi})">🔄 Mulai Ulang</button>
+ </div>`;
+}
+
+function clickOpt(pi, si){
+ const st=states[pi];
+ if(st.cooldown) return;
+ const q=getQ(st);
+ const opt=st.shuffledOpts[si];
+ const isCorrect=q.answers.includes(opt.origIdx);
+ if(st.selectedCorrect.includes(opt.origIdx)) return;
+ const btn=document.getElementById(`opt-${pi}-${si}`);
+ if(isCorrect){
+ st.selectedCorrect.push(opt.origIdx);
+ st.correctClicks++;
+ btn.classList.add('correct-selected');
+ btn.disabled=true;
+ if(st.correctClicks>=q.answers.length){
+ const pts=calcPoints(st);
+ st.score+=pts;
+ st.questionScores.push(pts);
+ const badge=document.querySelector(`#panel-${pi} .score-badge`);
+ if(badge) badge.textContent=`Skor: ${st.score}`;
+ document.querySelectorAll(`#opts-${pi} .opt-btn`).forEach(b=>{b.disabled=true;b.style.cursor='default';});
+ showPointsToast(pi,pts);
+ const nb=document.getElementById(`next-${pi}`);
+ if(nb) nb.style.display='block';
+ }
+ } else {
+ st.attempts++;
+ const attEl=document.getElementById(`attempts-${pi}`);
+ if(attEl) attEl.textContent=st.attempts+'x salah';
+ btn.classList.add('wrong-selected');
+ setTimeout(()=>{
+ reshuffleOptions(pi);
+ }, 600);
+ startCooldown(pi);
+ }
+}
+
+function reshuffleOptions(pi){
+ const st=states[pi];
+ const alreadyCorrect=[...st.selectedCorrect];
+ st.shuffledOpts=shuffle(st.shuffledOpts);
+ const optsEl=document.getElementById(`opts-${pi}`);
+ if(!optsEl) return;
+ optsEl.innerHTML=st.shuffledOpts.map((opt,si)=>{
+ const isSelectedCorrect=alreadyCorrect.includes(opt.origIdx);
+ const cls=isSelectedCorrect?'correct-selected':'';
+ const lockedCls=(!isSelectedCorrect&&st.cooldown)?'locked':'';
+ return `<button class="opt-btn ${cls} ${lockedCls}" id="opt-${pi}-${si}" onclick="clickOpt(${pi},${si})" ${isSelectedCorrect?'disabled':''}>
+ <span class="opt-text">${opt.text}</span>
+ </button>`;
+ }).join('');
+}
+
+function startCooldown(pi){
+ const st=states[pi];
+ st.cooldown=true;
+ lockOptions(pi);
+ const cdBar=document.getElementById(`cd-bar-${pi}`);
+ const cdMsg=document.getElementById(`cd-msg-${pi}`);
+ const cdFill=document.getElementById(`cd-fill-${pi}`);
+ if(cdBar) cdBar.style.display='block';
+ if(cdMsg) cdMsg.style.display='block';
+ if(cdFill){ 
+  cdFill.style.animation='none'; 
+  cdFill.offsetWidth; 
+  cdFill.style.animation='cooldown 10s linear forwards'; 
+ }
+ if(st.cooldownTimer) clearTimeout(st.cooldownTimer);
+ st.cooldownTimer=setTimeout(()=>{
+ st.cooldown=false;
+ unlockOptions(pi);
+ if(cdBar) cdBar.style.display='none';
+ if(cdMsg) cdMsg.style.display='none';
+ }, COOLDOWN_MS);
+}
+
+function lockOptions(pi){
+ document.querySelectorAll(`#opts-${pi} .opt-btn`).forEach(btn=>{ if(!btn.disabled) btn.classList.add('locked'); });
+}
+function unlockOptions(pi){
+ document.querySelectorAll(`#opts-${pi} .opt-btn`).forEach(btn=>{ btn.classList.remove('locked'); });
+}
+
+function showPointsToast(pi,pts){
+ const panel=document.getElementById(`panel-${pi}`);
+ if(!panel) return;
+ panel.style.position='relative';
+ const toast=document.createElement('div');
+ toast.style.cssText=`position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#16a34a;color:#fff;font-family:'Baloo 2',cursive;font-size:28px;font-weight:900;padding:10px 24px;border-radius:12px;pointer-events:none;z-index:99;box-shadow:0 4px 20px rgba(0,0,0,0.4);animation:toastPop 0.8s ease forwards;`;
+ toast.textContent=`+${pts} poin! ✓`;
+ panel.appendChild(toast);
+ setTimeout(()=>toast.remove(),1200);
+}
+
+function nextQ(pi){
+ const st=states[pi];
+ st.current++;
+ st.attempts=0;
+ st.correctClicks=0;
+ st.selectedCorrect=[];
+ st.cooldown=false;
+ if(st.cooldownTimer) clearTimeout(st.cooldownTimer);
+ if(st.current>=st.totalQ){ 
+  st.done=true; 
+  renderResult(pi); 
+ } else { 
+  st.stage='ishihara';
+  newIshiharaChallenge(pi);
+  shuffleOptions(st); 
+  renderPanel(pi); 
+ }
+}
+
+function restartPlayer(pi){
+ const st=states[pi];
+ Object.assign(st,{current:0,score:0,done:false,attempts:0,correctClicks:0,selectedCorrect:[],cooldown:false,questionScores:[],selectedOrder:[],wordFeedback:null,stage:'ishihara',ishiharaWrong:false});
+ if(st.cooldownTimer) clearTimeout(st.cooldownTimer);
+ const all=shuffle([...ALL_QUESTIONS.keys()]);
+ const start=(pi*Q_PER_PLAYER)%all.length;
+ st.qOrder=[];
+ for(let i=0;i<Q_PER_PLAYER;i++) st.qOrder.push(all[(start+i)%all.length]);
+ st.qOrder=shuffle(st.qOrder);
+ st.wordOrder=shuffle([...Array(WORD_QUIZ_SETS.length).keys()]);
+ newIshiharaChallenge(pi);
+ initWordGame(pi);
+ shuffleOptions(st);
+ renderPanel(pi);
+}
+
+dealQuestions();
+states.forEach((st,pi)=>{ 
+ initWordGame(pi);
+ shuffleOptions(st); 
+ renderPanel(pi); 
+});
+</script>
+</body>
+</html>

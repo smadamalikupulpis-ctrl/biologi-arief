@@ -1,0 +1,1080 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARENA — PERTUMBUHAN PERKEMBANGAN</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@500;600;700&display=swap');
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { 
+    width:100%; height:100%; overflow:hidden; 
+    font-family: 'Rajdhani', sans-serif;
+    background:#060c14; user-select: none; 
+}
+
+/* === HEADER === */
+#header {
+    height: 52px;
+    background: linear-gradient(90deg,#060c14 0%,#0d2137 35%,#0d2137 65%,#060c14 100%);
+    border-bottom: 2px solid #f0c040;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 18px; flex-shrink: 0;
+}
+#header h1 { 
+    font-family: 'Orbitron', monospace;
+    font-size: 16px; font-weight: 900; color: #f0c040; 
+    text-transform: uppercase; letter-spacing: 3px; 
+}
+#round-info {
+    font-family: 'Orbitron', monospace;
+    font-size: 12px; color: #8ab4d0;
+    background: rgba(240,192,64,0.1);
+    border: 1px solid rgba(240,192,64,0.3);
+    padding: 3px 12px; border-radius: 20px; letter-spacing: 1px;
+}
+#round-info span { color: #f0c040; font-weight: 900; }
+
+/* === ARENA === */
+#arena { display: flex; height: calc(100vh - 52px); width: 100%; }
+
+.panel { 
+    flex: 1; display: flex; flex-direction: column; overflow: hidden; 
+    border-right: 1px solid rgba(255,255,255,0.06); position: relative;
+}
+.panel:last-child { border-right: none; }
+.panel[data-p="0"] { background: #080f1c; }
+.panel[data-p="1"] { background: #060f0c; }
+.panel[data-p="2"] { background: #120a04; }
+.panel[data-p="3"] { background: #0c0614; }
+
+/* Panel header */
+.panel-header { 
+    padding: 8px 10px; display: flex; align-items: center; justify-content: space-between; 
+    color: #fff; font-weight: 700; font-size: 14px; letter-spacing: 1px; flex-shrink: 0;
+}
+.panel[data-p="0"] .panel-header { background: linear-gradient(90deg,#1a3a5c,#0f2540); border-bottom: 2px solid #2a6fa8; }
+.panel[data-p="1"] .panel-header { background: linear-gradient(90deg,#0f6e56,#094d3c); border-bottom: 2px solid #16a085; }
+.panel[data-p="2"] .panel-header { background: linear-gradient(90deg,#853d1e,#5c2a10); border-bottom: 2px solid #e67e22; }
+.panel[data-p="3"] .panel-header { background: linear-gradient(90deg,#5a1e6e,#3c1049); border-bottom: 2px solid #9b59b6; }
+
+.ph-name { display: flex; align-items: center; gap: 5px; font-family: 'Orbitron', monospace; font-size: 10px; }
+.ph-score { 
+    font-family: 'Orbitron', monospace; font-size: 10px;
+    background: rgba(240,192,64,0.15); border: 1px solid rgba(240,192,64,0.4);
+    color: #f0c040; padding: 2px 7px; border-radius: 10px;
+}
+
+/* Stage progress bar */
+.stage-progress { height: 3px; width: 100%; display: flex; flex-shrink: 0; }
+.sp-seg { flex: 1; background: rgba(255,255,255,0.06); margin: 0 1px; transition: background 0.3s; }
+.sp-seg.done { background: #f0c040; }
+.sp-seg.active { background: rgba(240,192,64,0.45); }
+.sp-seg.fail { background: #e74c3c; }
+
+/* Panel body */
+.panel-body { 
+    flex: 1; padding: 10px 8px; display: flex; flex-direction: column; 
+    align-items: center; justify-content: center; overflow: hidden;
+}
+
+/* Stage badge */
+.stage-badge { 
+    font-family: 'Orbitron', monospace; font-size: 8px; letter-spacing: 2px;
+    text-transform: uppercase; padding: 3px 10px; border-radius: 12px; margin-bottom: 5px;
+    border: 1px solid currentColor; flex-shrink: 0;
+}
+.stage-badge.s1 { color: #f0c040; border-color: #f0c040; background: rgba(240,192,64,0.1); }
+.stage-badge.s2 { color: #3498db; border-color: #3498db; background: rgba(52,152,219,0.1); }
+.stage-badge.s3 { color: #2ecc71; border-color: #2ecc71; background: rgba(46,204,113,0.1); }
+
+.stage-desc { color: #5a7f98; font-size: 10px; margin-bottom: 8px; text-align: center; line-height: 1.4; flex-shrink: 0; }
+/* Khusus untuk memperbesar font timer di bagian stage-desc */
+.stage-desc span {
+    font-size: 18px !important;  /* Perbesar ukuran fontnya */
+    font-weight: 900 !important; /* Buat fontnya lebih tebal */
+    color: #f0c040 !important;   /* Ubah warna jadi kuning terang biar makin kelihatan */
+}
+
+/* ===== GAME 1: INGAT WARNA ===== */
+.nada-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 7px;
+    width: 100%;
+    max-width: 230px;
+    margin-top: 4px;
+}
+.nada-tile {
+    aspect-ratio: 1 / 1;
+    border: 2px solid rgba(255,255,255,0.15);
+    border-radius: 9px;
+    cursor: pointer;
+    opacity: 0.55;
+    transition: opacity 0.12s, transform 0.1s, box-shadow 0.12s;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.4);
+}
+.nada-tile.active {
+    opacity: 1;
+    transform: scale(0.94);
+    box-shadow: 0 0 22px rgba(255,255,255,0.85);
+}
+.nada-tile:disabled { cursor: not-allowed; }
+.nada-progress {
+    font-family: 'Orbitron', monospace;
+    font-size: 10px;
+    color: #f0c040;
+    letter-spacing: 1px;
+    margin-top: 8px;
+}
+
+/* ===== GAME 2: KALIMAT RUMPANG ===== */
+.rumpang-card {
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px; padding: 12px 10px; width: 100%;
+    margin-bottom: 8px; text-align: center; flex-shrink: 0;
+}
+.rumpang-text { color: #e8f0f8; font-size: 14px; font-weight: 600; line-height: 1.6; }
+.rumpang-blank {
+    display: inline-block; min-width: 60px; padding: 0 4px; margin: 0 2px;
+    border-bottom: 2px solid #e74c3c; color: #f0c040; font-weight: 700;
+}
+.rumpang-blank.filled { color: #2ecc71; border-bottom-color: #2ecc71; }
+.rumpang-options { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; width: 100%; }
+.rumpang-feedback {
+    font-family: 'Orbitron', monospace; font-size: 10px; letter-spacing: 1px;
+    padding: 6px 10px; border-radius: 8px; margin-bottom: 8px; width: 100%; text-align: center;
+}
+.rumpang-feedback.benar { background: rgba(46,204,113,0.15); border: 1px solid rgba(46,204,113,0.4); color: #2ecc71; }
+.rumpang-feedback.salah { background: rgba(231,76,60,0.15); border: 1px solid rgba(231,76,60,0.4); color: #e74c3c; }
+
+/* ===== GAME 3: PILIHAN GANDA ===== */
+.q-card { 
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); 
+    border-radius: 10px; padding: 12px 10px; width: 100%;
+    margin-bottom: 8px; text-align: center; flex-shrink: 0;
+}
+.q-number { 
+    font-size: 9px; color: #5a7f98; letter-spacing: 1px; margin-bottom: 5px; 
+    font-family:'Orbitron',monospace; display: flex; align-items:center; justify-content:center; gap:6px;
+}
+.q-tries-badge {
+    background: rgba(240,192,64,0.15); border: 1px solid rgba(240,192,64,0.4);
+    color: #f0c040; padding: 1px 6px; border-radius: 8px; font-size: 8px;
+}
+.q-text { color: #e8f0f8; font-size: 16px; font-weight: 600; line-height: 1.45; }
+.q-score-preview { color: #f0c040; font-size: 9px; margin-top: 5px; font-family:'Orbitron',monospace; }
+
+.ans-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; width: 100%; }
+.ans-btn { 
+    padding: 10px 6px; border: 1px solid rgba(255,255,255,0.14); 
+    background: rgba(255,255,255,0.04); color: #d0e8f0; 
+    font-family: 'Rajdhani',sans-serif; font-weight: 600; font-size: 13px;
+    border-radius: 8px; cursor: pointer; line-height: 1.3; text-align: center;
+    transition: all 0.12s;
+}
+.ans-btn:active { transform: scale(0.97); }
+.ans-btn.correct { background: rgba(46,204,113,0.25); border-color: #2ecc71; color: #2ecc71; pointer-events:none; }
+.ans-btn.wrong   { background: rgba(231,76,60,0.25);  border-color: #e74c3c; color: #e74c3c; pointer-events:none; }
+.ans-btn.locked  { pointer-events: none; opacity: 0.6; }
+
+/* ===== FINISH ===== */
+.finish-box { text-align: center; color: #fff; }
+.finish-medal { font-size: 40px; margin-bottom: 6px; animation: medalPop 0.5s cubic-bezier(0.175,0.885,0.32,1.275); }
+@keyframes medalPop { 0%{transform:scale(0) rotate(-20deg);} 100%{transform:scale(1) rotate(0);} }
+.finish-rank-text { font-family:'Orbitron',monospace; font-size:13px; color:#f0c040; font-weight:900; margin-bottom:5px; letter-spacing:2px; }
+.finish-sub { color:#5a7f98; font-size:11px; margin-bottom:5px; }
+.finish-score-big { font-family:'Orbitron',monospace; font-size:22px; color:#fff; font-weight:900; }
+.finish-score-big span { color:#f0c040; }
+.restart-btn { 
+    margin-top: 14px; padding: 9px 22px; border: none; 
+    background: linear-gradient(90deg,#f0c040,#e8a020); color: #000; 
+    font-family: 'Orbitron',monospace; font-weight: 700; border-radius: 6px; cursor: pointer; 
+    text-transform: uppercase; font-size: 9px; letter-spacing: 2px;
+    box-shadow: 0 0 18px rgba(240,192,64,0.4);
+}
+
+/* Flash overlay */
+.flash-correct { animation: flashGreen 0.35s ease; }
+.flash-wrong   { animation: flashRed   0.35s ease; }
+@keyframes flashGreen { 0%,100%{background:transparent} 50%{background:rgba(46,204,113,0.13)} }
+@keyframes flashRed   { 0%,100%{background:transparent} 50%{background:rgba(231,76,60,0.13)} }
+
+/* ===== PENALTI COUNTDOWN ===== */
+.penalty-box {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 16px 10px; width: 100%;
+}
+.penalty-icon { font-size: 30px; margin-bottom: 6px; }
+.penalty-timer-ring {
+    position: relative; width: 100px; height: 100px; margin: 0 auto 10px;
+}
+.penalty-timer-ring svg { transform: rotate(-90deg); }
+.penalty-ring-bg { fill: none; stroke: rgba(231,76,60,0.15); stroke-width: 7; }
+.penalty-ring-fill { 
+    fill: none; stroke: #e74c3c; stroke-width: 7; stroke-linecap: round;
+    transition: stroke-dashoffset 0.9s linear;
+}
+.penalty-timer-num {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    font-family: 'Orbitron', monospace; font-size: 36px; font-weight: 900;
+    color: #e74c3c; line-height: 1;
+    text-shadow: 0 0 20px rgba(231,76,60,0.6);
+    animation: penaltyPulse 1s ease-in-out infinite;
+}
+@keyframes penaltyPulse { 
+    0%,100%{transform:translate(-50%,-50%) scale(1);} 
+    50%{transform:translate(-50%,-50%) scale(1.1);} 
+}
+.penalty-label-text {
+    font-family: 'Orbitron', monospace; font-size: 10px; color: #ff6b6b;
+    letter-spacing: 2px; margin-top: 2px; text-transform: uppercase;
+}
+.penalty-warn-bar {
+    background: rgba(231,76,60,0.12); border: 1px solid rgba(231,76,60,0.3);
+    border-radius: 8px; padding: 7px 10px; margin-top: 8px; width: 100%;
+    font-size: 11px; color: #e74c3c; text-align: center; line-height: 1.4;
+}
+
+/* ===== START SCREEN ===== */
+#start-screen {
+    position: fixed; inset: 0; z-index: 999;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 18px; text-align: center; padding: 24px;
+    background: radial-gradient(circle at 50% 40%, #0d2137 0%, #060c14 75%);
+}
+.start-title {
+    font-family: 'Orbitron', monospace; font-size: 20px; font-weight: 900;
+    color: #f0c040; letter-spacing: 3px; text-transform: uppercase;
+    text-shadow: 0 0 25px rgba(240,192,64,0.35);
+}
+.start-sub {
+    font-family: 'Rajdhani', sans-serif; font-size: 13px; color: #8ab4d0;
+    letter-spacing: 1px; max-width: 420px; line-height: 1.5;
+}
+.start-btn {
+    margin-top: 6px; padding: 16px 44px; border: none; cursor: pointer;
+    background: linear-gradient(90deg,#f0c040,#e8a020); color: #000;
+    font-family: 'Orbitron',monospace; font-weight: 900; border-radius: 10px;
+    text-transform: uppercase; font-size: 15px; letter-spacing: 3px;
+    box-shadow: 0 0 30px rgba(240,192,64,0.45);
+    transition: transform 0.15s;
+}
+.start-btn:hover { transform: translateY(-2px) scale(1.03); }
+.start-btn:active { transform: scale(0.96); }
+</style>
+</head>
+<body>
+
+<div id="start-screen">
+    <div class="start-title">🦴 Kuis Pertumbuhan Sekunder</div>
+    <div class="start-sub">Bersiaplah! Game akan dimulai dengan sesi mengingat urutan warna, dilanjutkan kalimat rumpang, dan diakhiri soal pilihan ganda. Klik tombol di bawah untuk memulai.</div>
+    <button class="start-btn" onclick="startGame()">▶ Klik Mulai</button>
+</div>
+
+<div id="header" style="display:none;">
+    <h1>🦴 KUIS PERTUMBUHAN SEKUNDER - ARIEF RACHMAN</h1>
+    <div id="round-info">PUTARAN <span id="round-num">1</span> / 1</div>
+</div>
+<div id="arena" style="display:none;">
+    <div class="panel" data-p="0" id="p-0"></div>
+    <div class="panel" data-p="1" id="p-1"></div>
+    <div class="panel" data-p="2" id="p-2"></div>
+    <div class="panel" data-p="3" id="p-3"></div>
+</div>
+
+<script>
+// ============================================================
+//  AUDIO
+// ============================================================
+function playSound(type) {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.connect(g); g.connect(ctx.destination);
+        const t = ctx.currentTime;
+        if (type==='tap') {
+            o.type='sine'; o.frequency.setValueAtTime(800,t); o.frequency.linearRampToValueAtTime(600,t+0.05);
+            g.gain.setValueAtTime(0.08,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.1);
+            o.start(t); o.stop(t+0.1);
+        } else if (type==='correct') {
+            o.type='triangle'; o.frequency.setValueAtTime(523,t); o.frequency.setValueAtTime(784,t+0.06);
+            g.gain.setValueAtTime(0.09,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.18);
+            o.start(t); o.stop(t+0.18);
+        } else if (type==='wrong') {
+            o.type='sawtooth'; o.frequency.setValueAtTime(220,t); o.frequency.setValueAtTime(160,t+0.1);
+            g.gain.setValueAtTime(0.07,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.2);
+            o.start(t); o.stop(t+0.2);
+        } else if (type==='done') {
+            [523,659,784,1047].forEach((f,i)=>{
+                const o2=ctx.createOscillator(), g2=ctx.createGain();
+                o2.connect(g2); g2.connect(ctx.destination);
+                o2.type='triangle'; o2.frequency.setValueAtTime(f, t+i*0.11);
+                g2.gain.setValueAtTime(0.09, t+i*0.11); g2.gain.exponentialRampToValueAtTime(0.001, t+i*0.11+0.15);
+                o2.start(t+i*0.11); o2.stop(t+i*0.11+0.15);
+            });
+        } else if (type==='tick') {
+            o.type='sine'; o.frequency.setValueAtTime(1200,t);
+            g.gain.setValueAtTime(0.04,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.04);
+            o.start(t); o.stop(t+0.04);
+        } else if (type==='timeout') {
+            o.type='sawtooth'; o.frequency.setValueAtTime(180,t); o.frequency.linearRampToValueAtTime(120,t+0.3);
+            g.gain.setValueAtTime(0.08,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.4);
+            o.start(t); o.stop(t+0.4);
+        }
+    } catch(e){}
+}
+
+// ============================================================
+//  POIN SISTEM BERTINGKAT
+// ============================================================
+function calcScore(tries) {
+    if (tries <= 1) return 5;
+    if (tries === 2) return 4;
+    return 2;
+}
+
+// ============================================================
+//  DATA SOAL GAME 2: PILIHAN GANDA
+// ============================================================
+const SORT_POOL = [
+    { 
+        q: "Proses penambahan diameter, lebar, atau ketebalan pada batang dan akar tumbuhan disebut dengan pertumbuhan...", 
+        opts: ["Primer", "Sekunder", "Tersier", "Apikal"], 
+        a: 1 
+    },
+    { 
+        q: "Bagian organ tumbuhan yang paling utama mengalami penambahan diameter akibat pertumbuhan sekunder adalah...", 
+        opts: ["Daun dan bunga", "Batang dan akar", "Buah dan biji", "Tunas dan daun"], 
+        a: 1 
+    },
+    { 
+        q: "Jaringan meristem yang aktivitasnya menyebabkan terjadinya pertumbuhan sekunder pada tumbuhan adalah...", 
+        opts: ["Meristem apikal", "Meristem lateral", "Meristem interkalar", "Meristem primer"], 
+        a: 1 
+    },
+    { 
+        q: "Pertumbuhan sekunder pada tumbuhan umumnya dapat ditemukan pada kelompok tumbuhan...", 
+        opts: ["Monokotil", "Dikotil", "Lumut", "Paku-pakuan"], 
+        a: 1 
+    },
+    { 
+        q: "Dua jenis kambium yang terlibat langsung dalam proses pertumbuhan sekunder adalah...", 
+        opts: ["Kambium apikal dan lateral", "Kambium vaskuler dan gabus", "Kambium primer dan sekunder", "Kambium interkalar dan pembuluh"], 
+        a: 1 
+    },
+    { 
+        q: "Kambium vaskuler yang membelah ke arah dalam pada batang pohon akan membentuk...", 
+        opts: ["Floem primer", "Xilem sekunder", "Floem sekunder", "Kambium gabus"], 
+        a: 1 
+    },
+    { 
+        q: "Ketika kambium vaskuler aktif membelah ke arah luar, jaringan yang terbentuk adalah...", 
+        opts: ["Xilem sekunder", "Floem sekunder", "Epidermis baru", "Korteks sekunder"], 
+        a: 1 
+    },
+    { 
+        q: "Bagian dari batang pohon yang sering kita sebut atau manfaatkan sebagai 'kayu' sebenarnya merupakan...", 
+        opts: ["Floem sekunder", "Xilem sekunder", "Epidermis", "Kambium gabus"], 
+        a: 1 
+    },
+    { 
+        q: "Bagian dari struktur pohon yang berfungsi dan dikenal sebagai 'kulit kayu' terbentuk dari...", 
+        opts: ["Xilem sekunder", "Floem sekunder", "Meristem apikal", "Empulur batang"], 
+        a: 1 
+    },
+    { 
+        q: "Aktivitas pembelahan kambium menjadi xilem dan floem sangat dipengaruhi oleh faktor...", 
+        opts: ["Genetik saja", "Lingkungan", "Umur daun", "Jenis pupuk"], 
+        a: 1 
+    },
+    { 
+        q: "Fenomena munculnya lingkaran tahun pada irisan melintang batang pohon disebabkan oleh perbedaan aktivitas pembelahan...", 
+        opts: ["Epidermis", "Kambium", "Meristem ujung", "Kolenkim"], 
+        a: 1 
+    },
+    { 
+        q: "Lingkaran tahun pada pohon dikotil tua paling jelas terlihat pada jaringan...", 
+        opts: ["Floem sekunder", "Xilem sekunder", "Kambium gabus", "Korteks"], 
+        a: 1 
+    },
+    { 
+        q: "Jaringan pengangkut pada tumbuhan vaskular yang memiliki nama lain pembuluh kayu adalah...", 
+        opts: ["Floem", "Xilem", "Kambium", "Epidermis"], 
+        a: 1 
+    },
+    { 
+        q: "Fungsi utama dari jaringan xilem pada tumbuhan berpembuluh adalah membawa air dan mineral dari...", 
+        opts: ["Daun ke akar", "Akar ke batang dan daun", "Batang ke buah", "Daun ke seluruh tubuh"], 
+        a: 1 
+    },
+    { 
+        q: "Target utama pengangkutan air dan zat mineral oleh pembuluh xilem adalah menuju ke...", 
+        opts: ["Tanah kembali", "Batang dan daun", "Akar tunggang", "Ujung akar saja"], 
+        a: 1 
+    },
+    { 
+        q: "Jaringan yang bertugas mengedarkan zat makanan hasil fotosintesis ke seluruh bagian tumbuhan adalah...", 
+        opts: ["Xilem", "Floem", "Kambium vaskuler", "Epidermis"], 
+        a: 1 
+    },
+    { 
+        q: "Zat makanan hasil fotosintesis yang diedarkan oleh floem mulanya diproduksi di bagian...", 
+        opts: ["Akar", "Daun", "Kambium", "Batang dalam"], 
+        a: 1 
+    },
+    { 
+        q: "Nama lain dari jaringan kambium gabus yang ikut berperan dalam pertumbuhan sekunder adalah...", 
+        opts: ["Xilem", "Felogen", "Epidermis", "Kolenkim"], 
+        a: 1 
+    },
+    { 
+        q: "Kambium gabus (felogen) akan membentuk lapisan pelindung baru dengan tujuan untuk menggantikan...", 
+        opts: ["Xilem yang mati", "Epidermis yang pecah/rusak", "Floem yang menyusut", "Kambium vaskuler"], 
+        a: 1 
+    },
+    { 
+        q: "Lapisan pelindung luar yang dibentuk oleh aktivitas kambium gabus berfungsi sebagai...", 
+        opts: ["Tempat fotosintesis", "Pelindung pengganti epidermis", "Penyerap air utama", "Saluran hasil respirasi"], 
+        a: 1 
+    }
+];
+
+// ============================================================
+//  DATA SOAL GAME 2: KALIMAT RUMPANG
+//  urutanBenar = kata kunci sesuai urutan kemunculannya di kalimat
+// ============================================================
+const RUMPANG_POOL = [
+    { 
+        kalimat: "Pertumbuhan sekunder adalah proses penambahan diameter, lebar, atau ketebalan pada batang dan akar tumbuhan.", 
+        urutanBenar: ["proses", "diameter", "batang"] 
+    },
+    { 
+        kalimat: "Pertumbuhan sekunder terjadi karena aktivitas jaringan meristem lateral atau kambium, seperti kambium vaskuler dan kambium gabus, dan umumnya ditemukan pada tumbuhan dikotil.", 
+        urutanBenar: ["lateral", "vaskuler", "dikotil"] 
+    },
+    { 
+        kalimat: "Kambium vaskuler melakukan pembelahan ke arah dalam membentuk xilem sekunder dan ke arah luar membentuk floem sekunder.", 
+        urutanBenar: ["vaskuler", "xilem", "floem"] 
+    },
+    { 
+        kalimat: "Pembelahan kambium menjadi xilem dan floem sangat dipengaruhi oleh lingkungan. Perbedaan ini mengakibatkan munculnya lingkaran tahun di batang pohon.", 
+        urutanBenar: ["xilem", "lingkungan", "lingkaran"] 
+    },
+    { 
+        kalimat: "Xilem adalah jaringan pengangkut pada tumbuhan vaskular yang berfungsi membawa air dan zat mineral dari akar menuju batang dan daun.", 
+        urutanBenar: ["pengangkut", "air", "akar"] 
+    },
+    { 
+        kalimat: "Floem adalah jaringan pengangkut pada tumbuhan berpembuluh yang berfungsi mengedarkan zat makanan hasil fotosintesis dari daun ke seluruh bagian tumbuhan.", 
+        urutanBenar: ["pengangkut", "fotosintesis", "daun"] 
+    },
+    { 
+        kalimat: "Kambium gabus membentuk lapisan pelindung untuk menggantikan epidermis yang pecah atau rusak.", 
+        urutanBenar: ["gabus", "pelindung", "epidermis"] 
+    }
+];
+
+// ============================================================
+//  CONFIG
+// ============================================================
+const PLAYERS   = ["Siswa 1","Siswa 2","Siswa 3","Siswa 4"];
+const TOTAL_ROUNDS  = 1; // Hanya 1 putaran
+const PG_TIMER      = 40; // Timer 40 detik untuk game soal
+
+// GAME 1: INGAT WARNA
+const NADA_LENGTH = 5; // jumlah warna dalam urutan
+const NADA_PENALTY_SECONDS = 5; // countdown penalti agar tidak asal klik (anti brute force)
+const NADA_COLORS = ['#e74c3c','#e67e22','#f1c40f','#2ecc71','#3498db','#9b59b6','#1abc9c','#e84393'];
+
+let globalRound = 1;
+let finishOrder = [];
+let states      = [];
+let roundActive = true;
+
+// ============================================================
+//  UTIL
+// ============================================================
+function shuffle(arr) { return [...arr].sort(()=>Math.random()-0.5); }
+
+function pickSortQuestions(n) {
+    return shuffle(SORT_POOL).slice(0, n);
+}
+
+function shuffledOpts(q) {
+    const indices = [0,1,2,3];
+    const sh = shuffle(indices);
+    const newOpts = sh.map(i=>q.opts[i]);
+    const newA    = sh.indexOf(q.a);
+    return { newOpts, newA };
+}
+
+// ============================================================
+//  UTIL: GAME 2 - KALIMAT RUMPANG
+// ============================================================
+function pilihRumpangBaru(kalimatSebelumnya) {
+    let pool = RUMPANG_POOL.filter(r => r.kalimat !== kalimatSebelumnya);
+    if (pool.length === 0) pool = RUMPANG_POOL;
+    return pool[Math.floor(Math.random() * pool.length)];
+}
+
+function buatTemplateRumpang(soal) {
+    let template = soal.kalimat;
+    soal.urutanBenar.forEach(kata => {
+        const escaped = kata.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(`\\b${escaped}\\b`, 'i');
+        template = template.replace(regex, '%%BLANK%%');
+    });
+    return template;
+}
+
+function assignRumpangBaru(st, kalimatSebelumnya) {
+    const soal = pilihRumpangBaru(kalimatSebelumnya);
+    st.rumpangSoal = soal;
+    st.rumpangTemplate = buatTemplateRumpang(soal);
+    st.rumpangKata = shuffle(soal.urutanBenar.map((kata, idx) => ({ id: idx, teks: kata, terpakai: false })));
+    st.rumpangIsian = [];
+    st.rumpangFeedback = null;
+}
+
+// ============================================================
+//  UTIL: GAME 1 - INGAT WARNA
+// ============================================================
+function generateNadaSequence() {
+    const seq = [];
+    for (let i = 0; i < NADA_LENGTH; i++) {
+        seq.push(Math.floor(Math.random() * 8) + 1);
+    }
+    return seq;
+}
+
+// ============================================================
+//  INIT
+// ============================================================
+function initRound() {
+    roundActive = true;
+    finishOrder = [];
+    document.getElementById('round-num').textContent = globalRound;
+
+    states = PLAYERS.map((name, idx) => {
+        const qs = pickSortQuestions(1).map(q => { // Hanya 1 soal per siswa
+            const { newOpts, newA } = shuffledOpts(q);
+            return { ...q, opts: newOpts, a: newA, tries: 0 };
+        });
+        return {
+            name, idx,
+            stage: 'nada', // 'nada' -> 'rumpang' -> 'pg'
+            score: 0,
+            // GAME 1: INGAT WARNA
+            nadaSequence: [],
+            nadaPlayerInput: [],
+            nadaPlaying: false,
+            nadaDone: false,
+            nadaHighlight: null,
+            nadaPenaltySecondsLeft: 0,
+            nadaPenaltyInterval: null,
+            // SOAL PG
+            sortQuestions: qs,
+            sortIdx: 0,
+            sortLocked: false,
+            finished: false,
+            // PENALTI & TIMER PG
+            penaltySecondsLeft: 0,
+            _penaltyInterval: null,
+            pgTimer: PG_TIMER,
+            pgTimerInterval: null,
+            pgDone: false
+        };
+    });
+    states.forEach((_, i) => renderPanel(i));
+    states.forEach((_, i) => startNadaStage(i));
+}
+
+// ============================================================
+//  RENDER
+// ============================================================
+
+function renderNadaStage(pi) {
+    const st = states[pi];
+
+    if (st.nadaPenaltySecondsLeft > 0) {
+        return `
+            <div class="panel-body">
+                <div class="stage-badge s1">SESI 1/1 — INGAT WARNA</div>
+                ${penaltyHTML(st.nadaPenaltySecondsLeft, 5)}
+            </div>
+        `;
+    }
+
+    const tilesHtml = NADA_COLORS.map((c, i) => {
+        const noteId = i + 1;
+        const isActive = st.nadaHighlight === noteId;
+        const disabled = st.nadaPlaying || st.nadaDone;
+        return `<button class="nada-tile ${isActive ? 'active' : ''}" style="background:${c};"
+            ${disabled ? 'disabled' : ''} onclick="handleNadaClick(${pi},${noteId})"></button>`;
+    }).join('');
+
+    let statusText;
+    if (st.nadaPlaying) {
+        statusText = 'Perhatikan urutan warnanya...';
+    } else if (st.nadaDone) {
+        statusText = '🎉 Hebat! Lanjut ke Kalimat Rumpang...';
+    } else {
+        statusText = 'Ulangi urutan warna yang baru saja menyala!';
+    }
+
+    return `
+        <div class="panel-body">
+            <div class="stage-badge s1">SESI 1/1 — INGAT WARNA</div>
+            <div class="stage-desc">${statusText}</div>
+            <div class="nada-grid">${tilesHtml}</div>
+            <div class="nada-progress">${st.nadaPlayerInput.length} / ${st.nadaSequence.length}</div>
+        </div>
+    `;
+}
+
+function renderKalimatRumpangHTML(pi) {
+    const st = states[pi];
+    const parts = st.rumpangTemplate.split('%%BLANK%%');
+    let html = parts[0];
+    for (let i = 0; i < st.rumpangSoal.urutanBenar.length; i++) {
+        if (i < st.rumpangIsian.length) {
+            html += `<span class="rumpang-blank filled">${st.rumpangIsian[i]}</span>`;
+        } else {
+            html += `<span class="rumpang-blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>`;
+        }
+        html += parts[i + 1];
+    }
+    return html;
+}
+
+function renderRumpangStage(pi) {
+    const st = states[pi];
+
+    const kataButtons = st.rumpangKata.map(k =>
+        `<button class="ans-btn" ${k.terpakai ? 'disabled' : ''} onclick="isiRumpang(${pi},${k.id})">${k.teks}</button>`
+    ).join('');
+
+    let feedbackHtml = '';
+    if (st.rumpangFeedback === 'benar') {
+        feedbackHtml = `<div class="rumpang-feedback benar">✅ TEPAT! LANJUT KE SOAL PG...</div>`;
+    } else if (st.rumpangFeedback === 'salah') {
+        feedbackHtml = `<div class="rumpang-feedback salah">❌ BELUM TEPAT, COBA KALIMAT LAIN...</div>`;
+    }
+
+    return `<div class="panel-body">
+        <div class="stage-badge s2">SESI 1/1 — KALIMAT RUMPANG</div>
+        <div class="stage-desc">Lengkapi kalimat rumpang berikut dengan kata yang tepat!</div>
+        ${feedbackHtml}
+        <div class="rumpang-card">
+            <div class="rumpang-text">${renderKalimatRumpangHTML(pi)}</div>
+        </div>
+        <div class="rumpang-options">${kataButtons}</div>
+    </div>`;
+}
+
+function isiRumpang(pi, kataId) {
+    if (!roundActive) return;
+    const st = states[pi];
+    if (st.finished || st.stage !== 'rumpang' || st.rumpangFeedback) return;
+
+    const kata = st.rumpangKata.find(k => k.id === kataId);
+    if (!kata || kata.terpakai) return;
+
+    playSound('tap');
+    kata.terpakai = true;
+    st.rumpangIsian.push(kata.teks);
+    renderPanel(pi);
+
+    if (st.rumpangIsian.length === st.rumpangSoal.urutanBenar.length) {
+        const benar = st.rumpangIsian.every((w, i) =>
+            w.toLowerCase() === st.rumpangSoal.urutanBenar[i].toLowerCase()
+        );
+        st.rumpangFeedback = benar ? 'benar' : 'salah';
+
+        document.getElementById(`p-${pi}`).classList.add(benar ? 'flash-correct' : 'flash-wrong');
+        setTimeout(() => document.getElementById(`p-${pi}`).classList.remove(benar ? 'flash-correct' : 'flash-wrong'), 400);
+        renderPanel(pi);
+
+        if (benar) {
+            playSound('correct');
+            setTimeout(() => {
+                st.stage = 'pg';
+                st.pgTimer = PG_TIMER;
+                startPgTimer(pi);
+                renderPanel(pi);
+            }, 1300);
+        } else {
+            playSound('wrong');
+            const kalimatGagal = st.rumpangSoal.kalimat;
+            setTimeout(() => {
+                assignRumpangBaru(st, kalimatGagal);
+                renderPanel(pi);
+            }, 1300);
+        }
+    }
+}
+
+function renderPanel(pi) {
+    const st = states[pi];
+    const el = document.getElementById(`p-${pi}`);
+    if (!el) return;
+
+    const icons = ['🦴','🫀','💪','🦷'];
+    const header = `<div class="panel-header">
+        <div class="ph-name">${icons[pi]} ${st.name}</div>
+        <div class="ph-score">⚡ ${st.score}pt</div>
+    </div>`;
+
+    let body = '';
+
+    if (st.finished) {
+        const rank   = finishOrder.indexOf(pi);
+        const medals = ['🥇','🥈','🥉','🏅'];
+        const labels = ['JUARA 1','JAGOAN 2','MANTAP 3','SELESAI 4'];
+        const showBtn = finishOrder.length===4 && pi===finishOrder[0];
+        body = `<div class="panel-body"><div class="finish-box">
+            <div class="finish-medal">${medals[rank]||'🎉'}</div>
+            <div class="finish-rank-text">${labels[rank]||'FINISH'}</div>
+            <div class="finish-sub">Skor Akhir</div>
+            <div class="finish-score-big">⚡ <span>${st.score}</span> poin</div>
+            ${showBtn?`<button class="restart-btn" onclick="showFinalScreen()">🏆 LIHAT HASIL AKHIR</button>`:''}
+        </div></div>`;
+    } else if (st.stage === 'nada') {
+        body = renderNadaStage(pi);
+    } else if (st.stage === 'rumpang') {
+        body = renderRumpangStage(pi);
+    } else if (st.stage === 'pg') {
+        if (st.pgDone) {
+            body = `<div class="panel-body" style="justify-content:center;text-align:center;color:#8ab4d0;font-size:12px;font-family:Orbitron;">
+                ⏳ Menunggu pemain lain selesai...
+            </div>`;
+        } else if (st.penaltySecondsLeft > 0) {
+            body = `<div class="panel-body">
+                <div class="stage-badge s2">SESI 1 / 1 — SOAL PG</div>
+                ${penaltyHTML(st.penaltySecondsLeft)}
+            </div>`;
+        } else {
+            const q   = st.sortQuestions[st.sortIdx];
+            const tries = q.tries || 0;
+            const pts  = calcScore(tries+1);
+            const optsHtml = q.opts.map((o,oi)=>
+                `<button class="ans-btn" onclick="doSort(${pi},${oi})">${o}</button>`
+            ).join('');
+            const triesBadge = tries>0
+                ? `<span class="q-tries-badge">Percobaan ${tries+1}</span>`
+                : '';
+            
+            // Timer PG
+            let timerClass = '';
+            if (st.pgTimer <= 5) timerClass = 'danger';
+            else if (st.pgTimer <= 10) timerClass = 'warning';
+            
+            body = `<div class="panel-body">
+                <div class="stage-badge s2">SESI 1 / 1 — SOAL PG</div>
+                <div class="stage-desc">Pilih jawaban yang tepat! <span style="color:#f0c040;">(${st.pgTimer}s)</span></div>
+                <div class="q-card">
+                    <div class="q-number">SOAL 1 / 1 ${triesBadge}</div>
+                    <div class="q-text">${q.q}</div>
+                    <div class="q-score-preview">✦ Benar sekarang = ${pts} poin</div>
+                </div>
+                <div class="ans-grid">${optsHtml}</div>
+            </div>`;
+        }
+    }
+
+    el.innerHTML = header + body;
+}
+
+// ============================================================
+//  GAME LOGIC: GAME 1 - INGAT WARNA (TANPA AUDIO)
+// ============================================================
+
+function startNadaStage(pi) {
+    const st = states[pi];
+    if (st.nadaPenaltyInterval) {
+        clearInterval(st.nadaPenaltyInterval);
+        st.nadaPenaltyInterval = null;
+    }
+    st.nadaSequence = generateNadaSequence();
+    st.nadaPlayerInput = [];
+    st.nadaPlaying = true;
+    st.nadaDone = false;
+    st.nadaHighlight = null;
+    st.nadaPenaltySecondsLeft = 0;
+    renderPanel(pi);
+    setTimeout(() => playNadaSequence(pi), 500);
+}
+
+function playNadaSequence(pi) {
+    const st = states[pi];
+    let i = 0;
+
+    const interval = setInterval(() => {
+        st.nadaHighlight = st.nadaSequence[i];
+        renderPanel(pi);
+
+        setTimeout(() => {
+            st.nadaHighlight = null;
+            renderPanel(pi);
+        }, 400);
+
+        i++;
+        if (i >= st.nadaSequence.length) {
+            clearInterval(interval);
+            setTimeout(() => {
+                st.nadaPlaying = false;
+                renderPanel(pi);
+            }, 500);
+        }
+    }, 700);
+}
+
+function handleNadaClick(pi, noteId) {
+    if (!roundActive) return;
+    const st = states[pi];
+    if (st.finished || st.stage !== 'nada' || st.nadaPlaying || st.nadaDone || st.nadaPenaltySecondsLeft > 0) return;
+
+    st.nadaHighlight = noteId;
+    renderPanel(pi);
+    setTimeout(() => {
+        if (st.nadaHighlight === noteId) st.nadaHighlight = null;
+        renderPanel(pi);
+    }, 250);
+
+    st.nadaPlayerInput.push(noteId);
+    const idx = st.nadaPlayerInput.length - 1;
+
+    if (st.nadaPlayerInput[idx] !== st.nadaSequence[idx]) {
+        // Salah urutan -> beri jeda countdown 5 detik agar tidak asal klik (anti brute force)
+        document.getElementById(`p-${pi}`).classList.add('flash-wrong');
+        setTimeout(() => document.getElementById(`p-${pi}`).classList.remove('flash-wrong'), 400);
+
+        st.nadaPlaying = true; // kunci papan warna selama jeda
+        st.nadaPenaltySecondsLeft = NADA_PENALTY_SECONDS;
+        renderPanel(pi);
+
+        st.nadaPenaltyInterval = setInterval(() => {
+            st.nadaPenaltySecondsLeft--;
+            if (st.nadaPenaltySecondsLeft <= 0) {
+                clearInterval(st.nadaPenaltyInterval);
+                st.nadaPenaltyInterval = null;
+                st.nadaPenaltySecondsLeft = 0;
+                startNadaStage(pi); // urutan baru, coba lagi
+                return;
+            }
+            renderPanel(pi);
+        }, 1000);
+        return;
+    }
+
+    if (st.nadaPlayerInput.length === st.nadaSequence.length) {
+        // Urutan lengkap dan benar -> lanjut ke Kalimat Rumpang
+        st.nadaDone = true;
+        document.getElementById(`p-${pi}`).classList.add('flash-correct');
+        setTimeout(() => document.getElementById(`p-${pi}`).classList.remove('flash-correct'), 400);
+        renderPanel(pi);
+
+        setTimeout(() => {
+            st.stage = 'rumpang';
+            assignRumpangBaru(st);
+            renderPanel(pi);
+        }, 1100);
+    } else {
+        renderPanel(pi);
+    }
+}
+// ============================================================
+
+function penaltyHTML(secsLeft, total=6) {
+    const r = 43; 
+    const circ = 2 * Math.PI * r;
+    const progress = secsLeft / total;
+    const offset = circ * (1 - progress);
+    return `
+        <div class="penalty-box">
+            <div class="penalty-icon">⛔</div>
+            <div class="penalty-timer-ring">
+                <svg width="100" height="100" viewBox="0 0 100 100">
+                    <circle class="penalty-ring-bg" cx="50" cy="50" r="${r}"/>
+                    <circle class="penalty-ring-fill" cx="50" cy="50" r="${r}"
+                        stroke-dasharray="${circ}"
+                        stroke-dashoffset="${offset}"/>
+                </svg>
+                <div class="penalty-timer-num">${secsLeft}</div>
+            </div>
+            <div class="penalty-label-text">⏳ JEDA HUKUMAN</div>
+            <div class="penalty-warn-bar">Jawaban salah!<br>Tunggu ${secsLeft} detik sebelum mencoba lagi.</div>
+        </div>`;
+}
+
+// ============================================================
+//  GAME LOGIC: SOAL PG
+// ============================================================
+
+function startPgTimer(pi) {
+    const st = states[pi];
+    if (st.pgTimerInterval) {
+        clearInterval(st.pgTimerInterval);
+        st.pgTimerInterval = null;
+    }
+    st.pgTimer = PG_TIMER;
+    
+    st.pgTimerInterval = setInterval(() => {
+        st.pgTimer--;
+        if (st.pgTimer <= 10 && st.pgTimer > 0) {
+            playSound('tick');
+        }
+        renderPanel(pi);
+        
+        if (st.pgTimer <= 0) {
+            // WAKTU HABIS!
+            clearInterval(st.pgTimerInterval);
+            st.pgTimerInterval = null;
+            playSound('timeout');
+            
+            // Dapat poin 1
+            st.score += 1;
+            st.pgDone = true;
+            st.finished = true;
+            finishOrder.push(pi);
+            
+            document.getElementById(`p-${pi}`).classList.add('flash-wrong');
+            setTimeout(() => document.getElementById(`p-${pi}`).classList.remove('flash-wrong'), 400);
+            renderPanel(pi);
+            
+            checkAllFinished();
+        }
+    }, 1000);
+}
+
+function doSort(pi, chosenIdx) {
+    if (!roundActive) return;
+    const st = states[pi];
+    if (st.finished || st.stage!=='pg' || st.sortLocked || st.pgDone) return;
+    const q = st.sortQuestions[st.sortIdx];
+    const correct = chosenIdx===q.a;
+
+    st.sortLocked = true;
+
+    const buttons = document.querySelectorAll(`#p-${pi} .ans-btn`);
+    buttons.forEach(b=>b.classList.add('locked'));
+    if (correct) {
+        buttons[chosenIdx].classList.add('correct');
+    } else {
+        buttons[chosenIdx].classList.add('wrong');
+    }
+
+    if (correct) {
+        playSound('correct');
+        const pts = calcScore(q.tries+1);
+        st.score += pts;
+        document.getElementById(`p-${pi}`).classList.add('flash-correct');
+        setTimeout(()=>document.getElementById(`p-${pi}`).classList.remove('flash-correct'),300);
+
+        setTimeout(()=>{
+            // Matikan Timer PG
+            if (st.pgTimerInterval) {
+                clearInterval(st.pgTimerInterval);
+                st.pgTimerInterval = null;
+            }
+            st.pgDone = true;
+            st.finished = true;
+            finishOrder.push(pi);
+            document.getElementById(`p-${pi}`).classList.add('flash-correct');
+            setTimeout(()=>document.getElementById(`p-${pi}`).classList.remove('flash-correct'),350);
+            states.forEach((_,i)=>renderPanel(i));
+            checkAllFinished();
+        }, 650);
+    } else {
+        playSound('wrong');
+        document.getElementById(`p-${pi}`).classList.add('flash-wrong');
+        setTimeout(()=>document.getElementById(`p-${pi}`).classList.remove('flash-wrong'),300);
+
+        setTimeout(()=>{
+            q.tries = (q.tries||0) + 1;
+            const { newOpts, newA } = shuffledOpts({ opts: SORT_POOL.find(s=>s.q===q.q)||q, a: SORT_POOL.find(s=>s.q===q.q)?SORT_POOL.find(s=>s.q===q.q).a:q._origA});
+            if (!q._origOpts) {
+                q._origOpts = [...q.opts];
+                q._origA    = q.a;
+            }
+            const origIndices = [0,1,2,3];
+            const sh = shuffle(origIndices);
+            q.opts = sh.map(i=>q._origOpts[i]);
+            q.a    = sh.indexOf(q._origA);
+
+            if (st._penaltyInterval) clearInterval(st._penaltyInterval);
+            st.penaltySecondsLeft = 6;
+            st.sortLocked = false;
+            renderPanel(pi);
+
+            st._penaltyInterval = setInterval(() => {
+                st.penaltySecondsLeft--;
+                if (st.penaltySecondsLeft <= 0) {
+                    clearInterval(st._penaltyInterval);
+                    st._penaltyInterval = null;
+                    st.penaltySecondsLeft = 0;
+                }
+                renderPanel(pi);
+            }, 1000);
+        }, 700);
+    }
+}
+
+// ============================================================
+//  GAME MANAGEMENT
+// ============================================================
+
+function checkAllFinished() {
+    if (finishOrder.length === 4) {
+        roundActive = false;
+        states.forEach((_,i)=>renderPanel(i));
+    }
+}
+
+function showFinalScreen() {
+    const ranked = [...states].sort((a,b)=>b.score-a.score);
+    const medals = ['🥇','🥈','🥉','🏅'];
+    document.getElementById('arena').innerHTML = `
+        <div style="width:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px;padding:28px;">
+            <div style="font-family:'Orbitron',monospace;font-size:20px;color:#f0c040;text-align:center;letter-spacing:3px;">🏆 GAME SELESAI! 🏆</div>
+            <div style="font-family:'Orbitron',monospace;font-size:11px;color:#8ab4d0;text-align:center;letter-spacing:2px;">1 PUTARAN — STRUKTUR ORGANEL SEL</div>
+            <div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center;">
+                ${ranked.map((s,i)=>`
+                    <div style="background:rgba(255,255,255,0.05);border:1px solid ${i===0?'#f0c040':'rgba(255,255,255,0.12)'};border-radius:12px;padding:18px 22px;text-align:center;min-width:110px;">
+                        <div style="font-size:30px;margin-bottom:6px;">${medals[i]}</div>
+                        <div style="font-family:'Orbitron',monospace;font-size:10px;color:#f0c040;margin-bottom:4px;">${s.name}</div>
+                        <div style="font-family:'Orbitron',monospace;font-size:20px;color:#fff;">${s.score}</div>
+                        <div style="font-size:10px;color:#5a7f98;">poin</div>
+                    </div>`).join('')}
+            </div>
+            <div style="font-family:'Orbitron',monospace;font-size:13px;color:#8ab4d0;letter-spacing:1px;">
+                📊 NILAI AKHIR TIM = <span style="color:#f0c040;">${Math.round(ranked.reduce((a,b)=>a+b.score,0))}</span> poin
+            </div>
+            <button class="restart-btn" onclick="restartAll()">🔄 MAIN LAGI DARI AWAL</button>
+        </div>`;
+}
+
+function restartAll() {
+    globalRound = 1;
+    document.getElementById('arena').innerHTML = `
+        <div class="panel" data-p="0" id="p-0"></div>
+        <div class="panel" data-p="1" id="p-1"></div>
+        <div class="panel" data-p="2" id="p-2"></div>
+        <div class="panel" data-p="3" id="p-3"></div>`;
+    initRound();
+}
+
+// ============================================================
+//  KICK OFF
+// ============================================================
+function startGame() {
+    document.getElementById('start-screen').style.display = 'none';
+    document.getElementById('header').style.display = 'flex';
+    document.getElementById('arena').style.display = 'flex';
+    initRound();
+}
+</script>
+</body>
+</html>

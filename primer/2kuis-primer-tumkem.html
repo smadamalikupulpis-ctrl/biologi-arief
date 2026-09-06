@@ -1,0 +1,779 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARENA — PERTUMBUHAN PERKEMBANGAN</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@500;600;700&display=swap');
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { 
+    width:100%; height:100%; overflow:hidden; 
+    font-family: 'Rajdhani', sans-serif;
+    background:#060c14; user-select: none; 
+}
+
+/* === HEADER === */
+#header {
+    height: 52px;
+    background: linear-gradient(90deg,#060c14 0%,#0d2137 35%,#0d2137 65%,#060c14 100%);
+    border-bottom: 2px solid #f0c040;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 18px; flex-shrink: 0;
+}
+#header h1 { 
+    font-family: 'Orbitron', monospace;
+    font-size: 16px; font-weight: 900; color: #f0c040; 
+    text-transform: uppercase; letter-spacing: 3px; 
+}
+#round-info {
+    font-family: 'Orbitron', monospace;
+    font-size: 12px; color: #8ab4d0;
+    background: rgba(240,192,64,0.1);
+    border: 1px solid rgba(240,192,64,0.3);
+    padding: 3px 12px; border-radius: 20px; letter-spacing: 1px;
+}
+#round-info span { color: #f0c040; font-weight: 900; }
+
+/* === ARENA === */
+#arena { display: flex; height: calc(100vh - 52px); width: 100%; }
+
+.panel { 
+    flex: 1; display: flex; flex-direction: column; overflow: hidden; 
+    border-right: 1px solid rgba(255,255,255,0.06); position: relative;
+}
+.panel:last-child { border-right: none; }
+.panel[data-p="0"] { background: #080f1c; }
+.panel[data-p="1"] { background: #060f0c; }
+.panel[data-p="2"] { background: #120a04; }
+
+/* Panel header */
+.panel-header { 
+    padding: 8px 10px; display: flex; align-items: center; justify-content: space-between; 
+    color: #fff; font-weight: 700; font-size: 14px; letter-spacing: 1px; flex-shrink: 0;
+}
+.panel[data-p="0"] .panel-header { background: linear-gradient(90deg,#1a3a5c,#0f2540); border-bottom: 2px solid #2a6fa8; }
+.panel[data-p="1"] .panel-header { background: linear-gradient(90deg,#0f6e56,#094d3c); border-bottom: 2px solid #16a085; }
+.panel[data-p="2"] .panel-header { background: linear-gradient(90deg,#853d1e,#5c2a10); border-bottom: 2px solid #e67e22; }
+
+.ph-name { display: flex; align-items: center; gap: 5px; font-family: 'Orbitron', monospace; font-size: 10px; }
+.ph-score { 
+    font-family: 'Orbitron', monospace; font-size: 10px;
+    background: rgba(240,192,64,0.15); border: 1px solid rgba(240,192,64,0.4);
+    color: #f0c040; padding: 2px 7px; border-radius: 10px;
+}
+
+/* Stage progress bar */
+.stage-progress { height: 3px; width: 100%; display: flex; flex-shrink: 0; }
+.sp-seg { flex: 1; background: rgba(255,255,255,0.06); margin: 0 1px; transition: background 0.3s; }
+.sp-seg.done { background: #f0c040; }
+.sp-seg.active { background: rgba(240,192,64,0.45); }
+
+/* Panel body */
+.panel-body { 
+    flex: 1; padding: 12px 12px; display: flex; flex-direction: column; 
+    align-items: center; justify-content: center; overflow: hidden;
+}
+
+/* Stage badge */
+.stage-badge { 
+    font-family: 'Orbitron', monospace; font-size: 10px; letter-spacing: 2px;
+    text-transform: uppercase; padding: 3px 12px; border-radius: 12px; margin-bottom: 6px;
+    border: 1px solid currentColor; flex-shrink: 0;
+}
+.stage-badge.s1 { color: #e74c3c; border-color: #e74c3c; background: rgba(231,76,60,0.1); }
+.stage-badge.s2 { color: #3498db; border-color: #3498db; background: rgba(52,152,219,0.1); }
+
+.stage-desc { color: #5a7f98; font-size: 11px; margin-bottom: 9px; text-align: center; line-height: 1.4; flex-shrink: 0; }
+
+/* ===== GAME PEMBUKA: TEMUKAN HURUF PENYUSUN KATA ===== */
+.word-target {
+    display: flex; gap: 6px; justify-content: center; flex-wrap: wrap;
+    margin-top: 6px; margin-bottom: 4px;
+}
+.wt-box {
+    width: 30px; height: 30px; background: #fff; color: #e74c3c;
+    border-radius: 7px; display: flex; align-items: center; justify-content: center;
+    font-family: 'Orbitron', monospace; font-weight: 900; font-size: 14px;
+    box-shadow: 0 2px 0 rgba(0,0,0,0.25); transition: all 0.2s;
+}
+.wt-box.found { background: #2ecc71; color: #fff; }
+.word-progress {
+    font-family: 'Orbitron', monospace; font-size: 11px; color: #f0c040;
+    text-align: center; letter-spacing: 1px; margin-bottom: 10px;
+}
+.letter-grid-wrap {
+    display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%;
+}
+.letter-grid {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 9px;
+    width: 100%; max-width: 300px;
+}
+.letter-cell {
+    aspect-ratio: 1; background: rgba(255,255,255,0.05);
+    border: 2px solid rgba(255,255,255,0.16); border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Orbitron', monospace; font-weight: 900; font-size: 16px;
+    color: #8ab4d0; cursor: pointer; transition: background 0.12s;
+}
+.letter-cell:active:not(.found) { background: rgba(255,255,255,0.12); }
+.letter-cell.found {
+    background: rgba(46,204,113,0.22); border-color: #2ecc71; color: #2ecc71; cursor: default;
+}
+.letter-cell.wrong-flash { background: rgba(231,76,60,0.35); border-color: #e74c3c; color: #e74c3c; }
+.word-status {
+    font-family: 'Orbitron', monospace; font-size: 12px; color: #8ab4d0;
+    margin-top: 12px; text-align: center; letter-spacing: 1px;
+}
+.word-status.win { color: #2ecc71; }
+
+/* ===== SOAL INTI: ESAI SUSUN-KATA ===== */
+.q-card { 
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); 
+    border-radius: 12px; padding: 14px 12px; width: 100%; max-width: 420px;
+    margin-bottom: 12px; text-align: center; flex-shrink: 0;
+}
+.q-number { 
+    font-size: 10px; color: #5a7f98; letter-spacing: 1px; margin-bottom: 7px; 
+    font-family:'Orbitron',monospace; display: flex; align-items:center; justify-content:center; gap:6px;
+}
+.q-text { color: #e8f0f8; font-size: 16px; font-weight: 600; line-height: 1.5; }
+
+.w-tries-row { 
+    display:flex; align-items:center; justify-content:space-between; width:100%; max-width:420px; margin-bottom:8px;
+}
+.w-tries-info { font-family:'Orbitron',monospace; font-size:11px; color:#5a7f98; }
+.w-score-preview { font-family:'Orbitron',monospace; font-size:11px; color:#f0c040; }
+
+.built-word { 
+    min-height: 48px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px; padding: 8px 12px; margin-bottom: 10px;
+    font-family: 'Rajdhani',sans-serif; font-weight: 700; font-size: 15px; color: #f0c040;
+    letter-spacing: 0.5px; text-align: center; width: 100%; max-width: 420px; line-height: 1.4;
+    display: flex; align-items: center; justify-content: center; flex-shrink:0;
+}
+.parts-wrap { display: flex; gap: 9px; flex-wrap: wrap; justify-content: center; width:100%; max-width:480px; }
+.part-btn { 
+    padding: 10px 14px; background: rgba(42,111,168,0.25); 
+    border: 1px solid #2a6fa8; color: #80c8f0; 
+    font-family: 'Rajdhani',sans-serif; font-weight: 700; font-size: 17px;
+    border-radius: 8px; cursor: pointer; transition: all 0.12s;
+    letter-spacing: 0.5px;
+}
+.part-btn:active:not(:disabled) { transform: scale(0.95); }
+.part-btn:disabled { opacity: 0.15; cursor: default; }
+.part-btn.wrong-flash { background: rgba(231,76,60,0.35); border-color: #e74c3c; color:#e74c3c; }
+
+.built-word.correct-complete { 
+    border-color: #2ecc71; background: rgba(46,204,113,0.1); color: #b8f0c8; 
+    font-size: 16px;
+}
+.essay-result-msg { 
+    font-family:'Orbitron',monospace; font-size: 13px; color: #2ecc71; 
+    text-align: center; margin-bottom: 12px; letter-spacing: 0.5px;
+}
+.essay-read-countdown { 
+    font-size: 13px; color: #8ab4d0; text-align: center; line-height: 1.5; 
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px; padding: 10px 12px; width: 100%; max-width: 420px;
+}
+
+/* ===== FINISH ===== */
+.finish-box { text-align: center; color: #fff; }
+.finish-medal { font-size: 40px; margin-bottom: 6px; animation: medalPop 0.5s cubic-bezier(0.175,0.885,0.32,1.275); }
+@keyframes medalPop { 0%{transform:scale(0) rotate(-20deg);} 100%{transform:scale(1) rotate(0);} }
+.finish-rank-text { font-family:'Orbitron',monospace; font-size:13px; color:#f0c040; font-weight:900; margin-bottom:5px; letter-spacing:2px; }
+.finish-sub { color:#5a7f98; font-size:11px; margin-bottom:5px; }
+.finish-score-big { font-family:'Orbitron',monospace; font-size:22px; color:#fff; font-weight:900; }
+.finish-score-big span { color:#f0c040; }
+.restart-btn { 
+    margin-top: 14px; padding: 9px 22px; border: none; 
+    background: linear-gradient(90deg,#f0c040,#e8a020); color: #000; 
+    font-family: 'Orbitron',monospace; font-weight: 700; border-radius: 6px; cursor: pointer; 
+    text-transform: uppercase; font-size: 9px; letter-spacing: 2px;
+    box-shadow: 0 0 18px rgba(240,192,64,0.4);
+}
+
+/* Flash overlay */
+.flash-correct { animation: flashGreen 0.35s ease; }
+.flash-wrong   { animation: flashRed   0.35s ease; }
+@keyframes flashGreen { 0%,100%{background:transparent} 50%{background:rgba(46,204,113,0.13)} }
+@keyframes flashRed   { 0%,100%{background:transparent} 50%{background:rgba(231,76,60,0.13)} }
+</style>
+</head>
+<body>
+
+<div id="header">
+    <h1>🦴 KUIS PERTUMBUHAN PERKEMBANGAN - ARIEF RACHMAN</h1>
+    <div id="round-info">PUTARAN <span id="round-num">1</span> / 10</div>
+</div>
+<div id="arena">
+    <div class="panel" data-p="0" id="p-0"></div>
+    <div class="panel" data-p="1" id="p-1"></div>
+    <div class="panel" data-p="2" id="p-2"></div>
+</div>
+
+<script>
+// ============================================================
+//  AUDIO
+// ============================================================
+function playSound(type) {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.connect(g); g.connect(ctx.destination);
+        const t = ctx.currentTime;
+        if (type==='tap') {
+            o.type='sine'; o.frequency.setValueAtTime(800,t); o.frequency.linearRampToValueAtTime(600,t+0.05);
+            g.gain.setValueAtTime(0.08,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.1);
+            o.start(t); o.stop(t+0.1);
+        } else if (type==='correct') {
+            o.type='triangle'; o.frequency.setValueAtTime(523,t); o.frequency.setValueAtTime(784,t+0.06);
+            g.gain.setValueAtTime(0.09,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.18);
+            o.start(t); o.stop(t+0.18);
+        } else if (type==='wrong') {
+            o.type='sawtooth'; o.frequency.setValueAtTime(220,t); o.frequency.setValueAtTime(160,t+0.1);
+            g.gain.setValueAtTime(0.07,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.2);
+            o.start(t); o.stop(t+0.2);
+        } else if (type==='done') {
+            [523,659,784,1047].forEach((f,i)=>{
+                const o2=ctx.createOscillator(), g2=ctx.createGain();
+                o2.connect(g2); g2.connect(ctx.destination);
+                o2.type='triangle'; o2.frequency.setValueAtTime(f, t+i*0.11);
+                g2.gain.setValueAtTime(0.09, t+i*0.11); g2.gain.exponentialRampToValueAtTime(0.001, t+i*0.11+0.15);
+                o2.start(t+i*0.11); o2.stop(t+i*0.11+0.15);
+            });
+        }
+    } catch(e){}
+}
+
+// ============================================================
+//  POIN BERBASIS JUMLAH KLIK SALAH (SOAL INTI)
+//  Dihitung dari banyaknya klik kata yang salah/salah urutan
+//  selama mengerjakan satu soal (anti brute-force):
+//  0-2 kali salah  = 10 poin
+//  3-4 kali salah  = 8 poin
+//  >=5 kali salah  = 6 poin (poin minimum, tidak turun lagi)
+// ============================================================
+function calcScoreByMistakes(wrongCount) {
+    if (wrongCount <= 2) return 10;
+    if (wrongCount <= 4) return 8;
+    return 6;
+}
+
+// ============================================================
+//  BANK SOAL INTI (ESAI — SUSUN KATA JADI KALIMAT JAWABAN)
+//  Siswa menjawab dengan memilih kata satu per satu (urut) dari
+//  kumpulan kata (jawaban benar + kata pengecoh) sampai membentuk
+//  kalimat jawaban yang tepat (minimal 7 kata).
+// ============================================================
+const ESSAY_POOL = [
+  {
+    q: "Apa yang dimaksud dengan pertumbuhan primer?",
+    answer: "Proses pertumbuhan tanaman yang membuat akar dan batang bertambah panjang",
+    distractors: ["kambium", "bahwa", "menghasilkan", "lebar"]
+  },
+  {
+    q: "Di jaringan mana pertumbuhan primer terjadi?",
+    answer: "Aktivitas pembelahan sel berlangsung pada jaringan meristem apikal",
+    distractors: ["korteks", "karena", "menyebabkan", "cepat"]
+  },
+  {
+    q: "Di mana letak utama meristem apikal?",
+    answer: "Jaringan tersebut terletak pada bagian ujung batang dan akar",
+    distractors: ["empulur", "maupun", "menembus", "dalam"]
+  },
+  {
+    q: "Apa nama pelindung ujung akar dari kerusakan?",
+    answer: "Bagian pelindung ujung akar tersebut dinamakan kaliptra",
+    distractors: ["kutikula", "sehingga", "melindungi", "rapuh"]
+  },
+  {
+    q: "Apa aktivitas sel di zona pembelahan?",
+    answer: "Sel meristem aktif membelah diri secara mitosis",
+    distractors: ["meiosis", "tetapi", "berhenti", "banyak"]
+  },
+  {
+    q: "Apa aktivitas sel di zona pemanjangan?",
+    answer: "Sel menyerap air sehingga ukuran tanaman bertambah tinggi",
+    distractors: ["elongasi", "sedangkan", "membesar", "panjang"]
+  },
+  {
+    q: "Apa aktivitas sel di zona diferensiasi?",
+    answer: "Sel mengalami perubahan bentuk spesifik menjadi jaringan dewasa",
+    distractors: ["epidermis", "supaya", "berubah", "khusus"]
+  },
+  {
+    q: "Tumbuhan apa yang mengalami pertumbuhan primer?",
+    answer: "Pertumbuhan primer dialami oleh seluruh jenis tanaman",
+    distractors: ["monokotil", "melainkan", "memulai", "kecil"]
+  },
+  {
+    q: "Apa hormon pemicu pemanjangan ujung tanaman?",
+    answer: "Zat pengatur tumbuh utama elongasi sel adalah auksin",
+    distractors: ["giberelin", "walaupun", "memicu", "utama"]
+  },
+  {
+    q: "Apa nama lain dari zona pembelahan pada akar tanaman?",
+    answer: "Daerah ujung akar dikenal sebagai zona proliferasi",
+    distractors: ["lateral", "apabila", "membelah", "muda"]
+  },
+  {
+    q: "Mengapa tudung akar sangat penting bagi pertumbuhan primer akar?",
+    answer: "Struktur kaliptra menjaga sel meristem apikal dari kerusakan",
+    distractors: ["akar", "melalui", "merusak", "aman"]
+  },
+  {
+    q: "Bagaimana sifat pembelahan sel yang terjadi di jaringan meristem?",
+    answer: "Sel meristem apikal senantiasa aktif membelah diri",
+    distractors: ["mitosis", "setelah", "mengelupas", "subur"]
+  },
+  {
+    q: "Kapan tanaman mulai mengalami fase pertumbuhan primer dalam hidupnya?",
+    answer: "Tumbuhan mengalami proses pertumbuhan primer sejak fase bibit",
+    distractors: ["embrio", "sambil", "berkecambah", "awal"]
+  },
+  {
+    q: "Di mana letak zona pembelahan jika dihitung dari tudung akar?",
+    answer: "Letak daerah proliferasi tepat di belakang tudung akar",
+    distractors: ["apikal", "bagaikan", "berada", "dekat"]
+  },
+  {
+    q: "Apa yang diserap oleh tanaman pada zona pemanjangan akar?",
+    answer: "Sel tanaman menyerap air untuk memperbesar volume ukuran",
+    distractors: ["nutrisi", "lalu", "mengalir", "basah"]
+  },
+  {
+    q: "Apa indikator utama terjadinya pertumbuhan primer pada batang tanaman?",
+    answer: "Tinggi tanaman bertambah akibat aktivitas meristem apikal",
+    distractors: ["biomasa", "bahkan", "meninggi", "tinggi"]
+  },
+  {
+    q: "Mengapa sel pada zona elongasi bisa melesat tumbuh sangat panjang?",
+    answer: "Penyerapan air memicu bentangan dinding sel tanaman",
+    distractors: ["auksin", "ketika", "merenggang", "elastis"]
+  },
+  {
+    q: "Apa fungsi spesifik dari hasil zona pematangan sel tumbuhan?",
+    answer: "Sel berubah struktur menjadi jaringan permanen sesuai fungsinya",
+    distractors: ["stomata", "namun", "menjalankan", "berbeda"]
+  }
+];
+
+// ============================================================
+//  BANK KATA — GAME PEMBUKA "TEMUKAN HURUF PENYUSUN KATA"
+//  (istilah seputar tema pertumbuhan & perkembangan)
+// ============================================================
+const WORD_BANK = [
+    "KECAMBAH","DORMANSI","IMBIBISI","GIBERELIN","HIPOKOTIL",
+    "EPIKOTIL","KOTILEDON","RADIKULA","PLUMULA","HORMON",
+    "ENZIM","EMBRIO","EPIGEAL","HIPOGEAL"
+];
+
+// ============================================================
+//  CONFIG
+// ============================================================
+const PLAYERS   = ["Siswa 1","Siswa 2","Siswa 3"];
+const TOTAL_ROUNDS = 1;
+const QUESTIONS_PER_ROUND = 10;  // total soal inti per putaran (5x game huruf, tiap game huruf diikuti 2 soal)
+const GROUP_SIZE = 2;            // kembali ke game pembuka tiap 2 soal inti
+
+let globalRound = 1;
+let finishOrder = [];
+let states      = [];
+let roundActive = true;
+
+// ============================================================
+//  UTIL
+// ============================================================
+function shuffle(arr) { return [...arr].sort(()=>Math.random()-0.5); }
+
+function pickEssayQuestions(n) {
+    return shuffle(ESSAY_POOL).slice(0, n);
+}
+
+// Susun bank kata (jawaban benar + pengecoh) dari satu soal esai.
+// Kata PERTAMA dan TERAKHIR dari kalimat jawaban dijadikan petunjuk tetap
+// (langsung ditampilkan di kolom jawaban, tidak jadi tombol pilihan),
+// supaya siswa tidak ambigu harus mulai/mengakhiri dengan kata apa.
+// Siswa hanya perlu memilih kata-kata di TENGAH kalimat secara berurutan.
+function buildEssayQuestion(item) {
+    const answerWords = item.answer.split(' ');
+    const n = answerWords.length;
+    const pool = answerWords.map((w,i)=>({ id:i, word:w }));
+    const poolMap = {};
+    pool.forEach(x=>poolMap[x.id]=x);
+
+    const firstId = 0;
+    const lastId  = n - 1;
+    const middleItems = pool.slice(1, n-1); // id 1..n-2
+
+    const distractors = shuffle(item.distractors).map((w,i)=>({ id: n+i, word:w }));
+    distractors.forEach(x=>poolMap[x.id]=x);
+
+    const combined = [...middleItems, ...distractors];
+    return {
+        question: item.q,
+        answerLen: n,
+        firstId, lastId,
+        poolShuffled: shuffle(combined),
+        poolMap
+    };
+}
+
+// ============================================================
+//  INIT
+// ============================================================
+function initWordGame(pi) {
+    const word = WORD_BANK[Math.floor(Math.random()*WORD_BANK.length)];
+    states[pi].wordGame = buildLetterGame(word);
+}
+
+// Menyusun data game: kata target, huruf unik penyusunnya, dan kotak
+// acak (huruf jawaban + huruf pengecoh) yang harus ditemukan siswa.
+function buildLetterGame(word) {
+    const upper = word.toUpperCase();
+    const letters = [...new Set(upper.split(''))];
+    let total = Math.min(20, Math.max(15, letters.length*2));
+    total = Math.ceil(total/5)*5;
+    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').filter(c=>!letters.includes(c));
+    const distractorsNeeded = Math.max(0, total - letters.length);
+    const distractors = shuffle(alphabet).slice(0, distractorsNeeded);
+    const cells = shuffle([...letters, ...distractors]);
+    return { word: upper, letters, cells, found: [] };
+}
+
+function initRound() {
+    roundActive = true;
+    finishOrder = [];
+    document.getElementById('round-num').textContent = globalRound;
+
+    states = PLAYERS.map((name,idx) => ({
+        name, idx,
+        phase: 'opener',              // 'opener' | 'essay' | 'finish'
+        score: 0,
+        essayQuestions: pickEssayQuestions(QUESTIONS_PER_ROUND),
+        essayIdx: 0,
+        currentQ: null,
+        builtIds: [],
+        wrongCount: 0,
+        wrongFlashId: null,
+        completed: false,
+        lastPts: 0,
+        readSecondsLeft: 0,
+        readInterval: null,
+        finished: false,
+        wordGame: null,
+        wrongFlashLetter: null,
+    }));
+    states.forEach((_,i)=>initWordGame(i));
+    states.forEach((_,i)=>renderPanel(i));
+}
+
+// ============================================================
+//  RENDER
+// ============================================================
+function renderPanel(pi) {
+    const st = states[pi];
+    const el = document.getElementById(`p-${pi}`);
+
+    const seg = s => `<div class="sp-seg ${st.essayIdx>=s?'done':((st.phase==='essay'&&st.essayIdx===s-1)?'active':'')}"></div>`;
+    const bar = `<div class="stage-progress">${Array.from({length:QUESTIONS_PER_ROUND},(_,i)=>i+1).map(seg).join('')}</div>`;
+
+    const icons = ['🦴','🫀','💪'];
+    const header = `<div class="panel-header">
+        <div class="ph-name">${icons[pi]} ${st.name}</div>
+        <div class="ph-score">⚡ ${st.score}pt</div>
+    </div>${bar}`;
+
+    let body = '';
+
+    // ---- FINISH ----
+    if (st.finished) {
+        const rank   = finishOrder.indexOf(pi);
+        const medals = ['🥇','🥈','🥉'];
+        const labels = ['JUARA 1','JAGOAN 2','MANTAP 3'];
+        const showBtn = finishOrder.length===PLAYERS.length && pi===finishOrder[0];
+        body = `<div class="panel-body"><div class="finish-box">
+            <div class="finish-medal">${medals[rank]||'🎉'}</div>
+            <div class="finish-rank-text">${labels[rank]||'FINISH'}</div>
+            <div class="finish-sub">Skor Putaran ${globalRound}</div>
+            <div class="finish-score-big">⚡ <span>${st.score}</span> poin</div>
+            ${showBtn?`<button class="restart-btn" onclick="nextRound()">▶ ${globalRound<TOTAL_ROUNDS?'PUTARAN '+(globalRound+1):'SELESAI'}</button>`:''}
+        </div></div>`;
+
+    // ---- GAME PEMBUKA: TEMUKAN HURUF PENYUSUN KATA ----
+    } else if (st.phase==='opener') {
+        body = renderWordGameBody(pi);
+
+    // ---- SOAL INTI: ESAI SUSUN-KATA ----
+    } else if (st.phase==='essay') {
+        body = renderEssayBody(pi);
+    }
+
+    el.innerHTML = header + body;
+}
+
+function renderWordGameBody(pi) {
+    const st = states[pi];
+    const g  = st.wordGame;
+    const win = g.found.length === g.letters.length;
+
+    const targetHtml = g.word.split('').map(ch=>{
+        const foundCls = g.found.includes(ch) ? ' found' : '';
+        return `<div class="wt-box${foundCls}">${ch}</div>`;
+    }).join('');
+
+    const gridHtml = g.cells.map(ch=>{
+        const isFound = g.found.includes(ch);
+        const wrongCls = st.wrongFlashLetter===ch ? ' wrong-flash' : '';
+        return `<div class="letter-cell${isFound?' found':''}${wrongCls}" ${(!isFound && !win)?`onclick="doLetterClick(${pi},'${ch}')"`:''}>${ch}</div>`;
+    }).join('');
+
+    const statusText = win ? '🎉 Semua huruf ditemukan! Lanjut ke soal...' : 'Pilih kotak yang berisi huruf penyusun kata di atas';
+
+    return `<div class="panel-body">
+        <div class="stage-badge s1">🎯 GAME FOKUS</div>
+        <div class="stage-desc">Temukan semua huruf penyusun kata untuk fokus sebelum soal inti!</div>
+        <div class="word-target">${targetHtml}</div>
+        <div class="word-progress">${g.found.length}/${g.letters.length} huruf ditemukan</div>
+        <div class="letter-grid-wrap">
+            <div class="letter-grid">${gridHtml}</div>
+        </div>
+        <div class="word-status ${win?'win':''}">${statusText}</div>
+    </div>`;
+}
+
+function renderEssayBody(pi) {
+    const st = states[pi];
+    const q  = st.currentQ;
+    const builtWordsText = renderBuiltSentence(st, q);
+
+    // ---- Jawaban sudah benar: tampilkan jeda baca sebelum lanjut ----
+    if (st.completed) {
+        return `<div class="panel-body">
+            <div class="stage-badge s2">📝 SOAL INTI</div>
+            <div class="q-card">
+                <div class="q-number">SOAL ${st.essayIdx+1} / ${QUESTIONS_PER_ROUND} · KELOMPOK ${Math.floor(st.essayIdx/GROUP_SIZE)+1}</div>
+                <div class="q-text">${q.question}</div>
+            </div>
+            <div class="built-word correct-complete">${builtWordsText}</div>
+            <div class="essay-result-msg">✅ Jawaban benar! +${st.lastPts} poin</div>
+            <div class="essay-read-countdown">⏳ Lanjut dalam ${st.readSecondsLeft} detik — baca dulu jawabannya!</div>
+        </div>`;
+    }
+
+    const wordButtons = q.poolShuffled.map(item=>{
+        const used = st.builtIds.includes(item.id);
+        const wrongFlash = st.wrongFlashId===item.id ? ' wrong-flash' : '';
+        return `<button class="part-btn${wrongFlash}" ${used?'disabled':''} onclick="doClickWord(${pi},${item.id})">${item.word}</button>`;
+    }).join('');
+
+    return `<div class="panel-body">
+        <div class="stage-badge s2">📝 SOAL INTI</div>
+        <div class="stage-desc">Kata awal &amp; akhir sudah tersedia — lengkapi bagian tengah kalimat secara berurutan!</div>
+        <div class="q-card">
+            <div class="q-number">SOAL ${st.essayIdx+1} / ${QUESTIONS_PER_ROUND} · KELOMPOK ${Math.floor(st.essayIdx/GROUP_SIZE)+1}</div>
+            <div class="q-text">${q.question}</div>
+        </div>
+        <div class="w-tries-row">
+            <div class="w-tries-info">❌ Salah: ${st.wrongCount}x</div>
+            <div class="w-score-preview">✦ Jika benar sekarang = ${calcScoreByMistakes(st.wrongCount)} poin</div>
+        </div>
+        <div class="built-word">${builtWordsText}</div>
+        <div class="parts-wrap">${wordButtons}</div>
+    </div>`;
+}
+
+// Menyusun teks kalimat jawaban: kata pertama & terakhir selalu tampil
+// sebagai petunjuk tetap, kata tengah yang sudah dipilih disisipkan di antaranya.
+function renderBuiltSentence(st, q) {
+    const firstWord = q.poolMap[q.firstId].word;
+    const lastWord   = q.poolMap[q.lastId].word;
+    const middleDone = st.builtIds.filter(id => id > q.firstId && id < q.lastId);
+    const middleText = middleDone.map(id => q.poolMap[id].word).join(' ');
+    const isComplete = st.builtIds.includes(q.lastId);
+
+    if (isComplete) return `${firstWord} ${middleText} ${lastWord}`;
+    if (middleText) return `${firstWord} ${middleText} · · · ${lastWord}`;
+    return `${firstWord} · · · ${lastWord}`;
+}
+
+// ============================================================
+//  GAME LOGIC — GAME PEMBUKA: TEMUKAN HURUF PENYUSUN KATA
+//  Siswa harus menemukan (menekan) semua huruf unik penyusun kata
+//  target di antara kotak-kotak huruf yang berisi huruf jawaban +
+//  huruf pengecoh. Klik huruf yang benar akan menandai kotak itu
+//  (dan semua kemunculan huruf itu di kata target) sebagai ditemukan.
+//  Klik huruf yang salah hanya diberi umpan balik (flash merah),
+//  tidak mengulang permainan — game ini hanya pemanasan fokus.
+// ============================================================
+function doLetterClick(pi, ch) {
+    if (!roundActive) return;
+    const st = states[pi];
+    if (st.finished || st.phase!=='opener') return;
+    const g = st.wordGame;
+    if (g.found.includes(ch)) return;
+
+    if (g.letters.includes(ch)) {
+        g.found.push(ch);
+        playSound('correct');
+
+        if (g.found.length === g.letters.length) {
+            playSound('done');
+            renderPanel(pi);
+            setTimeout(()=>advanceFromOpener(pi), 1200);
+            return;
+        }
+        renderPanel(pi);
+    } else {
+        playSound('wrong');
+        st.wrongFlashLetter = ch;
+        renderPanel(pi);
+        setTimeout(()=>{ if(states[pi]){ states[pi].wrongFlashLetter=null; renderPanel(pi);} }, 300);
+    }
+}
+
+function advanceFromOpener(pi) {
+    const st = states[pi];
+    if (st.finished) return;
+    st.phase = 'essay';
+    st.currentQ = buildEssayQuestion(st.essayQuestions[st.essayIdx]);
+    st.builtIds = [st.currentQ.firstId]; // kata pertama sudah terisi sebagai petunjuk
+    st.wrongCount = 0;
+    st.completed = false;
+    renderPanel(pi);
+}
+
+// ============================================================
+//  GAME LOGIC — SOAL INTI (ESAI SUSUN-KATA, POIN BERBASIS KLIK SALAH)
+// ============================================================
+function doClickWord(pi, id) {
+    if (!roundActive) return;
+    const st = states[pi];
+    if (st.finished || st.phase!=='essay') return;
+    if (st.builtIds.includes(id)) return;
+
+    const q = st.currentQ;
+    const expected = st.builtIds.length; // id kata jawaban yang benar berikutnya (0-indexed sesuai urutan kalimat)
+
+    if (id === expected && id < q.lastId) {
+        st.builtIds.push(id);
+        playSound('correct');
+
+        // Semua kata tengah sudah terisi -> kata terakhir (petunjuk) otomatis melengkapi kalimat
+        if (st.builtIds.length === q.answerLen - 1) {
+            st.builtIds.push(q.lastId);
+        }
+
+        if (st.builtIds.length === q.answerLen) {
+            // Kalimat jawaban lengkap & benar! Poin dihitung dari jumlah klik salah.
+            const pts = calcScoreByMistakes(st.wrongCount);
+            st.score += pts;
+            st.lastPts = pts;
+            st.completed = true;
+            playSound('done');
+            document.getElementById(`p-${pi}`).classList.add('flash-correct');
+            setTimeout(()=>document.getElementById(`p-${pi}`).classList.remove('flash-correct'),350);
+
+            // Jeda baca ±10 detik agar siswa membaca kalimat jawaban sebelum lanjut
+            st.readSecondsLeft = 10;
+            renderPanel(pi);
+            if (st.readInterval) clearInterval(st.readInterval);
+            st.readInterval = setInterval(()=>{
+                st.readSecondsLeft--;
+                if (st.readSecondsLeft <= 0) {
+                    clearInterval(st.readInterval);
+                    st.readInterval = null;
+                    proceedAfterEssay(pi);
+                    return;
+                }
+                renderPanel(pi);
+            }, 1000);
+            return;
+        }
+        renderPanel(pi);
+    } else {
+        // Kata salah / urutan salah — hitung sebagai kesalahan klik & beri umpan balik
+        st.wrongCount++;
+        playSound('wrong');
+        st.wrongFlashId = id;
+        renderPanel(pi);
+        setTimeout(()=>{ if(states[pi]){ states[pi].wrongFlashId=null; renderPanel(pi);} }, 300);
+    }
+}
+
+function proceedAfterEssay(pi) {
+    const st = states[pi];
+    st.essayIdx++;
+
+    if (st.essayIdx >= QUESTIONS_PER_ROUND) {
+        // Semua soal inti putaran ini selesai
+        st.finished = true;
+        st.phase = 'finish';
+        finishOrder.push(pi);
+        if (finishOrder.length === PLAYERS.length) roundActive = false;
+        states.forEach((_,i)=>renderPanel(i));
+        return;
+    }
+
+    if (st.essayIdx % GROUP_SIZE === 0) {
+        // Sudah 2 soal inti dijawab -> kembali ke game pembuka
+        st.phase = 'opener';
+        initWordGame(pi);
+        renderPanel(pi);
+    } else {
+        // Lanjut ke soal inti berikutnya dalam kelompok yang sama
+        st.currentQ = buildEssayQuestion(st.essayQuestions[st.essayIdx]);
+        st.builtIds = [st.currentQ.firstId]; // kata pertama sudah terisi sebagai petunjuk
+        st.wrongCount = 0;
+        st.completed = false;
+        renderPanel(pi);
+    }
+}
+
+// ============================================================
+//  ROUND & GAME MANAGEMENT
+// ============================================================
+function nextRound() {
+    if (globalRound>=TOTAL_ROUNDS) { showFinalScreen(); return; }
+    globalRound++;
+    initRound();
+}
+
+function showFinalScreen() {
+    const ranked = [...states].sort((a,b)=>b.score-a.score);
+    const medals = ['🥇','🥈','🥉'];
+    document.getElementById('arena').innerHTML = `
+        <div style="width:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px;padding:28px;">
+            <div style="font-family:'Orbitron',monospace;font-size:20px;color:#f0c040;text-align:center;letter-spacing:3px;">🏆 GAME SELESAI! 🏆</div>
+            <div style="font-family:'Orbitron',monospace;font-size:11px;color:#8ab4d0;text-align:center;letter-spacing:2px;">10 PUTARAN — STRUKTUR ORGANEL SEL</div>
+            <div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center;">
+                ${ranked.map((s,i)=>`
+                    <div style="background:rgba(255,255,255,0.05);border:1px solid ${i===0?'#f0c040':'rgba(255,255,255,0.12)'};border-radius:12px;padding:18px 22px;text-align:center;min-width:110px;">
+                        <div style="font-size:30px;margin-bottom:6px;">${medals[i]||'🏅'}</div>
+                        <div style="font-family:'Orbitron',monospace;font-size:10px;color:#f0c040;margin-bottom:4px;">${s.name}</div>
+                        <div style="font-family:'Orbitron',monospace;font-size:20px;color:#fff;">${s.score}</div>
+                        <div style="font-size:10px;color:#5a7f98;">poin</div>
+                    </div>`).join('')}
+            </div>
+            <button class="restart-btn" onclick="restartAll()">🔄 MAIN LAGI DARI AWAL</button>
+        </div>`;
+}
+
+function restartAll() {
+    globalRound = 1;
+    document.getElementById('arena').innerHTML = `
+        <div class="panel" data-p="0" id="p-0"></div>
+        <div class="panel" data-p="1" id="p-1"></div>
+        <div class="panel" data-p="2" id="p-2"></div>`;
+    initRound();
+}
+
+// ============================================================
+//  KICK OFF
+// ============================================================
+initRound();
+</script>
+</body>
+</html>

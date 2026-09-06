@@ -1,0 +1,462 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Interaktif - WhatsApp Style Kendali Emoticon</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #efeae2;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-container {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+
+        .bubble {
+            max-width: 80%;
+            padding: 30px 40px;
+            border-radius: 25px;
+            font-size: 2.5rem;
+            line-height: 1.6;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+            position: relative;
+            animation: fadeIn 0.3s ease forwards;
+            word-wrap: break-word;
+        }
+
+        .bubble-guru {
+            background-color: #ffffff;
+            align-self: flex-start;
+            border-top-left-radius: 0;
+            color: #111b21;
+        }
+
+        .bubble-siswa {
+            background-color: #d9fdd3;
+            align-self: flex-end;
+            border-top-right-radius: 0;
+            color: #111b21;
+        }
+
+        /* Gaya Khusus untuk Emoticon Pemicu Obrolan (Bisa Diklik) */
+        .emot-trigger {
+            display: inline-block;
+            cursor: pointer;
+            padding: 0 10px;
+            border-radius: 10px;
+            transition: transform 0.2s, background-color 0.2s;
+            user-select: none;
+        }
+
+        /* Memberikan efek visual sedikit saat kursor guru mendekati emot di IFP */
+        .emot-trigger:hover {
+            transform: scale(1.2);
+            background-color: rgba(0,0,0,0.05);
+        }
+
+        /* Animasi 3 Titik Mengetik WA (...) */
+        .typing-indicator {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            padding: 15px 25px;
+        }
+
+        .typing-indicator span {
+            width: 15px;
+            height: 15px;
+            background-color: #54656f;
+            border-radius: 50%;
+            display: inline-block;
+            animation: bounce 1.3s infinite ease-in-out;
+        }
+
+        .typing-indicator span:nth-child(2) { animation-delay: 0.15s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.3s; }
+
+        @keyframes bounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+
+        .options-container {
+            background-color: rgba(240, 242, 245, 0.95);
+            padding: 35px 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            border-top: 2px solid #e9edef;
+            z-index: 100;
+            flex-shrink: 0;
+        }
+
+        .opt-btn {
+            background-color: #00a884;
+            color: white;
+            border: none;
+            padding: 30px;
+            font-size: 2.3rem;
+            font-weight: bold;
+            border-radius: 20px;
+            cursor: pointer;
+            text-align: left;
+            transition: background 0.2s, transform 0.1s;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+        }
+
+        .opt-btn:hover { background-color: #008069; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="chat-container" id="chatContainer"></div>
+    <div class="options-container" id="optionsPanel"></div>
+    <script>
+    /* =======================================================
+       BAGIAN 1: DATA SOAL
+       -------------------------------------------------------
+       INI SATU-SATUNYA BAGIAN YANG PERLU ANDA EDIT/TAMBAH.
+       Cukup salin satu blok { ... } lalu ubah isinya untuk
+       menambah soal baru. Tidak perlu bikin fungsi baru.
+    ======================================================= */
+    // Kalimat pembuka guru (muncul pertama kali, sebelum soal nomor 1)
+    const SAPAAN_PEMBUKA = "Halo! Hari ini kita bahas bab perkecambahan ya. Ada yang tahu, apa sih arti dari perkecambahan itu? 🌱";
+
+    // Kalimat penutup guru (muncul setelah soal terakhir selesai dibahas)
+    const PENUTUP_KELAS = "Hebat! Semua materi perkecambahan sudah selesai kita bahas, sekarang kalian tuliskan kesimpulan pembelajaran kita tadi di buku tulis, waktunya 5 menit 🙌";
+
+    const DAFTAR_SOAL = [
+        {
+            // Soal 1
+            pertanyaan: "",
+            opsi: [
+                {
+                    teks: "Saat biji mulai tumbuh jadi tanaman baru, Pak?",
+                    penjelasan: "<b>Benar banget!</b> Perkecambahan itu adalah proses awal saat isi biji (embrio) mulai bangun dari tidurnya (dormansi) lalu tumbuh menjadi tanaman baru."
+                },
+                {
+                    teks: "Belum tahu artinya, Pak.",
+                    penjelasan: "<b>Mari kita bahas!</b> Singkatnya, perkecambahan adalah proses awal saat biji mulai tumbuh menjadi tanaman baru setelah sekian lama 'tidur'."
+                }
+            ]
+        },
+        {
+            // Soal 2
+            pertanyaan: "Mantap! Kita lanjut ya. Nah, apa syarat pertama yang paling penting agar biji bisa mulai berkecambah? 💧",
+            opsi: [
+                {
+                    teks: "Harus disiram air, Pak?",
+                    penjelasan: "<b>Tepat sekali!</b> Biji memerlukan air untuk tahap awal perkecambahan. Proses masuknya air meresap ke dalam biji ini disebut dengan istilah <b>imbibisi</b>."
+                },
+                {
+                    teks: "Diberi pupuk yang banyak, Pak?",
+                    penjelasan: "<b>Kurang tepat.</b> Hal pertama yang paling penting adalah air. Air harus masuk ke dalam biji (imbibisi) dulu untuk mengaktifkan bahan kimia di dalamnya."
+                }
+            ]
+        },
+        {
+            // Soal 3
+            pertanyaan: "Keren! Setelah air masuk ke dalam biji, zat apa di dalam biji yang langsung jadi aktif untuk membantu pertumbuhan? 🧪",
+            opsi: [
+                {
+                    teks: "Hormon giberelin dan enzim, Pak?",
+                    penjelasan: "<b>Luar biasa!</b> Air yang masuk bakal mengaktifkan hormon giberelin dan enzim pembongkar makanan (seperti amilase) agar biji punya energi untuk tumbuh."
+                },
+                {
+                    teks: "Zat hijau daun, Pak?",
+                    penjelasan: "<b>Bukan ya.</b> Air itu mengaktifkan <b>hormon giberelin</b> dan <b>enzim</b> di dalam biji. Mereka bertugas memasak cadangan makanan buat si tanaman muda."
+                }
+            ]
+        },
+        {
+            // Soal 4
+            pertanyaan: "Sekarang kita bahas tipenya ya. Ada tipe Epigeal. Apa ciri gampangnya dari perkecambahan epigeal? 🍃",
+            opsi: [
+                {
+                    teks: "Biji atau daun lembaganya ikut naik ke atas tanah, Pak?",
+                    penjelasan: "<b>Benar!</b> Pada tipe epigeal, kotiledon (biji/daun lembaga) <b>terangkat ke atas</b> permukaan tanah karena batang bawahnya memanjang. Contohnya kacang tanah dan kacang hijau."
+                },
+                {
+                    teks: "Bijinya tetap di dalam tanah, Pak?",
+                    penjelasan: "<b>Salah ya.</b> Kalau <b>epigeal</b>, bijinya justru <b>naik ke atas tanah</b>. Ingat saja kata 'Epi' artinya atas. Contohnya terjadi pada kacang hijau."
+                }
+            ]
+        },
+        {
+            // Soal 5
+            pertanyaan: "Nah, kalau tipe Hipogeal, itu kebalikannya. Bagaimana ciri utama dari tipe hipogeal ini? 🌽",
+            opsi: [
+                {
+                    teks: "Bijinya tetap tinggal di bawah tanah, Pak?",
+                    penjelasan: "<b>Keren!</b> Pada tipe hipogeal, bijinya <b>tetap di bawah tanah</b>. Batang atasnya saja yang tumbuh ke permukaan. Contohnya pada jagung dan kacang kapri."
+                },
+                {
+                    teks: "Bijinya ikut terbang ke atas, Pak?",
+                    penjelasan: "<b>Hahaha tidak dong.</b> Tipe <b>hipogeal</b> artinya bijinya <b>tetap di dalam tanah</b>. Ingat kata 'Hipo' artinya bawah. Contohnya bisa kamu lihat pada tanaman jagung."
+                }
+            ]
+        },
+        {
+            // Soal 6
+            pertanyaan: "Bagus! Sekarang pertanyaan ke-6: Kenapa sih pada tipe Epigeal bijinya bisa terangkat ke atas tanah? Bagian batang mana yang memanjang? 🌱",
+            opsi: [
+                {
+                    teks: "Bagian hipokotilnya yang memanjang ya, Pak?",
+                    penjelasan: "<b>Top banget!</b> Bagian batang di bawah kotiledon namanya <b>hipokotil</b>. Karena hipokotil ini tumbuh memanjang dengan cepat, makanya biji terdorong naik ke atas permukaan tanah."
+                },
+                {
+                    teks: "Bagian akarnya yang mendorong, Pak?",
+                    penjelasan: "<b>Bukan akar ya.</b> Yang memanjang adalah bagian batang bawah yang disebut <b>hipokotil</b>. Pertumbuhan hipokotil inilah yang mendorong biji naik ke atas."
+                }
+            ]
+        },
+        {
+            // Soal 7
+            pertanyaan: "Lalu bagaimana dengan tipe Hipogeal? Bagian batang mana yang memanjang sampai membuat bijinya tetap tertinggal di dalam tanah? 🌱",
+            opsi: [
+                {
+                    teks: "Kalau ini bagian epikotilnya yang memanjang, Pak?",
+                    penjelasan: "<b>Betul sekali!</b> Pada tipe hipogeal, batang bagian atas yang bernama <b>epikotil</b> tumbuh memanjang. Makanya, bijinya tetap diam di bawah dan cuma pucuknya yang muncul ke atas."
+                },
+                {
+                    teks: "Sama saja hipokotil juga, Pak?",
+                    penjelasan: "<b>Beda dong!</b> Kalau hipogeal itu yang memanjang adalah <b>epikotil</b> (batang bagian atas). Karena yang memanjang bagian atasnya, otomatis posisi bijinya tidak berubah, tetap di dalam tanah."
+                }
+            ]
+        },
+        {
+            // Soal 8
+            pertanyaan: "Wah, kalian hebat! Kita uji ingatan yuk. Kalau buah kacang hijau yang biasa dijadikan bubur, itu tipe perkecambahannya apa? 🍲",
+            opsi: [
+                {
+                    teks: "Tipe Epigeal, Pak! Bijinya ikut naik.",
+                    penjelasan: "<b>Mantap!</b> Kacang hijau adalah contoh klasik perkecambahan <b>epigeal</b>. Saat tumbuh, kamu bisa melihat sisa bijinya ikut naik ke atas dan terbelah menjadi daun muda."
+                },
+                {
+                    teks: "Tipe Hipogeal, Pak!",
+                    penjelasan: "<b>Kurang tepat.</b> Kacang hijau itu tipe <b>epigeal</b>. Coba ingat-ingat lagi saat menanam kacang hijau di kapas basah, bijinya pasti terangkat naik ke atas, kan?"
+                }
+            ]
+        },
+        {
+            // Soal 9
+            pertanyaan: "Kalau tanaman jagung yang biasa dibakar saat tahun baru, itu tipe perkecambahannya apa hayo? 🌽",
+            opsi: [
+                {
+                    teks: "Tipe Hipogeal, Pak! Bijinya di dalam tanah.",
+                    penjelasan: "<b>Sempurna!</b> Jagung adalah contoh perkecambahan <b>hipogeal</b>. Biji jagung akan tetap terkubur di dalam tanah, sementara yang muncul keluar hanya tunas daunnya saja."
+                },
+                {
+                    teks: "Tipe Epigeal, Pak!",
+                    penjelasan: "<b>Salah ya.</b> Jagung itu tipe <b>hipogeal</b>. Bijinya tidak akan pernah ikut naik ke atas permukaan tanah saat bertunas."
+                }
+            ]
+        },
+        {
+            // Soal 10
+            pertanyaan: "Pertanyaan terakhir sebelum kelas selesai! Apa sih nama istilah untuk 'masa tidur' biji sebelum akhirnya dia disiram air dan berkecambah? 💤",
+            opsi: [
+                {
+                    teks: "Masa dormansi, Pak?",
+                    penjelasan: "<b>Luar biasa, 100 buat kamu!</b> Masa istirahat atau masa tidur biji itu disebut <b>dormansi</b>. Ketika ada air masuk, masa dormansi ini berakhir dan biji pun mulai hidup kembali."
+                },
+                {
+                    teks: "Masa pingsan, Pak?",
+                    penjelasan: "<b>Hampir mirip tapi kurang ilmiah!</b> Istilah biologinya adalah <b>dormansi</b>. Jadi, dormansi adalah kondisi di mana biji sengaja beristirahat sampai mendapatkan lingkungan yang pas untuk tumbuh."
+                }
+            ]
+        }
+        // Mau nambah soal? tinggal copy-paste satu blok { ... } di atas,
+        // taruh sebelum tanda kurung siku penutup "]" ini, lalu isi teksnya.
+    ];
+
+    /* =======================================================
+       BAGIAN 2: MESIN CHAT (TIDAK PERLU DIUBAH)
+       -------------------------------------------------------
+       Bagian ini otomatis menjalankan seluruh DAFTAR_SOAL di
+       atas secara berurutan. Anda tidak perlu menyentuh kode
+       di bawah ini untuk menambah/mengedit soal.
+    ======================================================= */
+
+    const chatContainer = document.getElementById('chatContainer');
+    const optionsPanel = document.getElementById('optionsPanel');
+
+    // Mengatur kecepatan mengetik huruf (makin kecil, makin cepat)
+    const KECEPATAN_KETIK = 35;
+
+    // Emoji pemicu lanjut, dipakai bergantian antar soal biar variatif
+    const EMOJI_LANJUT = ['🚀', '🎯', '🎓', '🔥', '✨', '🎈', '🌟', '🎁'];
+
+    // Fungsi Simulasi Balon Tiga Titik (...) sebelum teks muncul
+    function buatBalonKetik(isGuru) {
+        const bubble = document.createElement('div');
+        bubble.className = `bubble ${isGuru ? 'bubble-guru' : 'bubble-siswa'}`;
+        bubble.id = 'typingBubble';
+        bubble.innerHTML = `
+            <div class="typing-indicator">
+                <span></span><span></span><span></span>
+            </div>
+        `;
+        chatContainer.appendChild(bubble);
+        bubble.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }
+
+    function hapusBalonKetik() {
+        const k = document.getElementById('typingBubble');
+        if (k) k.remove();
+    }
+
+    // Fungsi Efek Mengetik Teks Per Karakter (Typewriter Effect)
+    function cetakChatMengebat(jenis, teksHtml, callback) {
+        buatBalonKetik(jenis === 'guru');
+
+        setTimeout(() => {
+            hapusBalonKetik();
+
+            const bubble = document.createElement('div');
+            bubble.className = `bubble bubble-${jenis}`;
+            chatContainer.appendChild(bubble);
+
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = teksHtml;
+
+            const childNodes = Array.from(tempDiv.childNodes);
+            let nodeIndex = 0;
+            let charIndex = 0;
+            let currentNode = null;
+
+            const pengetik = setInterval(() => {
+                if (nodeIndex < childNodes.length) {
+                    if (!currentNode) {
+                        const donorNode = childNodes[nodeIndex];
+                        if (donorNode.nodeType === Node.TEXT_NODE) {
+                            currentNode = document.createTextNode('');
+                            bubble.appendChild(currentNode);
+                        } else {
+                            currentNode = donorNode.cloneNode(false);
+                            bubble.appendChild(currentNode);
+                        }
+                    }
+
+                    const donorNode = childNodes[nodeIndex];
+                    if (donorNode.nodeType === Node.TEXT_NODE) {
+                        if (charIndex < donorNode.textContent.length) {
+                            currentNode.textContent += donorNode.textContent.charAt(charIndex);
+                            charIndex++;
+                        } else {
+                            nodeIndex++;
+                            charIndex = 0;
+                            currentNode = null;
+                        }
+                    } else {
+                        if (charIndex < donorNode.innerHTML.length) {
+                            currentNode.innerHTML = donorNode.innerHTML;
+                            nodeIndex++;
+                            charIndex = 0;
+                            currentNode = null;
+                        }
+                    }
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                } else {
+                    clearInterval(pengetik);
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                    if (callback) callback();
+                }
+            }, KECEPATAN_KETIK);
+
+        }, 1200);
+    }
+
+    function matikanEmotLama() {
+        const emots = document.querySelectorAll('.emot-trigger');
+        emots.forEach(emot => {
+            emot.removeAttribute('onclick');
+            emot.style.cursor = 'default';
+            emot.style.pointerEvents = 'none';
+        });
+    }
+
+    // ======= ALUR OTOMATIS BERDASARKAN DAFTAR_SOAL =======
+
+    function mulaiKelas() {
+        cetakChatMengebat('guru', SAPAAN_PEMBUKA, () => tampilkanSoal(0));
+    }
+
+    function tampilkanSoal(index) {
+        const soal = DAFTAR_SOAL[index];
+        if (soal.pertanyaan) {
+            cetakChatMengebat('guru', soal.pertanyaan, () => tampilkanOpsi(index));
+        } else {
+            tampilkanOpsi(index);
+        }
+    }
+
+    function tampilkanOpsi(index) {
+        const soal = DAFTAR_SOAL[index];
+        optionsPanel.innerHTML = soal.opsi.map((o, i) => {
+            const huruf = String.fromCharCode(65 + i); // A, B, C, ...
+            const teksAman = o.teks.replace(/'/g, "\\'");
+            return `<button class="opt-btn" onclick="jawabSoal(${index}, ${i})">${huruf}. ${o.teks}</button>`;
+        }).join('');
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    function jawabSoal(indexSoal, indexOpsi) {
+        optionsPanel.innerHTML = ''; // Kosongkan tombol pilihan bawah
+
+        const soal = DAFTAR_SOAL[indexSoal];
+        const opsi = soal.opsi[indexOpsi];
+
+        cetakChatMengebat('siswa', opsi.teks, () => {
+            const emoji = EMOJI_LANJUT[indexSoal % EMOJI_LANJUT.length];
+            const penjelasan = `${opsi.penjelasan} <span class='emot-trigger' onclick='pemicuLanjut(${indexSoal})'>${emoji}</span>`;
+            cetakChatMengebat('guru', penjelasan);
+        });
+    }
+
+    function pemicuLanjut(indexSoal) {
+        matikanEmotLama();
+        const iniSoalTerakhir = indexSoal === DAFTAR_SOAL.length - 1;
+        const teks = iniSoalTerakhir
+            ? `Sampai sini sudah paham semua ya? <span class='emot-trigger' onclick='siswaLanjut(${indexSoal})'>👍</span>`
+            : `Sampai sini paham? Yuk lanjut materi/soal berikutnya <span class='emot-trigger' onclick='siswaLanjut(${indexSoal})'>👋</span>`;
+        cetakChatMengebat('guru', teks);
+    }
+
+    function siswaLanjut(indexSoal) {
+        matikanEmotLama();
+        cetakChatMengebat('siswa', 'Paham, Pak!', () => {
+            const iniSoalTerakhir = indexSoal === DAFTAR_SOAL.length - 1;
+            setTimeout(() => {
+                if (iniSoalTerakhir) {
+                    cetakChatMengebat('guru', PENUTUP_KELAS);
+                } else {
+                    tampilkanSoal(indexSoal + 1);
+                }
+            }, 1000);
+        });
+    }
+
+    mulaiKelas();
+    </script>
+</body>
+</html>

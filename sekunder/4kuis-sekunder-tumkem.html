@@ -1,0 +1,972 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARENA — PERTUMBUHAN PERKEMBANGAN</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@500;600;700&display=swap');
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { 
+    width:100%; height:100%; overflow:hidden; 
+    font-family: 'Rajdhani', sans-serif;
+    background:#060c14; user-select: none; 
+}
+
+/* === HEADER === */
+#header {
+    height: 52px;
+    background: linear-gradient(90deg,#060c14 0%,#0d2137 35%,#0d2137 65%,#060c14 100%);
+    border-bottom: 2px solid #f0c040;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 18px; flex-shrink: 0;
+}
+#header h1 { 
+    font-family: 'Orbitron', monospace;
+    font-size: 16px; font-weight: 900; color: #f0c040; 
+    text-transform: uppercase; letter-spacing: 3px; 
+}
+#round-info {
+    font-family: 'Orbitron', monospace;
+    font-size: 12px; color: #8ab4d0;
+    background: rgba(240,192,64,0.1);
+    border: 1px solid rgba(240,192,64,0.3);
+    padding: 3px 12px; border-radius: 20px; letter-spacing: 1px;
+}
+#round-info span { color: #f0c040; font-weight: 900; }
+
+/* === ARENA === */
+#arena { display: flex; height: calc(100vh - 52px); width: 100%; }
+
+.panel { 
+    flex: 1; display: flex; flex-direction: column; overflow: hidden; 
+    border-right: 1px solid rgba(255,255,255,0.06); position: relative;
+}
+.panel:last-child { border-right: none; }
+.panel[data-p="0"] { background: #080f1c; }
+.panel[data-p="1"] { background: #060f0c; }
+.panel[data-p="2"] { background: #120a04; }
+
+/* Panel header */
+.panel-header { 
+    padding: 8px 10px; display: flex; align-items: center; justify-content: space-between; 
+    color: #fff; font-weight: 700; font-size: 14px; letter-spacing: 1px; flex-shrink: 0;
+}
+.panel[data-p="0"] .panel-header { background: linear-gradient(90deg,#1a3a5c,#0f2540); border-bottom: 2px solid #2a6fa8; }
+.panel[data-p="1"] .panel-header { background: linear-gradient(90deg,#0f6e56,#094d3c); border-bottom: 2px solid #16a085; }
+.panel[data-p="2"] .panel-header { background: linear-gradient(90deg,#853d1e,#5c2a10); border-bottom: 2px solid #e67e22; }
+
+.ph-name { display: flex; align-items: center; gap: 5px; font-family: 'Orbitron', monospace; font-size: 10px; }
+.ph-score { 
+    font-family: 'Orbitron', monospace; font-size: 10px;
+    background: rgba(240,192,64,0.15); border: 1px solid rgba(240,192,64,0.4);
+    color: #f0c040; padding: 2px 7px; border-radius: 10px;
+}
+
+/* Stage progress bar */
+.stage-progress { height: 3px; width: 100%; display: flex; flex-shrink: 0; }
+.sp-seg { flex: 1; background: rgba(255,255,255,0.06); margin: 0 1px; transition: background 0.3s; }
+.sp-seg.done { background: #f0c040; }
+.sp-seg.active { background: rgba(240,192,64,0.45); }
+
+/* Panel body */
+.panel-body { 
+    flex: 1; padding: 12px 12px; display: flex; flex-direction: column; 
+    align-items: center; justify-content: center; overflow: hidden;
+}
+
+/* Stage badge */
+.stage-badge { 
+    font-family: 'Orbitron', monospace; font-size: 10px; letter-spacing: 2px;
+    text-transform: uppercase; padding: 3px 12px; border-radius: 12px; margin-bottom: 6px;
+    border: 1px solid currentColor; flex-shrink: 0;
+}
+.stage-badge.s1 { color: #e74c3c; border-color: #e74c3c; background: rgba(231,76,60,0.1); }
+.stage-badge.s2 { color: #3498db; border-color: #3498db; background: rgba(52,152,219,0.1); }
+
+.stage-desc { color: #5a7f98; font-size: 11px; margin-bottom: 9px; text-align: center; line-height: 1.4; flex-shrink: 0; }
+
+/* ===== GAME PEMBUKA: TEBAK GAMBAR (EMOJI + CLUE + SUSUN HURUF) ===== */
+.guess-clue {
+    text-align: center; font-family: 'Rajdhani', sans-serif; font-weight: 700;
+    font-size: 12.5px; color: #f0c040; margin-bottom: 8px; line-height: 1.35; padding: 0 6px;
+}
+.guess-timer {
+    text-align: center; font-family: 'Orbitron', monospace; font-size: 12px;
+    color: #8ab4d0; margin-bottom: 8px; letter-spacing: 1px; transition: color 0.2s;
+}
+.guess-timer.low { color: #e74c3c; }
+.essay-timer {
+    text-align: center; font-family: 'Orbitron', monospace; font-size: 12px;
+    color: #8ab4d0; margin-bottom: 8px; letter-spacing: 1px; transition: color 0.2s;
+}
+.essay-timer.low { color: #e74c3c; }
+.essay-timeout-msg {
+    font-family:'Orbitron',monospace; font-size: 13px; color: #e74c3c;
+    text-align: center; margin-bottom: 12px; letter-spacing: 0.5px;
+}
+.guess-emoji-box {
+    width: 84px; height: 84px; margin: 0 auto 12px;
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 16px; display: flex; align-items: center; justify-content: center;
+    font-size: 46px;
+}
+.guess-word-row {
+    display: flex; gap: 5px; justify-content: center; flex-wrap: wrap; margin-bottom: 12px;
+}
+.gw-box {
+    width: 26px; height: 30px; background: #fff; color: #2a6fa8;
+    border-radius: 6px; display: flex; align-items: center; justify-content: center;
+    font-family: 'Orbitron', monospace; font-weight: 900; font-size: 13px;
+    box-shadow: 0 2px 0 rgba(0,0,0,0.25);
+}
+.gw-box.empty {
+    background: rgba(255,255,255,0.08); color: transparent; box-shadow: none;
+    border: 2px dashed rgba(255,255,255,0.2);
+}
+.guess-tiles-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; }
+.guess-tiles {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;
+    width: 100%; max-width: 280px;
+}
+.guess-tile {
+    aspect-ratio: 1; background: rgba(255,255,255,0.05);
+    border: 2px solid rgba(255,255,255,0.16); border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Orbitron', monospace; font-weight: 900; font-size: 15px;
+    color: #8ab4d0; cursor: pointer; transition: background 0.12s;
+}
+.guess-tile:active:not(.used) { background: rgba(255,255,255,0.12); }
+.guess-tile.used {
+    background: rgba(46,204,113,0.22); border-color: #2ecc71; color: #2ecc71;
+    cursor: default; opacity: 0.55;
+}
+.guess-tile.wrong-flash { background: rgba(231,76,60,0.35); border-color: #e74c3c; color: #e74c3c; }
+.guess-tile.locked-tile { opacity: 0.35; cursor: not-allowed; }
+.guess-status {
+    font-family: 'Orbitron', monospace; font-size: 12px; color: #8ab4d0;
+    margin-top: 12px; text-align: center; letter-spacing: 1px;
+}
+.guess-status.win { color: #2ecc71; }
+.guess-status.penalty { color: #e74c3c; }
+
+/* ===== GAME PEMBUKA: TANGGA KATA (WORD LADDER 3 TAHAP) ===== */
+.ladder-chain { display: flex; flex-direction: column; width: 100%; max-width: 300px; margin-bottom: 10px; flex-shrink: 0; }
+.ladder-step {
+    padding: 6px 10px; border-radius: 10px;
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+}
+.ladder-step.active { border-color: #f0c040; background: rgba(240,192,64,0.09); }
+.ladder-step.done { border-color: #2ecc71; background: rgba(46,204,113,0.08); opacity: 0.8; }
+.ladder-clue { font-size: 10.5px; color: #8ab4d0; margin-bottom: 4px; text-align: center; font-weight: 700; }
+.ladder-step.active .ladder-clue { color: #f0c040; }
+.ladder-step.done .ladder-clue { color: #2ecc71; }
+.ladder-boxes { display: flex; gap: 4px; justify-content: center; }
+.lw-box {
+    width: 24px; height: 28px; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Orbitron', monospace; font-weight: 900; font-size: 13px;
+}
+.lw-box.done { background: #2ecc71; color: #06210f; }
+.lw-box.filled { background: #fff; color: #2a6fa8; box-shadow: 0 2px 0 rgba(0,0,0,0.25); }
+.lw-box.empty { background: rgba(255,255,255,0.08); color: transparent; border: 2px dashed rgba(255,255,255,0.2); }
+.lw-box.locked { background: rgba(255,255,255,0.04); color: #3a5468; border: 1px solid rgba(255,255,255,0.08); }
+.ladder-arrow { text-align: center; color: #5a7f98; font-size: 10px; line-height: 1; margin: 1px 0; }
+
+/* ===== SOAL INTI: ESAI SUSUN-KATA ===== */
+.q-card { 
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); 
+    border-radius: 12px; padding: 14px 12px; width: 100%; max-width: 420px;
+    margin-bottom: 12px; text-align: center; flex-shrink: 0;
+}
+.q-number { 
+    font-size: 10px; color: #5a7f98; letter-spacing: 1px; margin-bottom: 7px; 
+    font-family:'Orbitron',monospace; display: flex; align-items:center; justify-content:center; gap:6px;
+}
+.q-text { color: #e8f0f8; font-size: 16px; font-weight: 600; line-height: 1.5; }
+
+.w-tries-row { 
+    display:flex; align-items:center; justify-content:space-between; width:100%; max-width:420px; margin-bottom:8px;
+}
+.w-tries-info { font-family:'Orbitron',monospace; font-size:11px; color:#5a7f98; }
+.w-score-preview { font-family:'Orbitron',monospace; font-size:11px; color:#f0c040; }
+
+.built-word { 
+    min-height: 48px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px; padding: 8px 12px; margin-bottom: 10px;
+    font-family: 'Rajdhani',sans-serif; font-weight: 700; font-size: 15px; color: #f0c040;
+    letter-spacing: 0.5px; text-align: center; width: 100%; max-width: 420px; line-height: 1.4;
+    display: flex; align-items: center; justify-content: center; flex-shrink:0;
+}
+.parts-wrap { display: flex; gap: 9px; flex-wrap: wrap; justify-content: center; width:100%; max-width:480px; }
+.part-btn { 
+    padding: 10px 14px; background: rgba(42,111,168,0.25); 
+    border: 1px solid #2a6fa8; color: #80c8f0; 
+    font-family: 'Rajdhani',sans-serif; font-weight: 700; font-size: 17px;
+    border-radius: 8px; cursor: pointer; transition: all 0.12s;
+    letter-spacing: 0.5px;
+}
+.part-btn:active:not(:disabled) { transform: scale(0.95); }
+.part-btn:disabled { opacity: 0.15; cursor: default; }
+.part-btn.wrong-flash { background: rgba(231,76,60,0.35); border-color: #e74c3c; color:#e74c3c; }
+
+.built-word.correct-complete { 
+    border-color: #2ecc71; background: rgba(46,204,113,0.1); color: #b8f0c8; 
+    font-size: 16px;
+}
+.essay-result-msg { 
+    font-family:'Orbitron',monospace; font-size: 13px; color: #2ecc71; 
+    text-align: center; margin-bottom: 12px; letter-spacing: 0.5px;
+}
+.essay-read-countdown { 
+    font-size: 13px; color: #8ab4d0; text-align: center; line-height: 1.5; 
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px; padding: 10px 12px; width: 100%; max-width: 420px;
+}
+
+/* ===== FINISH ===== */
+.finish-box { text-align: center; color: #fff; }
+.finish-medal { font-size: 40px; margin-bottom: 6px; animation: medalPop 0.5s cubic-bezier(0.175,0.885,0.32,1.275); }
+@keyframes medalPop { 0%{transform:scale(0) rotate(-20deg);} 100%{transform:scale(1) rotate(0);} }
+.finish-rank-text { font-family:'Orbitron',monospace; font-size:13px; color:#f0c040; font-weight:900; margin-bottom:5px; letter-spacing:2px; }
+.finish-sub { color:#5a7f98; font-size:11px; margin-bottom:5px; }
+.finish-score-big { font-family:'Orbitron',monospace; font-size:22px; color:#fff; font-weight:900; }
+.finish-score-big span { color:#f0c040; }
+.restart-btn { 
+    margin-top: 14px; padding: 9px 22px; border: none; 
+    background: linear-gradient(90deg,#f0c040,#e8a020); color: #000; 
+    font-family: 'Orbitron',monospace; font-weight: 700; border-radius: 6px; cursor: pointer; 
+    text-transform: uppercase; font-size: 9px; letter-spacing: 2px;
+    box-shadow: 0 0 18px rgba(240,192,64,0.4);
+}
+
+/* Flash overlay */
+.flash-correct { animation: flashGreen 0.35s ease; }
+.flash-wrong   { animation: flashRed   0.35s ease; }
+@keyframes flashGreen { 0%,100%{background:transparent} 50%{background:rgba(46,204,113,0.13)} }
+@keyframes flashRed   { 0%,100%{background:transparent} 50%{background:rgba(231,76,60,0.13)} }
+</style>
+</head>
+<body>
+
+<div id="header">
+    <h1>🦴 KUIS PERTUMBUHAN PERKEMBANGAN - ARIEF RACHMAN</h1>
+    <div id="round-info">PUTARAN <span id="round-num">1</span> / 10</div>
+</div>
+<div id="arena">
+    <div class="panel" data-p="0" id="p-0"></div>
+    <div class="panel" data-p="1" id="p-1"></div>
+    <div class="panel" data-p="2" id="p-2"></div>
+</div>
+
+<script>
+// ============================================================
+//  AUDIO
+// ============================================================
+function playSound(type) {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.connect(g); g.connect(ctx.destination);
+        const t = ctx.currentTime;
+        if (type==='tap') {
+            o.type='sine'; o.frequency.setValueAtTime(800,t); o.frequency.linearRampToValueAtTime(600,t+0.05);
+            g.gain.setValueAtTime(0.08,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.1);
+            o.start(t); o.stop(t+0.1);
+        } else if (type==='correct') {
+            o.type='triangle'; o.frequency.setValueAtTime(523,t); o.frequency.setValueAtTime(784,t+0.06);
+            g.gain.setValueAtTime(0.09,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.18);
+            o.start(t); o.stop(t+0.18);
+        } else if (type==='wrong') {
+            o.type='sawtooth'; o.frequency.setValueAtTime(220,t); o.frequency.setValueAtTime(160,t+0.1);
+            g.gain.setValueAtTime(0.07,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.2);
+            o.start(t); o.stop(t+0.2);
+        } else if (type==='done') {
+            [523,659,784,1047].forEach((f,i)=>{
+                const o2=ctx.createOscillator(), g2=ctx.createGain();
+                o2.connect(g2); g2.connect(ctx.destination);
+                o2.type='triangle'; o2.frequency.setValueAtTime(f, t+i*0.11);
+                g2.gain.setValueAtTime(0.09, t+i*0.11); g2.gain.exponentialRampToValueAtTime(0.001, t+i*0.11+0.15);
+                o2.start(t+i*0.11); o2.stop(t+i*0.11+0.15);
+            });
+        }
+    } catch(e){}
+}
+
+// ============================================================
+//  POIN BERBASIS JUMLAH KLIK SALAH (SOAL INTI)
+//  Dihitung dari banyaknya klik kata yang salah/salah urutan
+//  selama mengerjakan satu soal (anti brute-force):
+//  0-2 kali salah  = 10 poin
+//  3-4 kali salah  = 8 poin
+//  >=5 kali salah  = 6 poin (poin minimum, tidak turun lagi)
+// ============================================================
+function calcScoreByMistakes(wrongCount) {
+    if (wrongCount <= 2) return 10;
+    if (wrongCount <= 4) return 8;
+    return 6;
+}
+
+// ============================================================
+//  BANK SOAL INTI (ESAI — SUSUN KATA JADI KALIMAT JAWABAN)
+//  Siswa menjawab dengan memilih kata satu per satu (urut) dari
+//  kumpulan kata (jawaban benar + kata pengecoh) sampai membentuk
+//  kalimat jawaban yang tepat (minimal 7 kata).
+// ============================================================
+const ESSAY_POOL = [
+  {
+    q: "Apa yang dimaksud dengan pertumbuhan sekunder?",
+    answer: "Proses penambahan diameter pada organ tumbuhan",
+    distractors: ["pelebaran", "tinggi", "batang", "akar"]
+  },
+  {
+    q: "Organ tumbuhan utama yang mengalami pertumbuhan sekunder?",
+    answer: "Bagian organ batang dan akar tumbuhan",
+    distractors: ["daun", "bunga", "buah", "Biji"]
+  },
+  {
+    q: "Aktivitas jaringan meristem yang menyebabkan terjadinya pertumbuhan sekunder?",
+    answer: "Aktivitas jaringan meristem lateral atau kambium",
+    distractors: ["sel", "batang", "primer", "proses"]
+  },
+  {
+    q: "Dua jenis kambium yang terlibat langsung dalam proses pertumbuhan sekunder",
+    answer: "Jenis kambium vaskuler dan kambium gabus",
+    distractors: ["apikal", "lateral", "sekunder", "primer"]
+  },
+  {
+    q: "Jaringan apa yang terbentuk ketika kambium vaskuler membelah ke arah dalam batang?",
+    answer: "Terjadi pembentukan jaringan xilem sekunder tumbuhan",
+    distractors: ["floem", "primer", "gabus", "korteks"]
+  },
+  {
+    q: "Jaringan apa yang terbentuk ketika kambium vaskuler aktif membelah ke arah luar?",
+    answer: "Terjadi pembentukan jaringan floem sekunder tumbuhan",
+    distractors: ["xilem", "epidermis", "sel", "kayu"]
+  },
+  {
+    q: "Faktor apa yang sangat memengaruhi aktivitas pembelahan kambium menjadi xilem dan floem?",
+    answer: "Aktivitas pembelahan kambium dipengaruhi faktor lingkungan",
+    distractors: ["umur", "penambahan", "diameter", "cahaya"]
+  },
+  {
+    q: "Fenomena apa yang muncul pada irisan melintang batang akibat perbedaan aktivitas pembelahan kambium?",
+    answer: "Terbentuknya lingkaran tahun pada batang pohon",
+    distractors: ["akar", "bertambah", "jaringan", "xilem"]
+  },
+  {
+    q: "Apa fungsi utama dari jaringan xilem atau pembuluh kayu pada tumbuhan berpembuluh?",
+    answer: "Mengangkut air dari akar ke daun",
+    distractors: ["fotosintesis", "hasil", "perlindungan", "tanah"]
+  },
+  {
+    q: "Jaringan apa yang bertugas mengedarkan zat makanan hasil fotosintesis ke seluruh bagian tumbuhan?",
+    answer: "Floem berfungsi mengedarkan zat hasil fotosintesis",
+    distractors: ["xilem", "menambah", "menyerap", "air"]
+  },
+  {
+    q: "Apa nama ilmiah dari jaringan kambium gabus?",
+    answer: "Jaringan kambium gabus disebut sebagai felogen",
+    distractors: ["xilem", "vaskuler", "dinamakan", "floem"]
+  },
+  {
+    q: "Mengapa kambium gabus (felogen) perlu aktif membelah membentuk lapisan pelindung baru?",
+    answer: "Menggantikan jaringan epidermis yang telah rusak",
+    distractors: ["kayu", "menyerap", "buah", "bertambah"]
+  }
+];
+
+// ============================================================
+//  BANK GAME PEMBUKA "TANGGA KATA" (WORD LADDER)
+//  Tiap entri berisi 3 kata berjenjang (kata pendek -> makin panjang,
+//  ditambah 1 huruf setiap langkah) beserta arti/petunjuknya dalam
+//  Bahasa Indonesia. Siswa harus menyelesaikan ketiga kata secara
+//  berurutan sebelum lanjut ke soal inti.
+// ============================================================
+const WORD_LADDER_BANK = [
+    { words:["IN","WIN","TWIN"], clues:["Di dalam","Menang","Kembar"] },
+    { words:["AIR","HAIR","CHAIR"], clues:["Udara","Rambut","Kursi"] },
+    { words:["ALL","MALL","SMALL"], clues:["Semua","Pusat Perbelanjaan","Kecil"] },
+    { words:["OLD","COLD","SCOLD"], clues:["Tua","Dingin","Memarahi"] },
+    { words:["ONE","TONE","STONE"], clues:["Satu","Nada","Batu"] },
+    { words:["INK","LINK","BLINK"], clues:["Tinta","Tautan","Berkedip"] },
+    { words:["ILL","PILL","SPILL"], clues:["Sakit","Pil Obat","Tumpah"] },
+    { words:["EAR","HEAR","SHEAR"], clues:["Telinga","Mendengar","Mencukur"] },
+    { words:["ICE","RICE","PRICE"], clues:["Es","Nasi","Harga"] },
+    { words:["END","LEND","BLEND"], clues:["Akhir","Meminjamkan","Mencampur"] },
+    { words:["OUT","POUT","SPOUT"], clues:["Luar","Cemberut","Memancar"] },
+    { words:["ART","TART","START"], clues:["Seni","Kue Tart","Mulai"] },
+    { words:["RAIN","TRAIN","STRAIN"], clues:["Hujan","Kereta Api","Tekanan"] },
+    { words:["RAY","PRAY","SPRAY"], clues:["Sinar","Berdoa","Semprotan"] },
+    { words:["IN","PIN","SPIN"], clues:["Di dalam","Peniti/Pin","Berputar"] }
+];
+
+// ============================================================
+//  CONFIG
+// ============================================================
+const PLAYERS   = ["Siswa 1","Siswa 2","Siswa 3"];
+const TOTAL_ROUNDS = 1;
+const QUESTIONS_PER_ROUND = 10;  // total soal inti per putaran (5x game huruf, tiap game huruf diikuti 2 soal)
+const GROUP_SIZE = 2;            // kembali ke game pembuka tiap 2 soal inti
+const ESSAY_TIMER = 45;          // batas waktu (detik) untuk setiap soal inti
+
+let globalRound = 1;
+let finishOrder = [];
+let states      = [];
+let roundActive = true;
+
+// ============================================================
+//  UTIL
+// ============================================================
+function shuffle(arr) { return [...arr].sort(()=>Math.random()-0.5); }
+
+function pickEssayQuestions(n) {
+    return shuffle(ESSAY_POOL).slice(0, n);
+}
+
+// Susun bank kata (jawaban benar + pengecoh) dari satu soal esai.
+// Kata PERTAMA dan TERAKHIR dari kalimat jawaban dijadikan petunjuk tetap
+// (langsung ditampilkan di kolom jawaban, tidak jadi tombol pilihan),
+// supaya siswa tidak ambigu harus mulai/mengakhiri dengan kata apa.
+// Siswa hanya perlu memilih kata-kata di TENGAH kalimat secara berurutan.
+function buildEssayQuestion(item) {
+    const answerWords = item.answer.split(' ');
+    const n = answerWords.length;
+    const pool = answerWords.map((w,i)=>({ id:i, word:w }));
+    const poolMap = {};
+    pool.forEach(x=>poolMap[x.id]=x);
+
+    const firstId = 0;
+    const lastId  = n - 1;
+    const middleItems = pool.slice(1, n-1); // id 1..n-2
+
+    const distractors = shuffle(item.distractors).map((w,i)=>({ id: n+i, word:w }));
+    distractors.forEach(x=>poolMap[x.id]=x);
+
+    const combined = [...middleItems, ...distractors];
+    return {
+        question: item.q,
+        answerLen: n,
+        firstId, lastId,
+        poolShuffled: shuffle(combined),
+        poolMap
+    };
+}
+
+// ============================================================
+//  INIT
+// ============================================================
+function initGuessGame(pi) {
+    const st = states[pi];
+    const entry = WORD_LADDER_BANK[Math.floor(Math.random()*WORD_LADDER_BANK.length)];
+    st.guessGame = buildLadderGame(entry);
+}
+
+// Menyusun 9 kotak huruf untuk SATU kata target: huruf-huruf kata itu
+// sendiri (termasuk huruf berulang) ditambah huruf pengecoh acak sampai
+// total 9 kotak, lalu diacak posisinya.
+function buildLadderTiles(word) {
+    let letters = word.split('');
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    while (letters.length < 9) {
+        const r = alphabet[Math.floor(Math.random()*alphabet.length)];
+        if (!letters.includes(r)) letters.push(r);
+    }
+    return shuffle(letters).map((letter,i)=>({ id:i, letter }));
+}
+
+function buildLadderGame(entry) {
+    return {
+        words: entry.words,
+        clues: entry.clues,
+        wordIdx: 0,
+        filled: [],
+        usedTileIds: [],
+        tiles: buildLadderTiles(entry.words[0]),
+        ladderDone: false,
+        penaltySecondsLeft: 0
+    };
+}
+
+// Jeda hukuman 5 detik: dipicu setiap kali siswa salah klik huruf, agar
+// siswa tidak bisa asal klik cepat (brute force) untuk menebak-nebak.
+// Selama jeda berjalan, kotak huruf tidak bisa diklik.
+function startPenalty(pi) {
+    const st = states[pi];
+    const g = st.guessGame;
+    if (!g) return;
+    g.penaltySecondsLeft = 5;
+    if (st.guessInterval) clearInterval(st.guessInterval);
+    st.guessInterval = setInterval(()=>{
+        const s = states[pi];
+        if (!s || s.finished || s.phase!=='opener' || !s.guessGame) {
+            clearInterval(st.guessInterval);
+            return;
+        }
+        s.guessGame.penaltySecondsLeft--;
+        if (s.guessGame.penaltySecondsLeft <= 0) {
+            s.guessGame.penaltySecondsLeft = 0;
+            clearInterval(st.guessInterval);
+            st.guessInterval = null;
+        }
+        renderPanel(pi);
+    }, 1000);
+}
+
+// Timer 45 detik per soal inti. Jika habis sebelum terjawab, siswa
+// otomatis diberi 3 poin dan langsung lanjut ke soal berikutnya.
+function startEssayTimer(pi) {
+    const st = states[pi];
+    if (st.essayInterval) { clearInterval(st.essayInterval); st.essayInterval = null; }
+    st.essayTimeLeft = ESSAY_TIMER;
+    st.essayInterval = setInterval(()=>{
+        const s = states[pi];
+        if (!s || s.finished || s.phase!=='essay' || s.completed) {
+            clearInterval(st.essayInterval);
+            return;
+        }
+        s.essayTimeLeft--;
+        if (s.essayTimeLeft <= 0) {
+            clearInterval(s.essayInterval);
+            s.essayInterval = null;
+            handleEssayTimeout(pi);
+            return;
+        }
+        renderPanel(pi);
+    }, 1000);
+}
+
+// Waktu soal inti habis: beri 3 poin lalu lanjut ke soal berikutnya.
+function handleEssayTimeout(pi) {
+    const st = states[pi];
+    if (st.finished || st.phase!=='essay' || st.completed) return;
+
+    st.score += 3;
+    st.lastPts = 3;
+    st.timedOut = true;
+    playSound('wrong');
+    document.getElementById(`p-${pi}`).classList.add('flash-wrong');
+    setTimeout(()=>document.getElementById(`p-${pi}`).classList.remove('flash-wrong'), 350);
+    renderPanel(pi);
+
+    setTimeout(()=>{
+        if (!states[pi]) return;
+        states[pi].timedOut = false;
+        proceedAfterEssay(pi);
+    }, 1500);
+}
+
+function initRound() {
+    roundActive = true;
+    finishOrder = [];
+    document.getElementById('round-num').textContent = globalRound;
+
+    states = PLAYERS.map((name,idx) => ({
+        name, idx,
+        phase: 'opener',              // 'opener' | 'essay' | 'finish'
+        score: 0,
+        essayQuestions: pickEssayQuestions(QUESTIONS_PER_ROUND),
+        essayIdx: 0,
+        currentQ: null,
+        builtIds: [],
+        wrongCount: 0,
+        wrongFlashId: null,
+        completed: false,
+        lastPts: 0,
+        readSecondsLeft: 0,
+        readInterval: null,
+        essayTimeLeft: ESSAY_TIMER,
+        essayInterval: null,
+        timedOut: false,
+        finished: false,
+        guessGame: null,
+        guessWrongTileId: null,
+        guessInterval: null,
+    }));
+    states.forEach((_,i)=>initGuessGame(i));
+    states.forEach((_,i)=>renderPanel(i));
+}
+
+// ============================================================
+//  RENDER
+// ============================================================
+function renderPanel(pi) {
+    const st = states[pi];
+    const el = document.getElementById(`p-${pi}`);
+
+    const seg = s => `<div class="sp-seg ${st.essayIdx>=s?'done':((st.phase==='essay'&&st.essayIdx===s-1)?'active':'')}"></div>`;
+    const bar = `<div class="stage-progress">${Array.from({length:QUESTIONS_PER_ROUND},(_,i)=>i+1).map(seg).join('')}</div>`;
+
+    const icons = ['🦴','🫀','💪'];
+    const header = `<div class="panel-header">
+        <div class="ph-name">${icons[pi]} ${st.name}</div>
+        <div class="ph-score">⚡ ${st.score}pt</div>
+    </div>${bar}`;
+
+    let body = '';
+
+    // ---- FINISH ----
+    if (st.finished) {
+        const rank   = finishOrder.indexOf(pi);
+        const medals = ['🥇','🥈','🥉'];
+        const labels = ['JUARA 1','JAGOAN 2','MANTAP 3'];
+        const showBtn = finishOrder.length===PLAYERS.length && pi===finishOrder[0];
+        body = `<div class="panel-body"><div class="finish-box">
+            <div class="finish-medal">${medals[rank]||'🎉'}</div>
+            <div class="finish-rank-text">${labels[rank]||'FINISH'}</div>
+            <div class="finish-sub">Skor Putaran ${globalRound}</div>
+            <div class="finish-score-big">⚡ <span>${st.score}</span> poin</div>
+            ${showBtn?`<button class="restart-btn" onclick="nextRound()">▶ ${globalRound<TOTAL_ROUNDS?'PUTARAN '+(globalRound+1):'SELESAI'}</button>`:''}
+        </div></div>`;
+
+    // ---- GAME PEMBUKA: TEBAK GAMBAR ----
+    } else if (st.phase==='opener') {
+        body = renderGuessGameBody(pi);
+
+    // ---- SOAL INTI: ESAI SUSUN-KATA ----
+    } else if (st.phase==='essay') {
+        body = renderEssayBody(pi);
+    }
+
+    el.innerHTML = header + body;
+}
+
+function renderGuessGameBody(pi) {
+    const st = states[pi];
+    const g  = st.guessGame;
+    const win = !!g.ladderDone;
+
+    // Rantai 3 kata: kata yang sudah selesai tampil penuh (hijau), kata yang
+    // sedang dikerjakan tampil kotak isi/kosong, kata yang belum giliran
+    // tampil terkunci (tanda tanya) supaya siswa tetap tahu ada 3 tahap.
+    const stepsHtml = g.words.map((w, idx) => {
+        const isDone = idx < g.wordIdx || win;
+        const isActive = idx === g.wordIdx && !win;
+        let boxesHtml;
+        if (isDone) {
+            boxesHtml = w.split('').map(ch=>`<div class="lw-box done">${ch}</div>`).join('');
+        } else if (isActive) {
+            boxesHtml = w.split('').map((_,i)=>{
+                const ch = g.filled[i];
+                return ch ? `<div class="lw-box filled">${ch}</div>` : `<div class="lw-box empty">·</div>`;
+            }).join('');
+        } else {
+            boxesHtml = w.split('').map(()=>`<div class="lw-box locked">?</div>`).join('');
+        }
+        return `<div class="ladder-step ${isDone?'done':''} ${isActive?'active':''}">
+            <div class="ladder-clue">${idx+1}. ${g.clues[idx]}</div>
+            <div class="ladder-boxes">${boxesHtml}</div>
+        </div>`;
+    }).join('<div class="ladder-arrow">▼</div>');
+
+    const locked = g.penaltySecondsLeft > 0;
+
+    const tilesHtml = win ? '' : g.tiles.map(t=>{
+        const isUsed = g.usedTileIds.includes(t.id);
+        const wrongCls = st.guessWrongTileId===t.id ? ' wrong-flash' : '';
+        const lockedCls = (locked && !isUsed) ? ' locked-tile' : '';
+        const clickable = !isUsed && !locked;
+        return `<div class="guess-tile${isUsed?' used':''}${lockedCls}${wrongCls}" ${clickable?`onclick="doGuessClick(${pi},${t.id})"`:''}>${t.letter}</div>`;
+    }).join('');
+
+    const statusText = win
+        ? '🎉 Tangga kata selesai! Lanjut ke soal...'
+        : locked
+            ? `⛔ Salah! Tunggu ${g.penaltySecondsLeft} detik...`
+            : `Susun huruf untuk arti: "${g.clues[g.wordIdx]}"`;
+
+    return `<div class="panel-body">
+        <div class="stage-badge s1">🪜 TANGGA KATA</div>
+        <div class="ladder-chain">${stepsHtml}</div>
+        <div class="guess-tiles-wrap">
+            <div class="guess-tiles">${tilesHtml}</div>
+        </div>
+        <div class="guess-status ${win?'win':''} ${locked?'penalty':''}">${statusText}</div>
+    </div>`;
+}
+
+function renderEssayBody(pi) {
+    const st = states[pi];
+    const q  = st.currentQ;
+    const builtWordsText = renderBuiltSentence(st, q);
+
+    // ---- Waktu habis: tampilkan pesan singkat sebelum lanjut otomatis ----
+    if (st.timedOut) {
+        return `<div class="panel-body">
+            <div class="stage-badge s2">📝 SOAL INTI</div>
+            <div class="q-card">
+                <div class="q-number">SOAL ${st.essayIdx+1} / ${QUESTIONS_PER_ROUND} · KELOMPOK ${Math.floor(st.essayIdx/GROUP_SIZE)+1}</div>
+                <div class="q-text">${q.question}</div>
+            </div>
+            <div class="built-word">${builtWordsText}</div>
+            <div class="essay-timeout-msg">⏰ Waktu habis! +${st.lastPts} poin. Lanjut ke soal berikutnya...</div>
+        </div>`;
+    }
+
+    // ---- Jawaban sudah benar: tampilkan jeda baca sebelum lanjut ----
+    if (st.completed) {
+        return `<div class="panel-body">
+            <div class="stage-badge s2">📝 SOAL INTI</div>
+            <div class="q-card">
+                <div class="q-number">SOAL ${st.essayIdx+1} / ${QUESTIONS_PER_ROUND} · KELOMPOK ${Math.floor(st.essayIdx/GROUP_SIZE)+1}</div>
+                <div class="q-text">${q.question}</div>
+            </div>
+            <div class="built-word correct-complete">${builtWordsText}</div>
+            <div class="essay-result-msg">✅ Jawaban benar! +${st.lastPts} poin</div>
+            <div class="essay-read-countdown">⏳ Lanjut dalam ${st.readSecondsLeft} detik — baca dulu jawabannya!</div>
+        </div>`;
+    }
+
+    const wordButtons = q.poolShuffled.map(item=>{
+        const used = st.builtIds.includes(item.id);
+        const wrongFlash = st.wrongFlashId===item.id ? ' wrong-flash' : '';
+        return `<button class="part-btn${wrongFlash}" ${used?'disabled':''} onclick="doClickWord(${pi},${item.id})">${item.word}</button>`;
+    }).join('');
+
+    const timeLow = st.essayTimeLeft <= 10;
+
+    return `<div class="panel-body">
+        <div class="stage-badge s2">📝 SOAL INTI</div>
+        <div class="stage-desc">Kata awal &amp; akhir sudah tersedia — lengkapi bagian tengah kalimat secara berurutan!</div>
+        <div class="essay-timer ${timeLow?'low':''}">⏱️ ${st.essayTimeLeft} detik</div>
+        <div class="q-card">
+            <div class="q-number">SOAL ${st.essayIdx+1} / ${QUESTIONS_PER_ROUND} · KELOMPOK ${Math.floor(st.essayIdx/GROUP_SIZE)+1}</div>
+            <div class="q-text">${q.question}</div>
+        </div>
+        <div class="w-tries-row">
+            <div class="w-tries-info">❌ Salah: ${st.wrongCount}x</div>
+            <div class="w-score-preview">✦ Jika benar sekarang = ${calcScoreByMistakes(st.wrongCount)} poin</div>
+        </div>
+        <div class="built-word">${builtWordsText}</div>
+        <div class="parts-wrap">${wordButtons}</div>
+    </div>`;
+}
+
+// Menyusun teks kalimat jawaban: kata pertama & terakhir selalu tampil
+// sebagai petunjuk tetap, kata tengah yang sudah dipilih disisipkan di antaranya.
+function renderBuiltSentence(st, q) {
+    const firstWord = q.poolMap[q.firstId].word;
+    const lastWord   = q.poolMap[q.lastId].word;
+    const middleDone = st.builtIds.filter(id => id > q.firstId && id < q.lastId);
+    const middleText = middleDone.map(id => q.poolMap[id].word).join(' ');
+    const isComplete = st.builtIds.includes(q.lastId);
+
+    if (isComplete) return `${firstWord} ${middleText} ${lastWord}`;
+    if (middleText) return `${firstWord} ${middleText} · · · ${lastWord}`;
+    return `${firstWord} · · · ${lastWord}`;
+}
+
+// ============================================================
+//  GAME LOGIC — GAME PEMBUKA: TANGGA KATA (WORD LADDER)
+//  Siswa mendapat 1 rangkaian 3 kata berjenjang beserta artinya, lalu
+//  menyusun huruf tiap kata secara BERURUTAN sesuai posisi jawaban dengan
+//  mengklik kotak huruf (termasuk huruf pengecoh & huruf berulang).
+//  Tidak ada batas waktu — namun setiap kali salah klik huruf, siswa
+//  kena jeda hukuman 5 detik (lihat startPenalty) sehingga tidak bisa
+//  asal klik cepat (brute force) untuk menebak-nebak jawaban.
+// ============================================================
+function doGuessClick(pi, tileId) {
+    if (!roundActive) return;
+    const st = states[pi];
+    if (st.finished || st.phase!=='opener') return;
+    const g = st.guessGame;
+    if (!g || g.ladderDone || g.penaltySecondsLeft > 0 || g.usedTileIds.includes(tileId)) return;
+
+    const currentWord = g.words[g.wordIdx];
+    const tile = g.tiles.find(t=>t.id===tileId);
+    const expected = currentWord[g.filled.length]; // huruf berikutnya yang dibutuhkan sesuai posisi kata
+
+    if (tile.letter === expected) {
+        g.usedTileIds.push(tileId);
+        g.filled.push(tile.letter);
+        playSound('correct');
+
+        if (g.filled.length === currentWord.length) {
+            const isLastWord = g.wordIdx === g.words.length - 1;
+
+            if (isLastWord) {
+                // Ketiga kata dalam tangga sudah selesai -> lanjut ke soal inti
+                if (st.guessInterval) { clearInterval(st.guessInterval); st.guessInterval = null; }
+                g.ladderDone = true;
+                playSound('done');
+                renderPanel(pi);
+                setTimeout(()=>advanceFromOpener(pi), 1200);
+                return;
+            } else {
+                // Kata ini selesai -> jeda sebentar lalu lanjut ke kata berikutnya
+                renderPanel(pi);
+                setTimeout(()=>{
+                    const s = states[pi];
+                    if (!s || s.finished || s.phase!=='opener' || !s.guessGame) return;
+                    s.guessGame.wordIdx++;
+                    s.guessGame.filled = [];
+                    s.guessGame.usedTileIds = [];
+                    s.guessGame.tiles = buildLadderTiles(s.guessGame.words[s.guessGame.wordIdx]);
+                    renderPanel(pi);
+                }, 700);
+                return;
+            }
+        }
+        renderPanel(pi);
+    } else {
+        // Salah klik huruf -> beri jeda hukuman 5 detik agar tidak brute force
+        playSound('wrong');
+        st.guessWrongTileId = tileId;
+        renderPanel(pi);
+        setTimeout(()=>{ if(states[pi]){ states[pi].guessWrongTileId=null; renderPanel(pi);} }, 300);
+        startPenalty(pi);
+    }
+}
+
+function advanceFromOpener(pi) {
+    const st = states[pi];
+    if (st.finished) return;
+    if (st.guessInterval) { clearInterval(st.guessInterval); st.guessInterval = null; }
+    st.phase = 'essay';
+    st.currentQ = buildEssayQuestion(st.essayQuestions[st.essayIdx]);
+    st.builtIds = [st.currentQ.firstId]; // kata pertama sudah terisi sebagai petunjuk
+    st.wrongCount = 0;
+    st.completed = false;
+    st.timedOut = false;
+    renderPanel(pi);
+    startEssayTimer(pi);
+}
+
+// ============================================================
+//  GAME LOGIC — SOAL INTI (ESAI SUSUN-KATA, POIN BERBASIS KLIK SALAH)
+// ============================================================
+function doClickWord(pi, id) {
+    if (!roundActive) return;
+    const st = states[pi];
+    if (st.finished || st.phase!=='essay') return;
+    if (st.builtIds.includes(id)) return;
+
+    const q = st.currentQ;
+    const expected = st.builtIds.length; // id kata jawaban yang benar berikutnya (0-indexed sesuai urutan kalimat)
+
+    if (id === expected && id < q.lastId) {
+        st.builtIds.push(id);
+        playSound('correct');
+
+        // Semua kata tengah sudah terisi -> kata terakhir (petunjuk) otomatis melengkapi kalimat
+        if (st.builtIds.length === q.answerLen - 1) {
+            st.builtIds.push(q.lastId);
+        }
+
+        if (st.builtIds.length === q.answerLen) {
+            // Kalimat jawaban lengkap & benar! Poin dihitung dari jumlah klik salah.
+            if (st.essayInterval) { clearInterval(st.essayInterval); st.essayInterval = null; }
+            const pts = calcScoreByMistakes(st.wrongCount);
+            st.score += pts;
+            st.lastPts = pts;
+            st.completed = true;
+            playSound('done');
+            document.getElementById(`p-${pi}`).classList.add('flash-correct');
+            setTimeout(()=>document.getElementById(`p-${pi}`).classList.remove('flash-correct'),350);
+
+            // Jeda baca ±10 detik agar siswa membaca kalimat jawaban sebelum lanjut
+            st.readSecondsLeft = 10;
+            renderPanel(pi);
+            if (st.readInterval) clearInterval(st.readInterval);
+            st.readInterval = setInterval(()=>{
+                st.readSecondsLeft--;
+                if (st.readSecondsLeft <= 0) {
+                    clearInterval(st.readInterval);
+                    st.readInterval = null;
+                    proceedAfterEssay(pi);
+                    return;
+                }
+                renderPanel(pi);
+            }, 1000);
+            return;
+        }
+        renderPanel(pi);
+    } else {
+        // Kata salah / urutan salah — hitung sebagai kesalahan klik & beri umpan balik
+        st.wrongCount++;
+        playSound('wrong');
+        st.wrongFlashId = id;
+        renderPanel(pi);
+        setTimeout(()=>{ if(states[pi]){ states[pi].wrongFlashId=null; renderPanel(pi);} }, 300);
+    }
+}
+
+function proceedAfterEssay(pi) {
+    const st = states[pi];
+    st.essayIdx++;
+
+    if (st.essayIdx >= QUESTIONS_PER_ROUND) {
+        // Semua soal inti putaran ini selesai
+        if (st.essayInterval) { clearInterval(st.essayInterval); st.essayInterval = null; }
+        st.finished = true;
+        st.phase = 'finish';
+        finishOrder.push(pi);
+        if (finishOrder.length === PLAYERS.length) roundActive = false;
+        states.forEach((_,i)=>renderPanel(i));
+        return;
+    }
+
+    if (st.essayIdx % GROUP_SIZE === 0) {
+        // Sudah 2 soal inti dijawab -> kembali ke game pembuka
+        if (st.essayInterval) { clearInterval(st.essayInterval); st.essayInterval = null; }
+        st.phase = 'opener';
+        initGuessGame(pi);
+        renderPanel(pi);
+    } else {
+        // Lanjut ke soal inti berikutnya dalam kelompok yang sama
+        st.currentQ = buildEssayQuestion(st.essayQuestions[st.essayIdx]);
+        st.builtIds = [st.currentQ.firstId]; // kata pertama sudah terisi sebagai petunjuk
+        st.wrongCount = 0;
+        st.completed = false;
+        st.timedOut = false;
+        renderPanel(pi);
+        startEssayTimer(pi);
+    }
+}
+
+// ============================================================
+//  ROUND & GAME MANAGEMENT
+// ============================================================
+function nextRound() {
+    if (globalRound>=TOTAL_ROUNDS) { showFinalScreen(); return; }
+    globalRound++;
+    initRound();
+}
+
+function showFinalScreen() {
+    const ranked = [...states].sort((a,b)=>b.score-a.score);
+    const medals = ['🥇','🥈','🥉'];
+    document.getElementById('arena').innerHTML = `
+        <div style="width:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px;padding:28px;">
+            <div style="font-family:'Orbitron',monospace;font-size:20px;color:#f0c040;text-align:center;letter-spacing:3px;">🏆 GAME SELESAI! 🏆</div>
+            <div style="font-family:'Orbitron',monospace;font-size:11px;color:#8ab4d0;text-align:center;letter-spacing:2px;">10 PUTARAN — STRUKTUR ORGANEL SEL</div>
+            <div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center;">
+                ${ranked.map((s,i)=>`
+                    <div style="background:rgba(255,255,255,0.05);border:1px solid ${i===0?'#f0c040':'rgba(255,255,255,0.12)'};border-radius:12px;padding:18px 22px;text-align:center;min-width:110px;">
+                        <div style="font-size:30px;margin-bottom:6px;">${medals[i]||'🏅'}</div>
+                        <div style="font-family:'Orbitron',monospace;font-size:10px;color:#f0c040;margin-bottom:4px;">${s.name}</div>
+                        <div style="font-family:'Orbitron',monospace;font-size:20px;color:#fff;">${s.score}</div>
+                        <div style="font-size:10px;color:#5a7f98;">poin</div>
+                    </div>`).join('')}
+            </div>
+            <button class="restart-btn" onclick="restartAll()">🔄 MAIN LAGI DARI AWAL</button>
+        </div>`;
+}
+
+function restartAll() {
+    globalRound = 1;
+    states.forEach(s=>{ if (s && s.guessInterval) clearInterval(s.guessInterval); if (s && s.readInterval) clearInterval(s.readInterval); if (s && s.essayInterval) clearInterval(s.essayInterval); });
+    document.getElementById('arena').innerHTML = `
+        <div class="panel" data-p="0" id="p-0"></div>
+        <div class="panel" data-p="1" id="p-1"></div>
+        <div class="panel" data-p="2" id="p-2"></div>`;
+    initRound();
+}
+
+// ============================================================
+//  KICK OFF
+// ============================================================
+initRound();
+</script>
+</body>
+</html>

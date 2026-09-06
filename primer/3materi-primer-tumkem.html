@@ -1,0 +1,317 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Interaktif - WhatsApp Style Kendali Emoticon</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #0b141a;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-container {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+
+        .bubble {
+            max-width: 85%;
+            padding: 30px 40px;
+            border-radius: 25px;
+            font-size: 50px;
+            font-weight: 700;
+            line-height: 1.5;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+            position: relative;
+            animation: fadeIn 0.3s ease forwards;
+            word-wrap: break-word;
+        }
+
+        .bubble-guru {
+            background-color: #005c4b;
+            align-self: flex-start;
+            border-top-left-radius: 0;
+            color: #ffffff;
+        }
+
+        /* Gaya Khusus untuk Emoticon Pemicu Obrolan (Bisa Diklik) */
+        .emot-trigger {
+            display: inline-block;
+            cursor: pointer;
+            padding: 0 10px;
+            border-radius: 10px;
+            transition: transform 0.2s, background-color 0.2s;
+            user-select: none;
+        }
+
+        /* Memberikan efek visual sedikit saat kursor guru mendekati emot di IFP */
+        .emot-trigger:hover {
+            transform: scale(1.2);
+            background-color: rgba(255,255,255,0.08);
+        }
+
+        /* Animasi 3 Titik Mengetik WA (...) */
+        .typing-indicator {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            padding: 15px 25px;
+        }
+
+        .typing-indicator span {
+            width: 15px;
+            height: 15px;
+            background-color: #8696a0;
+            border-radius: 50%;
+            display: inline-block;
+            animation: bounce 1.3s infinite ease-in-out;
+        }
+
+        .typing-indicator span:nth-child(2) { animation-delay: 0.15s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.3s; }
+
+        @keyframes bounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="chat-container" id="chatContainer"></div>
+    <script>
+    /* =======================================================
+       BAGIAN 1: DATA MATERI
+       -------------------------------------------------------
+       INI SATU-SATUNYA BAGIAN YANG PERLU ANDA EDIT/TAMBAH.
+       Setiap "bagian" berisi 1 kalimat pembuka/pengantar guru
+       (boleh dikosongkan "") lalu diikuti 1 kalimat penjelasan.
+       Cukup salin satu blok { ... } lalu ubah isinya untuk
+       menambah bagian materi baru. Tidak perlu bikin fungsi baru.
+    ======================================================= */
+    // Kalimat pembuka guru (muncul pertama kali, sebelum bagian materi 1)
+    const SAPAAN_PEMBUKA = "Hari ini kita bahas pertumbuhan primer ya. Yuk simak penjelasannya 🌱";
+
+    // Kalimat penutup guru (muncul setelah bagian materi terakhir selesai dibahas)
+    const PENUTUP_KELAS = "Semua materi pertumbuhan primer sudah selesai kita bahas, sekarang kalian tuliskan kesimpulan pembelajaran kita tadi di buku tulis, waktunya 5 menit 🙌";
+
+const DAFTAR_MATERI = [
+    {
+        // Bagian 1
+        pengantar: "Apa yang dimaksud dengan pertumbuhan primer itu? 📈",
+        penjelasan: "Pertumbuhan primer adalah proses pertumbuhan tanaman yang membuat akar dan batangnya menjadi <b>bertambah panjang atau tambah tinggi</b>."
+    },
+    {
+        // Bagian 2
+        pengantar: "Pertumbuhan primer ini bisa terjadi dikarenakan adanya adanya pembelahan sel yang sangat aktif dari sebuah jaringan  🧱",
+        penjelasan: "Pertumbuhan ini terjadi di jaringan bernama <b>meristem apikal</b> (meristem ujung)."
+    },
+    {
+        // Bagian 3
+        pengantar: "Organ tumbuhan mana saja kita dapat menemukan si meristem apikal ini? 📍",
+        penjelasan: "Meristem apikal terletak hampir diseluruh organ tumbuhan terutama di dua tempat, yaitu di <b>ujung batang</b> dan di <b>ujung akar</b> tumbuhan."
+    },
+    {
+        // Bagian 4
+        pengantar: "Sekarang kita intip ujung akar. Ada bagian pelindung di paling ujung akar agar tidak rusak saat menembus tanah saat pertumbuhan primer berlangsung 🛡️",
+        penjelasan: "Bagian pelindung itu disebut <b>tudung akar</b> atau <b>kaliptra</b>. Tugasnya melindungi sel-sel meristem yang masih muda dan rapuh di dalam tanah."
+    },
+    {
+        // Bagian 5
+        pengantar: "Nah, di belakang tudung akar itu ada 3 zona tumbuh 🔬",
+        penjelasan: "Zona pertama adalah <b>zona pembelahan (proliferasi)</b>. Di sini, sel-sel meristem aktif membelah diri secara mitosis untuk memperbanyak jumlah sel."
+    },
+    {
+        // Bagian 6
+        pengantar: "Setelah selnya banyak, mereka akan masuk ke zona kedua yang membuat akar/batang langsung melesat tumbuh 🚀",
+        penjelasan: "Zona kedua bernama <b>zona pemanjangan (elongasi)</b>. Di sini, sel-sel yang sudah membelah tadi akan menyerap air dan ukurannya berubah jadi jauh lebih panjang."
+    },
+    {
+        // Bagian 7
+        pengantar: "Lanjut ke zona terakhir! Di zona ketiga ini, sel-sel berubah bentuk sesuai tugas khususnya masing-masing 🎭",
+        penjelasan: "Zona ketiga disebut <b>zona diferensiasi (pematangan)</b>. Di daerah ini, sel-sel akan berubah bentuk menjadi jaringan dewasa seperti epidermis, kulit luar, atau pembuluh kayu."
+    },
+    {
+        // Bagian 8
+        pengantar: "Coba tebak, apakah pertumbuhan primer ini dialami oleh semua tumbuhan? 🌲",
+        penjelasan: "Pertumbuhan primer dialami oleh <b>semua jenis tumbuhan</b>, mulai dari rumput kecil, tanaman padi, sampai pohon raksasa sejak mereka masih berupa bibit."
+    },
+    {
+        // Bagian 9
+        pengantar: "Kita uji ingatan lagi ya! Apa definisi pertumbuhan primer? 📐",
+        penjelasan: "Pertumbuhan primer adalah proses pertumbuhan tanaman yang membuat akar dan batangnya menjadi <b>bertambah panjang atau tambah tinggi</b>."
+    },
+    {
+        // Bagian 10
+        pengantar: "Satu hal terakhir sebelum modul ini selesai! Pada pertumbuhan primer terdapat  hormon utama yang paling berjasa memicu pemanjangan sel 🧪",
+        penjelasan: "Hormon utama yang memicu pemanjangan sel-sel di ujung tanaman tersebut adalah hormon <b>auksin</b>."
+    }
+        // Mau nambah bagian materi? tinggal copy-paste satu blok { ... } di atas,
+        // taruh sebelum tanda kurung siku penutup "]" ini, lalu isi teksnya.
+    ];
+
+    /* =======================================================
+       BAGIAN 2: MESIN CHAT (TIDAK PERLU DIUBAH)
+       -------------------------------------------------------
+       Bagian ini otomatis menjalankan seluruh DAFTAR_MATERI di
+       atas secara berurutan. Anda tidak perlu menyentuh kode
+       di bawah ini untuk menambah/mengedit materi.
+    ======================================================= */
+
+    const chatContainer = document.getElementById('chatContainer');
+
+    // Mengatur kecepatan mengetik huruf (makin kecil, makin cepat)
+    const KECEPATAN_KETIK = 35;
+
+    // Emoji pemicu lanjut, dipakai bergantian antar bagian biar variatif
+    const EMOJI_LANJUT = ['🚀', '🎯', '🎓', '🔥', '✨', '🎈', '🌟', '🎁'];
+
+    // Fungsi Simulasi Balon Tiga Titik (...) sebelum teks muncul
+    function buatBalonKetik() {
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble bubble-guru';
+        bubble.id = 'typingBubble';
+        bubble.innerHTML = `
+            <div class="typing-indicator">
+                <span></span><span></span><span></span>
+            </div>
+        `;
+        chatContainer.appendChild(bubble);
+        bubble.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }
+
+    function hapusBalonKetik() {
+        const k = document.getElementById('typingBubble');
+        if (k) k.remove();
+    }
+
+    // Fungsi Efek Mengetik Teks Per Karakter (Typewriter Effect)
+    function cetakChatMengebat(teksHtml, callback) {
+        buatBalonKetik();
+
+        setTimeout(() => {
+            hapusBalonKetik();
+
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble bubble-guru';
+            chatContainer.appendChild(bubble);
+
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = teksHtml;
+
+            const childNodes = Array.from(tempDiv.childNodes);
+            let nodeIndex = 0;
+            let charIndex = 0;
+            let currentNode = null;
+
+            const pengetik = setInterval(() => {
+                if (nodeIndex < childNodes.length) {
+                    if (!currentNode) {
+                        const donorNode = childNodes[nodeIndex];
+                        if (donorNode.nodeType === Node.TEXT_NODE) {
+                            currentNode = document.createTextNode('');
+                            bubble.appendChild(currentNode);
+                        } else {
+                            currentNode = donorNode.cloneNode(false);
+                            bubble.appendChild(currentNode);
+                        }
+                    }
+
+                    const donorNode = childNodes[nodeIndex];
+                    if (donorNode.nodeType === Node.TEXT_NODE) {
+                        if (charIndex < donorNode.textContent.length) {
+                            currentNode.textContent += donorNode.textContent.charAt(charIndex);
+                            charIndex++;
+                        } else {
+                            nodeIndex++;
+                            charIndex = 0;
+                            currentNode = null;
+                        }
+                    } else {
+                        if (charIndex < donorNode.innerHTML.length) {
+                            currentNode.innerHTML = donorNode.innerHTML;
+                            nodeIndex++;
+                            charIndex = 0;
+                            currentNode = null;
+                        }
+                    }
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                } else {
+                    clearInterval(pengetik);
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                    if (callback) callback();
+                }
+            }, KECEPATAN_KETIK);
+
+        }, 1200);
+    }
+
+    function matikanEmotLama() {
+        const emots = document.querySelectorAll('.emot-trigger');
+        emots.forEach(emot => {
+            emot.removeAttribute('onclick');
+            emot.style.cursor = 'default';
+            emot.style.pointerEvents = 'none';
+        });
+    }
+
+    // ======= ALUR OTOMATIS BERDASARKAN DAFTAR_MATERI =======
+    // Menyusun semua kalimat (pembuka, pengantar & penjelasan tiap bagian,
+    // lalu penutup) jadi satu alur berurutan. Setiap pesan (kecuali yang
+    // terakhir) akan diakhiri emoji yang harus diklik dulu untuk lanjut.
+
+    function bangunAlurChat() {
+        const alur = [SAPAAN_PEMBUKA];
+        DAFTAR_MATERI.forEach(materi => {
+            if (materi.pengantar) alur.push(materi.pengantar);
+            alur.push(materi.penjelasan);
+        });
+        alur.push(PENUTUP_KELAS);
+        return alur;
+    }
+
+    const ALUR_CHAT = bangunAlurChat();
+
+    function mulaiKelas() {
+        tampilkanLangkah(0);
+    }
+
+    function tampilkanLangkah(index) {
+        const teksAsli = ALUR_CHAT[index];
+        const iniLangkahTerakhir = index === ALUR_CHAT.length - 1;
+
+        if (iniLangkahTerakhir) {
+            cetakChatMengebat(teksAsli);
+        } else {
+            const emoji = EMOJI_LANJUT[index % EMOJI_LANJUT.length];
+            const teks = `${teksAsli} <span class='emot-trigger' onclick='lanjutkanChat(${index})'>${emoji}</span>`;
+            cetakChatMengebat(teks);
+        }
+    }
+
+    function lanjutkanChat(index) {
+        matikanEmotLama();
+        tampilkanLangkah(index + 1);
+    }
+
+    mulaiKelas();
+    </script>
+</body>
+</html>

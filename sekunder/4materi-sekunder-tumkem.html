@@ -1,0 +1,331 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pertumbuhan Sekunder</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            height: 100vh;
+            background-color: #f0f4f8;
+            color: #1e293b;
+        }
+
+        /* Area Kiri: Teks Kalimat */
+        .content-area {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .sentence-card {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            font-size: 52px;
+            font-weight: 700;
+            line-height: 1.5;
+            color: #1e3a8a;
+        }
+
+        /* Garis kosong tempat kata */
+        .blank-space {
+            display: inline-block;
+            min-width: 120px;
+            border-bottom: 3px solid #ef4444;
+            margin: 0 8px;
+            text-align: center;
+            color: #2563eb;
+            padding: 0 4px;
+        }
+
+        /* Kata yang sudah dimasukkan ke dalam kalimat */
+        .blank-space.filled {
+            border-bottom: 3px solid #dc2626;
+            color: #dc2626;
+            font-weight: 800;
+        }
+
+        /* Area Kanan: Sidebar Pilihan Kata */
+        .sidebar {
+            width: 320px;
+            background-color: #1e2538;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            border-left: 4px solid #334155;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            text-align: center;
+            font-size: 14px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: #94a3b8;
+            border-bottom: 1px solid #334155;
+            font-weight: bold;
+        }
+
+        .word-pool {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+        }
+
+        /* Tombol Pilihan Kata */
+        .word-btn {
+            background-color: #2d3748;
+            color: #fc8181;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            transition: background 0.2s;
+        }
+
+        .word-btn:hover {
+            background-color: #4a5568;
+        }
+
+        .word-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        /* Tombol Navigasi Bawah */
+        .footer-btn-container {
+            padding: 20px;
+            border-top: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .nav-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .next-btn, .prev-btn, .reset-btn {
+            flex: 1;
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            transition: background 0.2s;
+        }
+
+        .next-btn {
+            background-color: #2563eb;
+        }
+
+        .next-btn:hover {
+            background-color: #1d4ed8;
+        }
+
+        .prev-btn {
+            background-color: #475569;
+        }
+
+        .prev-btn:hover {
+            background-color: #334155;
+        }
+
+        .prev-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .reset-btn {
+            background-color: #b91c1c;
+            width: 100%;
+        }
+
+        .reset-btn:hover {
+            background-color: #991b1b;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SISI KIRI -->
+    <div class="content-area" id="contentArea"></div>
+
+    <!-- SISI KANAN -->
+    <div class="sidebar">
+        <div class="sidebar-header" id="pageIndicator">Pilihan Kata</div>
+        <div class="word-pool" id="wordPool"></div>
+        <div class="footer-btn-container">
+            <div class="nav-row">
+                <button class="prev-btn" id="prevBtn" onclick="keHalamanSebelumnya()">← Sebelumnya</button>
+                <button class="next-btn" id="nextBtn" onclick="keHalamanBerikutnya()">Bagian Selanjutnya →</button>
+            </div>
+            <button class="reset-btn" id="resetBtn" onclick="resetHalaman()">↺ Reset Jawaban</button>
+        </div>
+    </div>
+
+    <script>
+        // STRUKTUR DATA BARU: Dikelompokkan per halaman memakai array [ ] tambahan
+        const halamanMateri = [
+            [
+                [
+                    "Pertumbuhan sekunder adalah proses penambahan diameter, lebar, atau ketebalan pada batang dan akar tumbuhan 🛡️",
+                    ["proses", "diameter", "batang"]
+                ]
+            ],
+            [
+                [
+                    "Pertumbuhan sekunder terjadi karena aktivitas jaringan meristem lateral atau kambium, seperti kambium vaskuler dan kambium gabus, dan umumnya ditemukan pada tumbuhan dikotil 🛡️",
+                    ["lateral", "vaskuler", "dikotil"]
+                ]
+            ],
+            [
+                [
+                    "Kambium vaskuler: Melakukan pembelahan ke arah dalam membentuk xilem sekunder (kayu) dan ke arah luar membentuk floem sekunder (kulit kayu) 🛑",
+                    ["vaskuler", "xilem", "floem"]
+                ]
+            ],
+            [
+                [
+                    "Pembelahan kambium menjadi xilem dan floem sangat dipengaruhi oleh lingkungan. Perbedaan ini mengakibatkan munculnya lingkaran tahun di batang pohon 🚶",
+                    ["xilem", "lingkungan", "lingkaran"]
+                ]
+            ],
+            [
+                [
+                    "Xilem (pembuluh kayu) adalah jaringan pengangkut pada tumbuhan vaskular yang berfungsi membawa air dan zat mineral dari akar menuju batang dan daun 🛑",
+                    ["pengangkut", "air", "akar"]
+                ]
+            ],
+            [
+                [
+                    "Floem adalah jaringan pengangkut pada tumbuhan berpembuluh yang berfungsi mengedarkan zat makanan hasil fotosintesis dari daun ke seluruh bagian tumbuhan 🚶",
+                    ["fotosintesis", "pengangkut", "daun"]
+                ]
+            ],
+            [
+                [
+                    "Kambium gabus (Felogen): Membentuk lapisan pelindung untuk menggantikan epidermis yang pecah/rusak 🛡️",
+                    ["gabus", "epidermis", "pelindung"]
+                ]
+            ]
+        ];
+
+        let halamanSekarang = 0;
+
+        function tampilkanHalaman(indexHalaman) {
+            const contentArea = document.getElementById('contentArea');
+            const wordPool = document.getElementById('wordPool');
+            const pageIndicator = document.getElementById('pageIndicator');
+            const nextBtn = document.getElementById('nextBtn');
+            const prevBtn = document.getElementById('prevBtn');
+
+            // Reset tampilan lama
+            contentArea.innerHTML = "";
+            wordPool.innerHTML = "";
+
+            // Update teks indikator sidebar atas
+            pageIndicator.innerText = `Pilihan Kata (Hal ${indexHalaman + 1}/${halamanMateri.length})`;
+
+            // Ambil data materi spesifik halaman ini
+            const materiHariIni = halamanMateri[indexHalaman];
+            let semuaPilihanKata = [];
+
+            materiHariIni.forEach((item) => {
+                let kalimatUtuh = item[0];
+                let kataKunci = item[1];
+
+                semuaPilihanKata.push(...kataKunci);
+
+                // Buat teks berlubang
+                kataKunci.forEach(kata => {
+                    const regex = new RegExp(`\\b${kata}\\b`, 'gi');
+                    kalimatUtuh = kalimatUtuh.replace(regex, `<span class="blank-space" data-word="${kata}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>`);
+                });
+
+                // Cetak ke layar kiri (tanpa nomor kalimat)
+                const card = document.createElement('div');
+                card.className = 'sentence-card';
+                card.innerHTML = kalimatUtuh;
+                contentArea.appendChild(card);
+            });
+
+            // Acak kata di sidebar kanan
+            semuaPilihanKata = [...new Set(semuaPilihanKata)].sort(() => Math.random() - 0.5);
+
+            // Cetak tombol kata ke sidebar kanan
+            semuaPilihanKata.forEach(kata => {
+                const btn = document.createElement('button');
+                btn.className = 'word-btn';
+                btn.innerText = kata;
+                btn.onclick = () => {
+                    const blank = contentArea.querySelector('.blank-space:not(.filled)');
+                    if (blank) {
+                        blank.innerText = kata;
+                        blank.classList.add('filled');
+                        btn.disabled = true;
+                    }
+                };
+                wordPool.appendChild(btn);
+            });
+
+            // Ganti teks tombol jika sudah di halaman terakhir
+            if (indexHalaman === halamanMateri.length - 1) {
+                nextBtn.innerText = "Selesai ✨";
+            } else {
+                nextBtn.innerText = "Bagian Selanjutnya →";
+            }
+
+            // Nonaktifkan tombol Sebelumnya jika di halaman pertama
+            prevBtn.disabled = indexHalaman === 0;
+        }
+
+        function keHalamanBerikutnya() {
+            if (halamanSekarang < halamanMateri.length - 1) {
+                halamanSekarang++;
+                tampilkanHalaman(halamanSekarang);
+            } else {
+                alert("Selamat! Semua sesi materi telah selesai.");
+            }
+        }
+
+        function keHalamanSebelumnya() {
+            if (halamanSekarang > 0) {
+                halamanSekarang--;
+                tampilkanHalaman(halamanSekarang);
+            }
+        }
+
+        function resetHalaman() {
+            tampilkanHalaman(halamanSekarang);
+        }
+
+        // Jalankan program pertama kali saat web dibuka
+        tampilkanHalaman(halamanSekarang);
+    </script>
+</body>
+</html>
