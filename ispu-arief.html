@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Udara Sekolah - Maliku & Basarang</title>
+    <title>Dashboard Udara Sekolah - Kalteng</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; }
         body { background-color: #0f172a; color: #f8fafc; font-family: system-ui, sans-serif; min-height: 100vh; }
@@ -17,7 +17,7 @@
 
         aside { background-color: #1e293b; padding: 24px; width: 100%; border-bottom: 1px solid #334155; display: flex; flex-direction: column; justify-content: space-between; }
         .logo-area { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; font-size: 18px; font-weight: bold; color: #fff; }
-        .logo-dot { width: 12px; height: 12px; background-color: #10b981; border-radius: 50%; }
+        .logo-dot { width: 12px; height: 12px; background-color: #f59e0b; border-radius: 50%; }
         nav { display: flex; flex-direction: column; gap: 8px; }
         nav a { display: block; padding: 12px 16px; color: #94a3b8; text-decoration: none; font-weight: 500; border-radius: 8px; transition: 0.2s; }
         nav a:hover { background-color: #334155; color: #fff; }
@@ -36,7 +36,7 @@
         .card { background-color: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 24px; }
         .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
         .card-title { color: #94a3b8; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-        .aqi-large { font-size: 64px; font-weight: 900; color: #fff; margin-top: 8px; line-height: 1; }
+        .aqi-large { font-size: 64px; font-weight: 900; color: #f59e0b; margin-top: 8px; line-height: 1; }
         .badge { padding: 6px 14px; border-radius: 9999px; font-size: 12px; font-weight: 700; }
         
         .progress-container { width: 100%; background-color: #334155; height: 14px; border-radius: 9999px; margin-top: 20px; overflow: hidden; }
@@ -46,11 +46,7 @@
         .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; border-top: 1px solid #334155; padding-top: 16px; font-size: 13px; }
         .info-grid span { color: #fff; font-weight: 600; display: block; margin-top: 2px; }
 
-        .grid-pollutants { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-        .pollutant-card { background-color: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 20px; }
-        .pollutant-val { font-size: 26px; font-weight: 800; color: #fff; margin-top: 6px; }
-        
-        .section-title { font-size: 18px; font-weight: 700; color: #fff; border-left: 4px solid #0ea5e9; padding-left: 12px; margin-bottom: 12px; }
+        .section-title { font-size: 18px; font-weight: 700; color: #fff; border-left: 4px solid #f59e0b; padding-left: 12px; margin-bottom: 12px; }
         
         .decision-box { padding: 20px; border-radius: 12px; margin-top: 16px; font-size: 15px; line-height: 1.6; }
         .decision-normal { background: rgba(16,185,129,0.15); border: 1px solid #10b981; }
@@ -70,7 +66,6 @@
             aside { width: 260px; border-bottom: none; border-right: 1px solid #334155; position: fixed; height: 100vh; overflow-y: auto; }
             main { margin-left: 260px; padding: 40px; }
             .grid-main { grid-template-columns: 2fr 1fr; }
-            .grid-pollutants { grid-template-columns: repeat(4, 1fr); }
             h1 { font-size: 26px; }
         }
     </style>
@@ -81,11 +76,10 @@
             <div>
                 <div class="logo-area">
                     <div class="logo-dot"></div>
-                    <span>AeroKalteng v5.0</span>
+                    <span>AeroKalteng v6.0</span>
                 </div>
                 <nav>
-                    <a href="#dashboard" style="background-color: #0ea5e9; color: #fff;">📊 Dashboard Utama</a>
-                    <a href="#peta-wilayah">🗺️ Peta Stasiun</a>
+                    <a href="#dashboard" style="background-color: #f59e0b; color: #fff;">📊 Dashboard Utama</a>
                     <a href="#riwayat-ispu">📈 Riwayat ISPU</a>
                     <a href="#panduan">📚 Panduan & Protokol</a>
                     <a href="#tentang">ℹ️ Tentang</a>
@@ -93,8 +87,7 @@
             </div>
             <div class="footer-sidebar">
                 Sumber Data:<br>
-                <span style="color:#f59e0b; font-weight:bold;">WAQI (KLHK) — Utama</span><br>
-                <span style="color:#34d399; font-weight:bold;">Open-Meteo — Info Lokal</span><br><br>
+                <span style="color:#f59e0b; font-weight:bold;">WAQI (KLHK) — Palangka Raya</span><br><br>
                 Jam Pembaruan:<br>
                 <span id="last-update" style="color:#fff;">Memuat...</span>
             </div>
@@ -104,7 +97,7 @@
             <header id="dashboard">
                 <div>
                     <h1>🌫️ Dashboard Udara Sekolah Kalteng</h1>
-                    <p>Pemantauan real-time untuk keputusan pembelajaran — Maliku, Basarang & Selat Kapuas.</p>
+                    <p>Pemantauan kualitas udara berbasis stasiun resmi KLHK untuk keputusan pembelajaran.</p>
                 </div>
                 <div class="select-box">
                     <select id="village-selector">
@@ -129,26 +122,26 @@
                 </div>
             </header>
 
-            <!-- REKOMENDASI KEPUTUSAN (dari WAQI) -->
+            <!-- REKOMENDASI KEPUTUSAN -->
             <section>
                 <div id="decision-box" class="decision-box decision-normal">
                     <div style="font-size:12px; color:#94a3b8; text-transform:uppercase; font-weight:600; margin-bottom:6px;">
-                        📋 Rekomendasi Keputusan Pembelajaran <span style="color:#f59e0b;">(berdasarkan data resmi KLHK/WAQI)</span>
+                        📋 Rekomendasi Keputusan Pembelajaran <span style="color:#f59e0b;">(Stasiun Palangka Raya — KLHK)</span>
                     </div>
                     <div id="decision-text" style="font-size:18px; font-weight:700; color:#fff;">Memuat data...</div>
                     <div id="decision-detail" style="font-size:13px; color:#cbd5e1; margin-top:6px;">Berdasarkan SE Mendikdasmen 20/2026</div>
                 </div>
             </section>
 
-            <!-- KARTU UTAMA: WAQI -->
-            <section style="display:flex; flex-direction:column; gap:16px;">
-                <h3 class="section-title">🏛️ Data Resmi KLHK (WAQI) — Acuan Keputusan</h3>
+            <!-- KARTU UTAMA: WAQI PALANGKA RAYA -->
+            <section>
+                <h3 class="section-title">🏛️ Data Utama — Stasiun Resmi KLHK</h3>
                 <div class="grid-main">
                     <div class="card" style="border-left: 4px solid #f59e0b;">
                         <div class="card-header">
                             <div>
-                                <div class="card-title" id="waqi-station-name">Stasiun: Memuat...</div>
-                                <div class="aqi-large" style="color:#f59e0b;" id="waqi-aqi">--</div>
+                                <div class="card-title">🏛️ WAQI — Palangka Raya (UID 8342)</div>
+                                <div class="aqi-large" id="waqi-aqi">--</div>
                             </div>
                             <span id="waqi-badge" class="badge" style="background:rgba(100,116,139,0.2); color:#94a3b8;">--</span>
                         </div>
@@ -161,10 +154,10 @@
 
                     <div class="card" style="display:flex; flex-direction:column; justify-content:space-between;">
                         <div>
-                            <div class="card-title">📡 Info Stasiun</div>
+                            <div class="card-title">📡 Info Stasiun Utama</div>
                             <div style="margin:16px 0;">
                                 <div style="font-size:14px; color:#cbd5e1; line-height:1.8;">
-                                    <div>📍 Lokasi: <span id="waqi-lokasi" style="color:#fff; font-weight:600;">--</span></div>
+                                    <div>📍 Lokasi: <span style="color:#fff; font-weight:600;">Palangka Raya</span></div>
                                     <div>📏 Jarak: <span id="waqi-jarak" style="color:#fff; font-weight:600;">--</span></div>
                                     <div>🧪 Polutan: <span id="waqi-polutan" style="color:#fff; font-weight:600;">--</span></div>
                                 </div>
@@ -178,81 +171,47 @@
                 </div>
             </section>
 
-            <!-- KARTU SEKUNDER: OPEN-METEO -->
-            <section style="display:flex; flex-direction:column; gap:16px;">
-                <h3 class="section-title">🛰️ Info Lokal (Open-Meteo) — Estimasi Model</h3>
-                <div class="grid-main">
-                    <div class="card">
-                        <div class="card-header">
-                            <div>
-                                <div class="card-title" id="sensor-source-title">Stasiun Desa</div>
-                                <div class="aqi-large" id="aqi-value" style="font-size:48px;">--</div>
-                            </div>
-                            <span id="aqi-status" class="badge">Proses...</span>
-                        </div>
-                        <div>
-                            <div class="progress-container"><div id="aqi-progress" class="progress-bar"></div></div>
-                            <p class="desc-text" id="aqi-desc">Memuat data sensor...</p>
-                        </div>
-                    </div>
-
-                    <div class="card" style="display:flex; flex-direction:column; justify-content:space-between;">
-                        <div>
-                            <div class="card-title">🚨 Radar Hotspot</div>
-                            <div style="margin:16px 0;">
-                                <div style="font-size:32px; font-weight:700; color:#ef4444;" id="hotspot-value">0 Titik</div>
-                                <div style="color:#38bdf8; font-size:14px; font-weight:600;" id="weather-desc">Memuat...</div>
-                            </div>
-                        </div>
-                        <div class="info-grid">
-                            <div>Suhu: <span id="weather-temp">--°C</span></div>
-                            <div>Kelembapan: <span id="weather-humidity">--%</span></div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- POLUTAN (Open-Meteo) -->
-            <section style="display:flex; flex-direction:column; gap:16px;">
-                <h3 class="section-title">Konsentrasi Parameter Polutan Mikro (Open-Meteo)</h3>
-                <div class="grid-pollutants">
-                    <div class="pollutant-card"><div class="card-title">PM2.5</div><div class="pollutant-val" id="pm25-val">--</div></div>
-                    <div class="pollutant-card"><div class="card-title">PM10</div><div class="pollutant-val" id="pm10-val">--</div></div>
-                    <div class="pollutant-card"><div class="card-title">CO</div><div class="pollutant-val" id="co-val">--</div></div>
-                    <div class="pollutant-card"><div class="card-title">NO2</div><div class="pollutant-val" id="no2-val">--</div></div>
-                </div>
-            </section>
-
-            <!-- PEMBANDING & LINK RESMI -->
-            <section style="display:grid; grid-template-columns: 1fr; gap:24px;">
+            <!-- KARTU OPSIONAL: WAQI STASIUN TERDEKAT -->
+            <section>
+                <h3 class="section-title">📍 Data Opsional — Stasiun Terdekat (Auto)</h3>
                 <div class="card" style="border-left: 4px solid #8b5cf6;">
                     <div class="card-header">
                         <div>
-                            <div class="card-title">🛰️ Pembanding Open Source (Sensor.Community)</div>
-                            <div style="font-size:11px; color:#64748b; margin-top:4px;">Data dari sensor warga, bebas API key</div>
+                            <div class="card-title" id="waqi-nearby-name">Stasiun: Memuat...</div>
+                            <div style="font-size:32px; font-weight:900; color:#a78bfa; margin-top:8px;" id="waqi-nearby-aqi">--</div>
                         </div>
-                    </div>
-                    <div style="margin:16px 0;">
-                        <div style="font-size:32px; font-weight:900; color:#a78bfa;" id="sc-pm25">--</div>
-                        <div style="font-size:12px; color:#94a3b8;">PM2.5 rata-rata (µg/m³) — sensor terdekat</div>
+                        <span id="waqi-nearby-badge" class="badge" style="background:rgba(100,116,139,0.2); color:#94a3b8;">--</span>
                     </div>
                     <div class="info-grid" style="border-top:1px solid #334155; padding-top:12px;">
-                        <div>Jarak Sensor: <span id="sc-jarak">--</span></div>
-                        <div>Jumlah Sensor: <span id="sc-jumlah">--</span></div>
+                        <div>Lokasi: <span id="waqi-nearby-lokasi">--</span></div>
+                        <div>Jarak: <span id="waqi-nearby-jarak">--</span></div>
+                        <div>Polutan: <span id="waqi-nearby-polutan">--</span></div>
+                        <div>Update: <span id="waqi-nearby-waktu">--</span></div>
                     </div>
+                    <p style="font-size:11px; color:#64748b; margin-top:12px; font-style:italic;">
+                        ⚠️ Info tambahan saja. Keputusan pembelajaran tetap mengacu pada stasiun utama (Palangka Raya).
+                    </p>
                 </div>
+            </section>
 
-                <div class="card" style="border-left: 4px solid #64748b;">
-                    <div class="card-title">🔗 Cek Data Resmi KLHK</div>
-                    <p style="font-size:13px; color:#94a3b8; margin:12px 0;">
-                        Untuk membandingkan dengan data resmi pemerintah (KLHK):
-                    </p>
-                    <a href="https://ispu.kemenlh.go.id/webv5" target="_blank" class="link-btn">
-                        Buka Portal ISPU KLHK →
-                    </a>
-                    <p style="font-size:11px; color:#64748b; margin-top:12px;">
-                        Pilih stasiun <strong>"Kota Palangka Raya"</strong> sebagai pembanding terdekat.
-                    </p>
+            <!-- RIWAYAT -->
+            <section id="riwayat-ispu" style="padding-top:16px;">
+                <h3 class="section-title">📈 Log Transmisi Stasiun Utama</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Jam</th>
+                                <th>Sumber</th>
+                                <th>Stasiun</th>
+                                <th>Skor ISPU</th>
+                                <th>Indikator</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-rows">
+                            <tr><td colspan="5" style="text-align:center; color:#64748b;">Memuat data...</td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </section>
 
@@ -282,20 +241,31 @@
                 </p>
             </section>
 
+            <!-- LINK RESMI -->
+            <section style="padding-top:16px;">
+                <h3 class="section-title">🔗 Link Resmi</h3>
+                <div class="card">
+                    <p style="font-size:13px; color:#94a3b8; margin-bottom:12px;">
+                        Untuk verifikasi manual, kunjungi portal resmi KLHK:
+                    </p>
+                    <a href="https://ispu.kemenlh.go.id/webv5" target="_blank" class="link-btn">
+                        Buka Portal ISPU KLHK →
+                    </a>
+                </div>
+            </section>
+
             <!-- TENTANG -->
             <section id="tentang" style="padding-top:16px;">
                 <h3 class="section-title">ℹ️ Tentang Dashboard</h3>
                 <div class="card">
                     <p style="font-size:14px; color:#cbd5e1; line-height:1.7;">
                         Dashboard ini membantu pengambilan keputusan pembelajaran (Normal / Terbatas / Daring) 
-                        berdasarkan kualitas udara real-time di Kalimantan Tengah.
+                        berdasarkan kualitas udara real-time dari stasiun resmi KLHK.
                     </p>
                     <p style="font-size:13px; color:#94a3b8; margin-top:12px; line-height:1.7;">
                         <strong>Sumber Data:</strong><br>
-                        • <span style="color:#f59e0b;">WAQI (KLHK)</span> — sensor fisik resmi, acuan keputusan<br>
-                        • <span style="color:#34d399;">Open-Meteo</span> — model satelit CAMS, info lokal<br>
-                        • <span style="color:#a78bfa;">Sensor.Community</span> — sensor warga, open source<br>
-                        • KLHK ISPU — link manual ke portal resmi
+                        • <span style="color:#f59e0b;">WAQI — Stasiun Palangka Raya (UID 8342)</span> — data utama, acuan keputusan<br>
+                        • <span style="color:#a78bfa;">WAQI — Stasiun Terdekat</span> — info tambahan (opsional)
                     </p>
                     <p style="font-size:12px; color:#64748b; margin-top:12px; font-style:italic;">
                         ⚠️ WAQI menggunakan standar AQI US EPA. Untuk keputusan kritis, verifikasi dengan kondisi lapangan.
@@ -311,23 +281,24 @@
         // ============================================
         const WAQI_TOKEN = '4811d811a791744acaad866f70d32f9826df3751'; // ⚠️ GANTI SETELAH TESTING!
         
+        // Stasiun Utama (untuk keputusan)
+        const STASIUN_UTAMA = { 
+            uid: 8342, 
+            nama: "Palangka Raya", 
+            lat: -2.22611, 
+            lon: 113.945 
+        };
+
         const petaKoordinatDesa = {
-            // 🏠 Zona Rumah
-            selat_dalam: { nama: "Kelurahan Selat Dalam (Rumah)", lat: -2.9963922, lon: 114.3939284 },
-            
-            // 🏫 Zona Sekolah - Maliku
-            tahai_jaya: { nama: "Desa Tahai Jaya (Maliku)", lat: -3.0768, lon: 114.1554 },
-            tahai_baru: { nama: "Desa Tahai Baru (Maliku)", lat: -3.0612, lon: 114.1685 },
-            belanti: { nama: "Desa Belanti (Maliku)", lat: -3.1254, lon: 114.1956 },
-            palambahen: { nama: "Desa Palambahen (Maliku)", lat: -3.0234, lon: 114.1123 },
-            badirih: { nama: "Desa Badirih (Maliku)", lat: -3.0988, lon: 114.1345 },
-            pandih_batu: { nama: "Kecamatan Pandih Batu", lat: -3.2452, lon: 114.2241 },
-            
-            // 🏫 Zona Sekolah - Basarang
-            tarung_manuah: { nama: "Desa Tarung Manuah (Basarang)", lat: -2.9654, lon: 114.3412 },
-            
-            // 📍 Zona Pembanding - Selat
-            selat_kapuas: { nama: "Desa Selat Kapuas (Kec. Selat)", lat: -2.995538, lon: 114.3935655 }
+            selat_dalam:    { nama: "Kelurahan Selat Dalam (Rumah)", lat: -2.9963922, lon: 114.3939284 },
+            tahai_jaya:     { nama: "Desa Tahai Jaya (Maliku)", lat: -3.0768, lon: 114.1554 },
+            tahai_baru:     { nama: "Desa Tahai Baru (Maliku)", lat: -3.0612, lon: 114.1685 },
+            belanti:        { nama: "Desa Belanti (Maliku)", lat: -3.1254, lon: 114.1956 },
+            palambahen:     { nama: "Desa Palambahen (Maliku)", lat: -3.0234, lon: 114.1123 },
+            badirih:        { nama: "Desa Badirih (Maliku)", lat: -3.0988, lon: 114.1345 },
+            pandih_batu:    { nama: "Kecamatan Pandih Batu", lat: -3.2452, lon: 114.2241 },
+            tarung_manuah:  { nama: "Desa Tarung Manuah (Basarang)", lat: -2.9654, lon: 114.3412 },
+            selat_kapuas:   { nama: "Desa Selat Kapuas (Kec. Selat)", lat: -2.995538, lon: 114.3935655 }
         };
 
         // ============================================
@@ -344,11 +315,92 @@
         }
 
         // ============================================
-        // AMBIL DATA WAQI (DATA UTAMA)
+        // SET BADGE WARNA
         // ============================================
-        async function ambilDataWAQI(userLat, userLon, namaDesa) {
+        function setBadge(element, aqi) {
+            if (aqi <= 50) {
+                element.innerText = 'Baik';
+                element.style.background = 'rgba(16,185,129,0.2)';
+                element.style.color = '#34d399';
+                return '#10b981';
+            } else if (aqi <= 100) {
+                element.innerText = 'Sedang';
+                element.style.background = 'rgba(245,158,11,0.2)';
+                element.style.color = '#fbbf24';
+                return '#f59e0b';
+            } else if (aqi <= 200) {
+                element.innerText = 'Tidak Sehat';
+                element.style.background = 'rgba(239,68,68,0.2)';
+                element.style.color = '#f87171';
+                return '#ef4444';
+            } else if (aqi <= 300) {
+                element.innerText = 'Sangat Tidak Sehat';
+                element.style.background = 'rgba(127,29,29,0.4)';
+                element.style.color = '#fca5a5';
+                return '#b91c1c';
+            } else {
+                element.innerText = 'Berbahaya';
+                element.style.background = 'rgba(127,29,29,0.6)';
+                element.style.color = '#fecaca';
+                return '#7f1d1d';
+            }
+        }
+
+        // ============================================
+        // AMBIL DATA WAQI (STASIUN UTAMA PALANGKA RAYA)
+        // ============================================
+        async function ambilDataUtama(userLat, userLon, namaDesa) {
             try {
-                // Cari stasiun terdekat dari koordinat user
+                const url = `https://api.waqi.info/feed/@${STASIUN_UTAMA.uid}/?token=${WAQI_TOKEN}`;
+                const res = await fetch(url);
+                const json = await res.json();
+
+                if (json.status === 'ok' && json.data && json.data.aqi) {
+                    const d = json.data;
+                    const aqi = d.aqi;
+                    const polutan = d.dominentpol ? d.dominentpol.toUpperCase() : 'PM2.5';
+                    const waktu = d.time ? d.time.s : '--';
+                    const jarak = hitungJarak(userLat, userLon, STASIUN_UTAMA.lat, STASIUN_UTAMA.lon);
+
+                    document.getElementById('waqi-aqi').innerText = aqi;
+                    document.getElementById('waqi-polutan').innerText = polutan;
+                    document.getElementById('waqi-waktu').innerText = waktu;
+                    document.getElementById('waqi-jarak').innerText = jarak.toFixed(0) + ' km dari ' + namaDesa;
+
+                    const badge = document.getElementById('waqi-badge');
+                    const bar = document.getElementById('waqi-progress');
+                    const desc = document.getElementById('waqi-desc');
+                    const warna = setBadge(badge, aqi);
+                    bar.style.background = warna;
+                    bar.style.width = Math.min((aqi / 300) * 100, 100) + '%';
+
+                    if (aqi <= 50) {
+                        desc.innerText = '✅ Kualitas udara baik menurut stasiun resmi KLHK Palangka Raya.';
+                    } else if (aqi <= 100) {
+                        desc.innerText = '⚠️ Kualitas udara sedang. Aktivitas luar ruangan dibatasi.';
+                    } else if (aqi <= 200) {
+                        desc.innerText = '🚨 Kualitas udara tidak sehat. Masker wajib, jam pelajaran dipersingkat.';
+                    } else if (aqi <= 300) {
+                        desc.innerText = '🚨 SANGAT TIDAK SEHAT. Pembelajaran harus Daring.';
+                    } else {
+                        desc.innerText = '🛑 BERBAHAYA. Aktivitas sekolah dihentikan total.';
+                    }
+
+                    updateRekomendasi(aqi);
+                    updateRiwayat(aqi, STASIUN_UTAMA.nama, badge.innerText);
+                }
+            } catch (err) {
+                console.error('Gagal ambil WAQI utama:', err);
+                document.getElementById('waqi-aqi').innerText = 'N/A';
+                document.getElementById('waqi-desc').innerText = 'Gagal ambil data. Cek koneksi internet.';
+            }
+        }
+
+        // ============================================
+        // AMBIL DATA WAQI (STASIUN TERDEKAT - OPSIONAL)
+        // ============================================
+        async function ambilDataTerdekat(userLat, userLon) {
+            try {
                 const url = `https://api.waqi.info/feed/geo:${userLat};${userLon}/?token=${WAQI_TOKEN}`;
                 const res = await fetch(url);
                 const json = await res.json();
@@ -363,69 +415,29 @@
                     const stasiunLon = d.city && d.city.geo ? d.city.geo[1] : userLon;
                     const jarak = hitungJarak(userLat, userLon, stasiunLat, stasiunLon);
 
-                    // Render ke kartu WAQI
-                    document.getElementById('waqi-aqi').innerText = aqi;
-                    document.getElementById('waqi-polutan').innerText = polutan;
-                    document.getElementById('waqi-waktu').innerText = waktu;
-                    document.getElementById('waqi-lokasi').innerText = namaStasiun;
-                    document.getElementById('waqi-jarak').innerText = jarak.toFixed(0) + ' km dari ' + namaDesa;
-                    document.getElementById('waqi-station-name').innerText = 'Stasiun: ' + namaStasiun;
+                    document.getElementById('waqi-nearby-aqi').innerText = aqi;
+                    document.getElementById('waqi-nearby-polutan').innerText = polutan;
+                    document.getElementById('waqi-nearby-waktu').innerText = waktu;
+                    document.getElementById('waqi-nearby-lokasi').innerText = namaStasiun;
+                    document.getElementById('waqi-nearby-jarak').innerText = jarak.toFixed(0) + ' km';
+                    document.getElementById('waqi-nearby-name').innerText = 'Stasiun: ' + namaStasiun;
 
-                    // Update badge & progress
-                    const badge = document.getElementById('waqi-badge');
-                    const bar = document.getElementById('waqi-progress');
-                    const desc = document.getElementById('waqi-desc');
-                    
-                    bar.style.width = Math.min((aqi / 300) * 100, 100) + '%';
-
-                    if (aqi <= 50) {
-                        badge.innerText = 'Baik';
-                        badge.style.background = 'rgba(16,185,129,0.2)';
-                        badge.style.color = '#34d399';
-                        bar.style.background = '#10b981';
-                        desc.innerText = 'Kualitas udara baik menurut stasiun resmi KLHK.';
-                    } else if (aqi <= 100) {
-                        badge.innerText = 'Sedang';
-                        badge.style.background = 'rgba(245,158,11,0.2)';
-                        badge.style.color = '#fbbf24';
-                        bar.style.background = '#f59e0b';
-                        desc.innerText = 'Kualitas udara sedang. Aktivitas luar ruangan dibatasi.';
-                    } else if (aqi <= 200) {
-                        badge.innerText = 'Tidak Sehat';
-                        badge.style.background = 'rgba(239,68,68,0.2)';
-                        badge.style.color = '#f87171';
-                        bar.style.background = '#ef4444';
-                        desc.innerText = '🚨 Kualitas udara tidak sehat. Masker wajib, jam pelajaran dipersingkat.';
-                    } else if (aqi <= 300) {
-                        badge.innerText = 'Sangat Tidak Sehat';
-                        badge.style.background = 'rgba(127,29,29,0.4)';
-                        badge.style.color = '#fca5a5';
-                        bar.style.background = '#b91c1c';
-                        desc.innerText = '🚨 SANGAT TIDAK SEHAT. Pembelajaran harus Daring.';
-                    } else {
-                        badge.innerText = 'Berbahaya';
-                        badge.style.background = 'rgba(127,29,29,0.6)';
-                        badge.style.color = '#fecaca';
-                        bar.style.background = '#7f1d1d';
-                        desc.innerText = '🛑 BERBAHAYA. Aktivitas sekolah dihentikan total.';
-                    }
-
-                    // Update rekomendasi keputusan berdasarkan WAQI
-                    updateRekomendasi(aqi, 'WAQI/KLHK');
+                    const badge = document.getElementById('waqi-nearby-badge');
+                    setBadge(badge, aqi);
                 } else {
-                    throw new Error('WAQI tidak mengembalikan data');
+                    document.getElementById('waqi-nearby-aqi').innerText = 'N/A';
+                    document.getElementById('waqi-nearby-name').innerText = 'Tidak ada stasiun terdekat';
                 }
             } catch (err) {
-                console.error('Gagal ambil WAQI:', err);
-                document.getElementById('waqi-aqi').innerText = 'N/A';
-                document.getElementById('waqi-desc').innerText = 'Gagal ambil data dari WAQI. Cek koneksi internet.';
+                console.error('Gagal ambil WAQI terdekat:', err);
+                document.getElementById('waqi-nearby-aqi').innerText = 'N/A';
             }
         }
 
         // ============================================
         // UPDATE REKOMENDASI KEPUTUSAN
         // ============================================
-        function updateRekomendasi(aqi, sumber) {
+        function updateRekomendasi(aqi) {
             const decisionBox = document.getElementById('decision-box');
             const decisionText = document.getElementById('decision-text');
             const decisionDetail = document.getElementById('decision-detail');
@@ -435,155 +447,55 @@
             if (aqi <= 50) {
                 decisionBox.classList.add('decision-normal');
                 decisionText.innerText = '✅ PEMBELAJARAN NORMAL (TATAP MUKA)';
-                decisionDetail.innerText = `Sumber: ${sumber} | ISPU ${aqi} — Kualitas udara aman.`;
+                decisionDetail.innerText = `Sumber: Stasiun Palangka Raya | ISPU ${aqi} — Kualitas udara aman.`;
             } else if (aqi <= 100) {
                 decisionBox.classList.add('decision-limited');
                 decisionText.innerText = '⚠️ PEMBELAJARAN TERBATAS';
-                decisionDetail.innerText = `Sumber: ${sumber} | ISPU ${aqi} — Aktivitas luar dibatasi, masker disiapkan.`;
+                decisionDetail.innerText = `Sumber: Stasiun Palangka Raya | ISPU ${aqi} — Aktivitas luar dibatasi, masker disiapkan.`;
             } else if (aqi <= 200) {
                 decisionBox.classList.add('decision-limited');
                 decisionText.innerText = '⚠️ PEMBELAJARAN TERBATAS (MASKER WAJIB)';
-                decisionDetail.innerText = `Sumber: ${sumber} | ISPU ${aqi} — Jam dipersingkat, kelompok rentan BDR.`;
+                decisionDetail.innerText = `Sumber: Stasiun Palangka Raya | ISPU ${aqi} — Jam dipersingkat, kelompok rentan BDR.`;
             } else if (aqi <= 300) {
                 decisionBox.classList.add('decision-online');
                 decisionText.innerText = '🚨 PEMBELAJARAN DARING (BDR)';
-                decisionDetail.innerText = `Sumber: ${sumber} | ISPU ${aqi} — Tatap muka ditiadakan.`;
+                decisionDetail.innerText = `Sumber: Stasiun Palangka Raya | ISPU ${aqi} — Tatap muka ditiadakan.`;
             } else {
                 decisionBox.classList.add('decision-online');
                 decisionText.innerText = '🛑 SEKOLAH DIHENTIKAN TOTAL';
-                decisionDetail.innerText = `Sumber: ${sumber} | ISPU ${aqi} — Evaluasi darurat.`;
+                decisionDetail.innerText = `Sumber: Stasiun Palangka Raya | ISPU ${aqi} — Evaluasi darurat.`;
             }
         }
 
         // ============================================
-        // AMBIL DATA OPEN-METEO (INFO LOKAL)
+        // UPDATE RIWAYAT
         // ============================================
-        async function ambilDataOpenMeteo(key) {
-            const geo = petaKoordinatDesa[key];
-            if (!geo) return;
-
-            const urlAir = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${geo.lat}&longitude=${geo.lon}&current=pm10,pm2_5,carbon_monoxide,nitrogen_dioxide`;
-            const urlWeather = `https://api.open-meteo.com/v1/forecast?latitude=${geo.lat}&longitude=${geo.lon}&current=temperature_2m,relative_humidity_2m`;
-
-            try {
-                const [resAir, resWeather] = await Promise.all([fetch(urlAir), fetch(urlWeather)]);
-                const jsonAir = await resAir.json();
-                const jsonWeather = await resWeather.json();
-
-                if (jsonAir.current && jsonWeather.current) {
-                    const airData = {
-                        pm25: jsonAir.current.pm2_5 || 0,
-                        pm10: jsonAir.current.pm10 || 0,
-                        co: jsonAir.current.carbon_monoxide || 0,
-                        no2: jsonAir.current.nitrogen_dioxide || 0
-                    };
-                    hitungDanRenderOpenMeteo(geo.nama, airData, jsonWeather.current);
-                }
-            } catch (err) {
-                console.error('Gagal ambil Open-Meteo:', err);
+        function updateRiwayat(aqi, stasiun, kategori) {
+            const tbody = document.getElementById('history-rows');
+            const now = new Date();
+            const waktu = now.getHours().toString().padStart(2, '0') + ':' + 
+                          now.getMinutes().toString().padStart(2, '0');
+            
+            // Tambah baris baru di atas
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>${waktu} WIB</td>
+                <td>WAQI (KLHK)</td>
+                <td>${stasiun}</td>
+                <td style="font-weight:bold; color:#f59e0b;">${aqi}</td>
+                <td>${kategori}</td>
+            `;
+            
+            // Hapus "Memuat data..." jika ada
+            if (tbody.firstChild && tbody.firstChild.innerText.includes('Memuat')) {
+                tbody.innerHTML = '';
             }
-        }
-
-        function hitungISPUdariPM25(pm25) {
-            const tabel = [
-                { ispuMin: 0,   ispuMax: 50,  pmMin: 0,    pmMax: 15.5  },
-                { ispuMin: 51,  ispuMax: 100, pmMin: 15.6, pmMax: 55.4  },
-                { ispuMin: 101, ispuMax: 200, pmMin: 55.5, pmMax: 150.4 },
-                { ispuMin: 201, ispuMax: 300, pmMin: 150.5,pmMax: 250.4 },
-                { ispuMin: 301, ispuMax: 500, pmMin: 250.5,pmMax: 500   }
-            ];
-            for (const t of tabel) {
-                if (pm25 >= t.pmMin && pm25 <= t.pmMax) {
-                    return Math.round(((pm25 - t.pmMin) / (t.pmMax - t.pmMin)) * (t.ispuMax - t.ispuMin) + t.ispuMin);
-                }
-            }
-            return 500;
-        }
-
-        function hitungDanRenderOpenMeteo(desaNama, air, weather) {
-            const skorIspu = hitungISPUdariPM25(air.pm25);
-            let hotspot = 0;
-            if (skorIspu > 50) hotspot = 1;
-            if (skorIspu > 100) hotspot = Math.round(skorIspu / 15);
-
-            document.getElementById('aqi-value').innerText = skorIspu;
-            document.getElementById('sensor-source-title').innerText = "Estimasi " + desaNama;
-            document.getElementById('hotspot-value').innerText = hotspot + " Titik Api";
-            document.getElementById('weather-temp').innerText = Math.round(weather.temperature_2m) + "°C";
-            document.getElementById('weather-humidity').innerText = weather.relative_humidity_2m + "%";
-
-            const unit = ' <span style="font-size:12px; color:#94a3b8; font-weight:normal;">µg/m³</span>';
-            document.getElementById('pm25-val').innerHTML = Number(air.pm25).toFixed(1) + unit;
-            document.getElementById('pm10-val').innerHTML = Number(air.pm10).toFixed(1) + unit;
-            document.getElementById('co-val').innerHTML = Math.round(air.co) + unit;
-            document.getElementById('no2-val').innerHTML = Number(air.no2).toFixed(1) + unit;
-
-            const badge = document.getElementById('aqi-status');
-            const bar = document.getElementById('aqi-progress');
-            const desc = document.getElementById('aqi-desc');
-            const radarDesc = document.getElementById('weather-desc');
-
-            bar.style.width = Math.min((skorIspu / 300) * 100, 100) + '%';
-
-            if (skorIspu <= 50) {
-                badge.innerText = "Baik"; badge.style.background = "rgba(16,185,129,0.2)"; badge.style.color = "#34d399";
-                bar.style.background = "#10b981"; radarDesc.innerText = "Gambut Aman";
-                desc.innerText = "Estimasi model: kualitas udara baik.";
-            } else if (skorIspu <= 100) {
-                badge.innerText = "Sedang"; badge.style.background = "rgba(245,158,11,0.2)"; badge.style.color = "#fbbf24";
-                bar.style.background = "#f59e0b"; radarDesc.innerText = "Asap Ringan";
-                desc.innerText = "Estimasi model: kualitas udara sedang.";
-            } else {
-                badge.innerText = "Tidak Sehat"; badge.style.background = "rgba(239,68,68,0.2)"; badge.style.color = "#f87171";
-                bar.style.background = "#ef4444"; radarDesc.innerText = "Kebakaran Aktif";
-                desc.innerText = "Estimasi model: kualitas udara tidak sehat.";
-            }
-        }
-
-        // ============================================
-        // AMBIL DATA SENSOR.COMMUNITY
-        // ============================================
-        async function ambilDataSensorCommunity(lat, lon) {
-            try {
-                const url = `https://data.sensor.community/airrohr/v1/filter/box=${lat},${lon},50`;
-                const res = await fetch(url);
-                if (!res.ok) throw new Error("No response");
-                const data = await res.json();
-                
-                if (!Array.isArray(data) || data.length === 0) {
-                    document.getElementById('sc-pm25').innerText = "N/A";
-                    document.getElementById('sc-jarak').innerText = "-";
-                    document.getElementById('sc-jumlah').innerText = "0";
-                    return;
-                }
-                
-                const sensorPM25 = data.filter(d => 
-                    d.sensordatavalues && d.sensordatavalues.some(v => v.value_type === 'P2')
-                );
-                
-                if (sensorPM25.length === 0) {
-                    document.getElementById('sc-pm25').innerText = "N/A";
-                    document.getElementById('sc-jarak').innerText = "-";
-                    document.getElementById('sc-jumlah').innerText = "0";
-                    return;
-                }
-                
-                let totalPM25 = 0, count = 0;
-                sensorPM25.slice(0, 5).forEach(d => {
-                    const p2 = d.sensordatavalues.find(v => v.value_type === 'P2');
-                    if (p2 && p2.value) { totalPM25 += parseFloat(p2.value); count++; }
-                });
-                
-                const rataPM25 = count > 0 ? (totalPM25 / count).toFixed(1) : "N/A";
-                document.getElementById('sc-pm25').innerText = rataPM25 + " µg/m³";
-                document.getElementById('sc-jarak').innerText = "< 50 km";
-                document.getElementById('sc-jumlah').innerText = count + " sensor";
-                
-            } catch (err) {
-                console.error("Sensor.Community error:", err);
-                document.getElementById('sc-pm25').innerText = "N/A";
-                document.getElementById('sc-jarak').innerText = "Error";
-                document.getElementById('sc-jumlah').innerText = "-";
+            
+            tbody.insertBefore(newRow, tbody.firstChild);
+            
+            // Batasi 10 baris terakhir
+            while (tbody.children.length > 10) {
+                tbody.removeChild(tbody.lastChild);
             }
         }
 
@@ -594,24 +506,25 @@
             const key = e.target.value;
             const geo = petaKoordinatDesa[key];
             if (geo) {
-                ambilDataWAQI(geo.lat, geo.lon, geo.nama);      // UTAMA
-                ambilDataOpenMeteo(key);                          // INFO LOKAL
-                ambilDataSensorCommunity(geo.lat, geo.lon);       // PEMBANDING
+                ambilDataUtama(geo.lat, geo.lon, geo.nama);
+                ambilDataTerdekat(geo.lat, geo.lon);
             }
         });
 
         // Pemuatan perdana
         const defaultKey = 'tahai_jaya';
         const defaultGeo = petaKoordinatDesa[defaultKey];
-        ambilDataWAQI(defaultGeo.lat, defaultGeo.lon, defaultGeo.nama);
-        ambilDataOpenMeteo(defaultKey);
-        setTimeout(() => ambilDataSensorCommunity(defaultGeo.lat, defaultGeo.lon), 500);
+        ambilDataUtama(defaultGeo.lat, defaultGeo.lon, defaultGeo.nama);
+        ambilDataTerdekat(defaultGeo.lat, defaultGeo.lon);
 
-        // Auto-refresh WAQI setiap 30 menit
+        // Auto-refresh setiap 30 menit
         setInterval(() => {
             const key = document.getElementById('village-selector').value;
             const geo = petaKoordinatDesa[key];
-            if (geo) ambilDataWAQI(geo.lat, geo.lon, geo.nama);
+            if (geo) {
+                ambilDataUtama(geo.lat, geo.lon, geo.nama);
+                ambilDataTerdekat(geo.lat, geo.lon);
+            }
         }, 30 * 60 * 1000);
 
         // Update jam
