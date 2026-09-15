@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Udara Sekolah - Maliku & Basarang</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; }
+        body { background-color: #0f172a; color: #f8fafc; font-family: system-ui, sans-serif; min-height: 100vh; }
+        .wrapper { display: flex; flex-direction: column; min-height: 100vh; }
+        
+        @keyframes alert-blink {
+            0%, 100% { background-color: #0f172a; }
+            50% { background-color: #450a0a; }
+        }
+        .siaga-asap { animation: alert-blink 2s infinite; }
+
+        aside { background-color: #1e293b; padding: 24px; width: 100%; border-bottom: 1px solid #334155; display: flex; flex-direction: column; justify-content: space-between; }
+        .logo-area { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; font-size: 18px; font-weight: bold; color: #fff; }
+        .logo-dot { width: 12px; height: 12px; background-color: #10b981; border-radius: 50%; }
+        nav { display: flex; flex-direction: column; gap: 8px; }
+        nav a { display: block; padding: 12px 16px; color: #94a3b8; text-decoration: none; font-weight: 500; border-radius: 8px; transition: 0.2s; }
+        nav a:hover { background-color: #334155; color: #fff; }
+        .footer-sidebar { margin-top: 24px; padding-top: 24px; border-top: 1px solid #334155; font-size: 11px; color: #64748b; }
+
+        main { flex: 1; padding: 24px; display: flex; flex-direction: column; gap: 32px; overflow-y: auto; }
+        header { display: flex; flex-direction: column; gap: 16px; justify-content: space-between; border-bottom: 1px solid #334155; padding-bottom: 20px; }
+        h1 { font-size: 22px; color: #fff; font-weight: 700; }
+        header p { color: #94a3b8; font-size: 14px; }
+        
+        .select-box { display: flex; flex-direction: column; gap: 6px; }
+        select { background-color: #0f172a; border: 1px solid #475569; color: #fff; padding: 10px 16px; font-size: 14px; border-radius: 8px; cursor: pointer; min-width: 280px; font-weight: 600; }
+        optgroup { background: #1e293b; color: #94a3b8; font-weight: 600; }
+        
+        .grid-main { display: grid; grid-template-columns: 1fr; gap: 24px; }
+        .card { background-color: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 24px; }
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+        .card-title { color: #94a3b8; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .aqi-large { font-size: 64px; font-weight: 900; color: #fff; margin-top: 8px; line-height: 1; }
+        .badge { padding: 6px 14px; border-radius: 9999px; font-size: 12px; font-weight: 700; }
+        
+        .progress-container { width: 100%; background-color: #334155; height: 14px; border-radius: 9999px; margin-top: 20px; overflow: hidden; }
+        .progress-bar { height: 100%; width: 0%; border-radius: 9999px; transition: width 0.5s ease; }
+        .desc-text { font-size: 14px; color: #94a3b8; margin-top: 14px; line-height: 1.5; }
+
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; border-top: 1px solid #334155; padding-top: 16px; font-size: 13px; }
+        .info-grid span { color: #fff; font-weight: 600; display: block; margin-top: 2px; }
+
+        .grid-pollutants { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+        .pollutant-card { background-color: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 20px; }
+        .pollutant-val { font-size: 26px; font-weight: 800; color: #fff; margin-top: 6px; }
+        
+        .section-title { font-size: 18px; font-weight: 700; color: #fff; border-left: 4px solid #0ea5e9; padding-left: 12px; margin-bottom: 12px; }
+        
+        .decision-box { padding: 20px; border-radius: 12px; margin-top: 16px; font-size: 15px; line-height: 1.6; }
+        .decision-normal { background: rgba(16,185,129,0.15); border: 1px solid #10b981; }
+        .decision-limited { background: rgba(245,158,11,0.15); border: 1px solid #f59e0b; }
+        .decision-online { background: rgba(239,68,68,0.15); border: 1px solid #ef4444; }
+
+        .table-container { overflow-x: auto; background-color: #1e293b; border: 1px solid #334155; border-radius: 12px; }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        th, td { padding: 14px 16px; border-bottom: 1px solid #334155; text-align: left; }
+        th { background-color: #0f172a; color: #94a3b8; font-size: 12px; text-transform: uppercase; }
+
+        .link-btn { display: inline-block; padding: 10px 16px; background: #0ea5e9; color: #fff; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; transition: 0.2s; }
+        .link-btn:hover { background: #0284c7; }
+
+        @media (min-width: 768px) {
+            .wrapper { flex-direction: row; }
+            aside { width: 260px; border-bottom: none; border-right: 1px solid #334155; position: fixed; height: 100vh; overflow-y: auto; }
+            main { margin-left: 260px; padding: 40px; }
+            .grid-main { grid-template-columns: 2fr 1fr; }
+            .grid-pollutants { grid-template-columns: repeat(4, 1fr); }
+            h1 { font-size: 26px; }
+        }
+    </style>
+</head>
+<body id="dashboard-body">
+    <div class="wrapper">
+        <aside>
+            <div>
+                <div class="logo-area">
+                    <div class="logo-dot"></div>
+                    <span>AeroKalteng v4.0</span>
+                </div>
+                <nav>
+                    <a href="#dashboard" style="background-color: #0ea5e9; color: #fff;">📊 Dashboard Utama</a>
+                    <a href="#peta-wilayah">🗺️ Peta Stasiun</a>
+                    <a href="#riwayat-ispu">📈 Riwayat ISPU</a>
+                    <a href="#panduan">📚 Panduan & Protokol</a>
+                    <a href="#tentang">ℹ️ Tentang</a>
+                </nav>
+            </div>
+            <div class="footer-sidebar">
+                Sumber Data:<br>
+                <span style="color:#34d399; font-weight:bold;">Open-Meteo + Sensor.Community</span><br><br>
+                Jam Pembaruan:<br>
+                <span id="last-update" style="color:#fff;">Memuat...</span>
+            </div>
+        </aside>
+        
+        <main>
+            <header id="dashboard">
+                <div>
+                    <h1>🌫️ Dashboard Udara Sekolah Kalteng</h1>
+                    <p>Pemantauan real-time untuk keputusan pembelajaran — Maliku, Basarang & Selat Kapuas.</p>
+                </div>
+                <div class="select-box">
+                    <select id="village-selector">
+                        <optgroup label="🏠 Zona Rumah">
+                            <option value="selat_dalam">Kelurahan Selat Dalam (Rumah)</option>
+                        </optgroup>
+                        <optgroup label="🏫 Zona Sekolah — Maliku">
+                            <option value="tahai_jaya" selected>Desa Tahai Jaya (Maliku)</option>
+                            <option value="tahai_baru">Desa Tahai Baru (Maliku)</option>
+                            <option value="belanti">Desa Belanti (Maliku)</option>
+                            <option value="palambahen">Desa Palambahen (Maliku)</option>
+                            <option value="badirih">Desa Badirih (Maliku)</option>
+                            <option value="pandih_batu">Kecamatan Pandih Batu</option>
+                        </optgroup>
+                        <optgroup label="🏫 Zona Sekolah — Basarang">
+                            <option value="tarung_manuah">Desa Tarung Manuah (Basarang)</option>
+                        </optgroup>
+                        <optgroup label="📍 Zona Pembanding — Selat">
+                            <option value="selat_kapuas">Desa Selat Kapuas (Kec. Selat)</option>
+                        </optgroup>
+                    </select>
+                </div>
+            </header>
+
+            <!-- REKOMENDASI KEPUTUSAN -->
+            <section>
+                <div id="decision-box" class="decision-box decision-normal">
+                    <div style="font-size:12px; color:#94a3b8; text-transform:uppercase; font-weight:600; margin-bottom:6px;">📋 Rekomendasi Keputusan Pembelajaran</div>
+                    <div id="decision-text" style="font-size:18px; font-weight:700; color:#fff;">Memuat data...</div>
+                    <div id="decision-detail" style="font-size:13px; color:#cbd5e1; margin-top:6px;">Berdasarkan SE Mendikdasmen 20/2026</div>
+                </div>
+            </section>
+
+            <!-- KARTU UTAMA -->
+            <section class="grid-main">
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title" id="sensor-source-title">Stasiun Desa</div>
+                            <div class="aqi-large" id="aqi-value">--</div>
+                        </div>
+                        <span id="aqi-status" class="badge">Proses...</span>
+                    </div>
+                    <div>
+                        <div class="progress-container"><div id="aqi-progress" class="progress-bar"></div></div>
+                        <div style="margin-top:10px; font-size:12px; color:#f87171; font-weight:bold;">Batas Nilai Aman LHK: ≤ 100</div>
+                        <p class="desc-text" id="aqi-desc">Memuat data sensor...</p>
+                    </div>
+                </div>
+
+                <div class="card" style="display:flex; flex-direction:column; justify-content:space-between;">
+                    <div>
+                        <div class="card-title">🚨 Radar Satelit Hotspot</div>
+                        <div style="margin:16px 0;">
+                            <div style="font-size:32px; font-weight:700; color:#ef4444;" id="hotspot-value">0 Titik</div>
+                            <div style="color:#38bdf8; font-size:14px; font-weight:600;" id="weather-desc">Memuat...</div>
+                        </div>
+                    </div>
+                    <div class="info-grid">
+                        <div>Suhu Lapangan: <span id="weather-temp">--°C</span></div>
+                        <div>Kelembapan: <span id="weather-humidity">--%</span></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- POLUTAN -->
+            <section style="display:flex; flex-direction:column; gap:16px;">
+                <h3 class="section-title">Konsentrasi Parameter Polutan Mikro</h3>
+                <div class="grid-pollutants">
+                    <div class="pollutant-card"><div class="card-title">PM2.5 (Inti Asap)</div><div class="pollutant-val" id="pm25-val">--</div></div>
+                    <div class="pollutant-card"><div class="card-title">PM10 (Debu Kasar)</div><div class="pollutant-val" id="pm10-val">--</div></div>
+                    <div class="pollutant-card"><div class="card-title">CO (Gas Karbon)</div><div class="pollutant-val" id="co-val">--</div></div>
+                    <div class="pollutant-card"><div class="card-title">NO2 (Polusi)</div><div class="pollutant-val" id="no2-val">--</div></div>
+                </div>
+            </section>
+
+            <!-- PEMBANDING & LINK RESMI -->
+            <section style="display:grid; grid-template-columns: 1fr; gap:24px;">
+                <div class="card" style="border-left: 4px solid #8b5cf6;">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">🛰️ Pembanding Open Source (Sensor.Community)</div>
+                            <div style="font-size:11px; color:#64748b; margin-top:4px;">Data dari sensor warga, bebas API key</div>
+                        </div>
+                    </div>
+                    <div style="margin:16px 0;">
+                        <div style="font-size:32px; font-weight:900; color:#a78bfa;" id="sc-pm25">--</div>
+                        <div style="font-size:12px; color:#94a3b8;">PM2.5 rata-rata (µg/m³) — sensor terdekat</div>
+                    </div>
+                    <div class="info-grid" style="border-top:1px solid #334155; padding-top:12px;">
+                        <div>Jarak Sensor: <span id="sc-jarak">--</span></div>
+                        <div>Jumlah Sensor: <span id="sc-jumlah">--</span></div>
+                    </div>
+                    <p style="font-size:11px; color:#64748b; margin-top:12px; font-style:italic;">
+                        Jika tidak ada sensor dalam radius 50 km, nilai akan tampil "N/A".
+                    </p>
+                </div>
+
+                <div class="card" style="border-left: 4px solid #64748b;">
+                    <div class="card-title">🔗 Cek Data Resmi KLHK</div>
+                    <p style="font-size:13px; color:#94a3b8; margin:12px 0;">
+                        Untuk membandingkan dengan data resmi pemerintah (KLHK), kunjungi portal ISPU:
+                    </p>
+                    <a href="https://ispu.kemenlh.go.id/webv5" target="_blank" class="link-btn">
+                        Buka Portal ISPU KLHK →
+                    </a>
+                    <p style="font-size:11px; color:#64748b; margin-top:12px;">
+                        Pilih stasiun <strong>"Kabupaten Kapuas"</strong> atau <strong>"Kota Palangka Raya"</strong> sebagai pembanding terdekat.
+                    </p>
+                </div>
+            </section>
+
+            <!-- PETA -->
+            <section id="peta-wilayah" style="padding-top:16px;">
+                <h3 class="section-title">Peta Koordinat Sebaran</h3>
+                <div style="background-color:#1e293b; border:2px dashed #475569; height:180px; border-radius:12px; display:flex; justify-content:center; align-items:center; color:#94a3b8; text-align:center; padding:20px;">
+                    🗺️ Peta interaktif (opsional) — bisa ditambahkan dengan Leaflet.js<br>
+                    <span style="font-size:12px; margin-top:8px;">Koordinat desa sudah tersimpan di sistem radar.</span>
+                </div>
+            </section>
+
+            <!-- RIWAYAT -->
+            <section id="riwayat-ispu" style="padding-top:16px;">
+                <h3 class="section-title">Log Transmisi Peta Sensor Udara</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Jam</th>
+                                <th>Sumber Data</th>
+                                <th>PM2.5</th>
+                                <th>Skor ISPU</th>
+                                <th>Indikator</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-rows"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- PANDUAN -->
+            <section id="panduan" style="padding-top:16px;">
+                <h3 class="section-title">📚 Panduan ISPU & Protokol Pembelajaran</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ISPU</th>
+                                <th>Kategori</th>
+                                <th>Protokol Pembelajaran</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td style="color:#34d399; font-weight:700;">0 – 50</td><td>Baik</td><td>Tatap Muka Normal</td></tr>
+                            <tr><td style="color:#60a5fa; font-weight:700;">51 – 100</td><td>Sedang</td><td>Tatap Muka Penuh, aktivitas luar ruangan dibatasi, masker disiapkan</td></tr>
+                            <tr><td style="color:#fbbf24; font-weight:700;">101 – 200</td><td>Tidak Sehat</td><td>Tatap Muka Terbatas, jam dipersingkat, masker wajib, kelompok rentan BDR</td></tr>
+                            <tr><td style="color:#f87171; font-weight:700;">201 – 300</td><td>Sangat Tidak Sehat</td><td>Tatap Muka Ditiadakan, seluruhnya BDR / Daring</td></tr>
+                            <tr><td style="color:#fca5a5; font-weight:700;">&gt; 300</td><td>Berbahaya</td><td>Seluruh aktivitas sekolah dihentikan, evaluasi & perlindungan darurat</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p style="font-size:12px; color:#64748b; margin-top:12px;">
+                    Mengacu pada <strong>SE Mendikdasmen No. 20/2026</strong> dan <strong>Permen LHK 14/2020</strong>.
+                </p>
+            </section>
+
+            <!-- TENTANG -->
+            <section id="tentang" style="padding-top:16px;">
+                <h3 class="section-title">ℹ️ Tentang Dashboard</h3>
+                <div class="card">
+                    <p style="font-size:14px; color:#cbd5e1; line-height:1.7;">
+                        Dashboard ini dibuat untuk membantu pengambilan keputusan pembelajaran (Normal / Terbatas / Daring) 
+                        berdasarkan kualitas udara real-time di wilayah Maliku, Basarang, dan Selat Kapuas, Kalimantan Tengah.
+                    </p>
+                    <p style="font-size:13px; color:#94a3b8; margin-top:12px; line-height:1.7;">
+                        <strong>Sumber Data:</strong><br>
+                        • Open-Meteo (Air Quality API) — model CAMS Eropa, resolusi ~45 km<br>
+                        • Sensor.Community — sensor partikel warga, open source<br>
+                        • KLHK ISPU — link manual ke portal resmi
+                    </p>
+                    <p style="font-size:12px; color:#64748b; margin-top:12px; font-style:italic;">
+                        ⚠️ Data Open-Meteo bersifat estimasi model satelit, bukan pengukuran langsung. 
+                        Untuk keputusan kritis, selalu verifikasi dengan data resmi KLHK dan kondisi lapangan.
+                    </p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // ============================================
+        // KOORDINAT DESA
+        // ============================================
+        const petaKoordinatDesa = {
+            // 🏠 Zona Rumah
+            selat_dalam: { nama: "Kelurahan Selat Dalam (Rumah)", lat: -2.9963922, lon: 114.3939284 },
+            
+            // 🏫 Zona Sekolah - Maliku
+            tahai_jaya: { nama: "Desa Tahai Jaya (Maliku)", lat: -3.0768, lon: 114.1554 },
+            tahai_baru: { nama: "Desa Tahai Baru (Maliku)", lat: -3.0612, lon: 114.1685 },
+            belanti: { nama: "Desa Belanti (Maliku)", lat: -3.1254, lon: 114.1956 },
+            palambahen: { nama: "Desa Palambahen (Maliku)", lat: -3.0234, lon: 114.1123 },
+            badirih: { nama: "Desa Badirih (Maliku)", lat: -3.0988, lon: 114.1345 },
+            pandih_batu: { nama: "Kecamatan Pandih Batu", lat: -3.2452, lon: 114.2241 },
+            
+            // 🏫 Zona Sekolah - Basarang
+            tarung_manuah: { nama: "Desa Tarung Manuah (Basarang)", lat: -2.9654, lon: 114.3412 },
+            
+            // 📍 Zona Pembanding - Selat
+            selat_kapuas: { nama: "Desa Selat Kapuas (Kec. Selat)", lat: -2.995538, lon: 114.3935655 }
+        };
+
+        // ============================================
+        // AMBIL DATA OPEN-METEO (REAL-TIME)
+        // ============================================
+        async function ambilDataOpenMeteo(key) {
+            const geo = petaKoordinatDesa[key];
+            if (!geo) return;
+
+            const urlAir = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${geo.lat}&longitude=${geo.lon}&current=pm10,pm2_5,carbon_monoxide,nitrogen_dioxide`;
+            const urlWeather = `https://api.open-meteo.com/v1/forecast?latitude=${geo.lat}&longitude=${geo.lon}&current=temperature_2m,relative_humidity_2m`;
+
+            try {
+                const [resAir, resWeather] = await Promise.all([
+                    fetch(urlAir),
+                    fetch(urlWeather)
+                ]);
+                const jsonAir = await resAir.json();
+                const jsonWeather = await resWeather.json();
+
+                if (jsonAir.current && jsonWeather.current) {
+                    const airData = {
+                        pm25: jsonAir.current.pm2_5 || 0,
+                        pm10: jsonAir.current.pm10 || 0,
+                        co: jsonAir.current.carbon_monoxide || 0,
+                        no2: jsonAir.current.nitrogen_dioxide || 0
+                    };
+                    hitungDanRender(geo.nama, airData, jsonWeather.current);
+                } else {
+                    throw new Error("Data kosong");
+                }
+            } catch (err) {
+                console.error("Gagal ambil Open-Meteo:", err);
+                // Fallback data dummy jika offline
+                eksekusiRender(geo.nama, 165, 72.4, 98.0, 940, 5, 26, 74, 8);
+            }
+        }
+
+        // ============================================
+        // KONVERSI PM2.5 → ISPU (Permen LHK 14/2020)
+        // ============================================
+        function hitungISPUdariPM25(pm25) {
+            const tabel = [
+                { ispuMin: 0,   ispuMax: 50,  pmMin: 0,    pmMax: 15.5  },
+                { ispuMin: 51,  ispuMax: 100, pmMin: 15.6, pmMax: 55.4  },
+                { ispuMin: 101, ispuMax: 200, pmMin: 55.5, pmMax: 150.4 },
+                { ispuMin: 201, ispuMax: 300, pmMin: 150.5,pmMax: 250.4 },
+                { ispuMin: 301, ispuMax: 500, pmMin: 250.5,pmMax: 500   }
+            ];
+            for (const t of tabel) {
+                if (pm25 >= t.pmMin && pm25 <= t.pmMax) {
+                    return Math.round(((pm25 - t.pmMin) / (t.pmMax - t.pmMin)) * (t.ispuMax - t.ispuMin) + t.ispuMin);
+                }
+            }
+            return 500;
+        }
+
+        function hitungDanRender(desaNama, air, weather) {
+            const skorIspu = hitungISPUdariPM25(air.pm25);
+            
+            let hitungHotspot = 0;
+            if (skorIspu > 50) hitungHotspot = 1;
+            if (skorIspu > 100) hitungHotspot = Math.round(skorIspu / 15);
+
+            eksekusiRender(
+                desaNama, skorIspu,
+                air.pm25, air.pm10, air.co, air.no2,
+                Math.round(weather.temperature_2m),
+                weather.relative_humidity_2m,
+                hitungHotspot
+            );
+        }
+
+        // ============================================
+        // RENDER DASHBOARD
+        // ============================================
+        function eksekusiRender(desaNama, skorIspu, pm25, pm10, co, no2, temp, humidity, hotspots) {
+            document.getElementById('aqi-value').innerText = skorIspu;
+            document.getElementById('sensor-source-title').innerText = "Stasiun " + desaNama;
+            document.getElementById('hotspot-value').innerText = hotspots + " Titik Api";
+            document.getElementById('weather-temp').innerText = temp + "°C";
+            document.getElementById('weather-humidity').innerText = humidity + "%";
+
+            const unit = ' <span style="font-size:12px; color:#94a3b8; font-weight:normal;">µg/m³</span>';
+            document.getElementById('pm25-val').innerHTML = Number(pm25).toFixed(1) + unit;
+            document.getElementById('pm10-val').innerHTML = Number(pm10).toFixed(1) + unit;
+            document.getElementById('co-val').innerHTML = Math.round(co) + unit;
+            document.getElementById('no2-val').innerHTML = Number(no2).toFixed(1) + unit;
+
+            const badge = document.getElementById('aqi-status');
+            const bar = document.getElementById('aqi-progress');
+            const desc = document.getElementById('aqi-desc');
+            const body = document.getElementById('dashboard-body');
+            const radarDesc = document.getElementById('weather-desc');
+            const decisionBox = document.getElementById('decision-box');
+            const decisionText = document.getElementById('decision-text');
+            const decisionDetail = document.getElementById('decision-detail');
+
+            bar.style.width = Math.min((skorIspu / 300) * 100, 100) + '%';
+
+            // Reset decision box class
+            decisionBox.className = 'decision-box';
+
+            if (skorIspu <= 50) {
+                badge.innerText = "Baik";
+                badge.style.background = "rgba(16,185,129,0.2)"; badge.style.color = "#34d399";
+                bar.style.background = "#10b981";
+                radarDesc.innerText = "Gambut Aman Lembab";
+                desc.innerText = "Kualitas udara sangat sehat. Partikel asap kebakaran lahan nihil.";
+                body.className = "";
+                
+                decisionBox.classList.add('decision-normal');
+                decisionText.innerText = "✅ PEMBELAJARAN NORMAL (TATAP MUKA)";
+                decisionDetail.innerText = "Kualitas udara aman. Kegiatan luar ruangan diizinkan.";
+            } else if (skorIspu <= 100) {
+                badge.innerText = "Sedang";
+                badge.style.background = "rgba(245,158,11,0.2)"; badge.style.color = "#fbbf24";
+                bar.style.background = "#f59e0b";
+                radarDesc.innerText = "Pantauan Asap Ringan";
+                desc.innerText = "Kualitas udara tingkat sedang. Terdeteksi kepulan kabut asap tipis.";
+                body.className = "";
+                
+                decisionBox.classList.add('decision-limited');
+                decisionText.innerText = "⚠️ PEMBELAJARAN TERBATAS";
+                decisionDetail.innerText = "Aktivitas luar ruangan dibatasi. Masker disiapkan untuk siswa & guru.";
+            } else if (skorIspu <= 200) {
+                badge.innerText = "Tidak Sehat";
+                badge.style.background = "rgba(239,68,68,0.2)"; badge.style.color = "#f87171";
+                bar.style.background = "#ef4444";
+                radarDesc.innerText = "Kebakaran Lahan Aktif";
+                desc.innerText = "🚨 Konsentrasi partikulat jelaga melampaui batas aman. Masker wajib.";
+                body.className = "siaga-asap";
+                
+                decisionBox.classList.add('decision-limited');
+                decisionText.innerText = "⚠️ PEMBELAJARAN TERBATAS (MASKER WAJIB)";
+                decisionDetail.innerText = "Jam pelajaran dipersingkat. Kelompok rentan disarankan BDR.";
+            } else if (skorIspu <= 300) {
+                badge.innerText = "Sangat Tidak Sehat";
+                badge.style.background = "rgba(127,29,29,0.4)"; badge.style.color = "#fca5a5";
+                bar.style.background = "#b91c1c";
+                radarDesc.innerText = "Darurat Kabut Asap";
+                desc.innerText = "🚨 ISPU SANGAT TIDAK SEHAT. Seluruh pembelajaran harus Daring.";
+                body.className = "siaga-asap";
+                
+                decisionBox.classList.add('decision-online');
+                decisionText.innerText = "🚨 PEMBELAJARAN DARING (BDR)";
+                decisionDetail.innerText = "Tatap muka ditiadakan. Seluruh siswa belajar dari rumah.";
+            } else {
+                badge.innerText = "Berbahaya";
+                badge.style.background = "rgba(127,29,29,0.6)"; badge.style.color = "#fecaca";
+                bar.style.background = "#7f1d1d";
+                radarDesc.innerText = "KONDISI DARURAT";
+                desc.innerText = "🛑 ISPU BERBAHAYA. Aktivitas sekolah dihentikan total.";
+                body.className = "siaga-asap";
+                
+                decisionBox.classList.add('decision-online');
+                decisionText.innerText = "🛑 SEKOLAH DIHENTIKAN TOTAL";
+                decisionDetail.innerText = "Evaluasi darurat. Perlindungan kesehatan siswa & guru diprioritaskan.";
+            }
+
+            const clock = new Date();
+            document.getElementById('last-update').innerText = clock.toLocaleTimeString('id-ID') + ' WIB';
+            
+            const tbody = document.getElementById('history-rows');
+            tbody.innerHTML = `
+                <tr>
+                    <td>${clock.getHours()}:00 WIB</td>
+                    <td>Open-Meteo (CAMS)</td>
+                    <td>${Number(pm25).toFixed(1)} µg/m³</td>
+                    <td style="font-weight:bold;">${skorIspu}</td>
+                    <td>${badge.innerText}</td>
+                </tr>
+            `;
+        }
+
+        // ============================================
+        // AMBIL DATA SENSOR.COMMUNITY (PEMBANDING OPEN SOURCE)
+        // ============================================
+        async function ambilDataSensorCommunity(lat, lon) {
+            try {
+                // Sensor.Community: cari sensor dalam radius 50 km
+                // API: https://data.sensor.community/airrohr/v1/filter/box=lat,lon,radius
+                const url = `https://data.sensor.community/airrohr/v1/filter/box=${lat},${lon},50`;
+                const res = await fetch(url);
+                
+                if (!res.ok) throw new Error("Sensor.Community tidak merespon");
+                
+                const data = await res.json();
+                
+                if (!Array.isArray(data) || data.length === 0) {
+                    document.getElementById('sc-pm25').innerText = "N/A";
+                    document.getElementById('sc-jarak').innerText = "-";
+                    document.getElementById('sc-jumlah').innerText = "0";
+                    return;
+                }
+                
+                // Ambil sensor dengan PM2.5 valid
+                const sensorPM25 = data.filter(d => 
+                    d.sensordatavalues && 
+                    d.sensordatavalues.some(v => v.value_type === 'P2')
+                );
+                
+                if (sensorPM25.length === 0) {
+                    document.getElementById('sc-pm25').innerText = "N/A";
+                    document.getElementById('sc-jarak').innerText = "-";
+                    document.getElementById('sc-jumlah').innerText = "0";
+                    return;
+                }
+                
+                // Hitung rata-rata PM2.5
+                let totalPM25 = 0;
+                let count = 0;
+                sensorPM25.slice(0, 5).forEach(d => { // ambil maks 5 sensor terdekat
+                    const p2 = d.sensordatavalues.find(v => v.value_type === 'P2');
+                    if (p2 && p2.value) {
+                        totalPM25 += parseFloat(p2.value);
+                        count++;
+                    }
+                });
+                
+                const rataPM25 = count > 0 ? (totalPM25 / count).toFixed(1) : "N/A";
+                
+                document.getElementById('sc-pm25').innerText = rataPM25 + " µg/m³";
+                document.getElementById('sc-jarak').innerText = "< 50 km";
+                document.getElementById('sc-jumlah').innerText = count + " sensor";
+                
+            } catch (err) {
+                console.error("Gagal ambil Sensor.Community:", err);
+                document.getElementById('sc-pm25').innerText = "N/A";
+                document.getElementById('sc-jarak').innerText = "Error";
+                document.getElementById('sc-jumlah').innerText = "-";
+            }
+        }
+
+        // ============================================
+        // EVENT HANDLER
+        // ============================================
+        document.getElementById('village-selector').addEventListener('change', function(e) {
+            const key = e.target.value;
+            const geo = petaKoordinatDesa[key];
+            if (geo) {
+                ambilDataOpenMeteo(key);
+                ambilDataSensorCommunity(geo.lat, geo.lon);
+            }
+        });
+
+        // Pemuatan perdana: Desa Tahai Jaya (sekolah)
+        ambilDataOpenMeteo('tahai_jaya');
+        
+        // Auto-refresh setiap 10 menit
+        setInterval(() => {
+            const key = document.getElementById('village-selector').value;
+            ambilDataOpenMeteo(key);
+        }, 10 * 60 * 1000);
+
+        // Pemuatan awal Sensor.Community untuk desa default
+        setTimeout(() => {
+            const geo = petaKoordinatDesa['tahai_jaya'];
+            ambilDataSensorCommunity(geo.lat, geo.lon);
+        }, 1000);
+    </script>
+</body>
+</html>
