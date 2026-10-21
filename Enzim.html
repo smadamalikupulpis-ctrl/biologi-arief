@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="utf-8">
@@ -33,19 +33,22 @@ button{font:inherit;cursor:pointer;border:0}
 .step{display:flex;gap:10px;padding:5px 0;align-items:flex-start;font-size:.95em}
 .step span{flex:none;width:24px;height:24px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;font-size:.8em;font-weight:700;margin-top:1px}
 
-/* Paragraf rumpang */
-.para{font-size:1.08em;line-height:2.3;margin:0}
-.blank{display:inline-block;min-width:4.2em;border-bottom:2.5px solid var(--navy);margin:0 3px;text-align:center;line-height:1.1;padding-bottom:1px}
-.blank b{display:inline-block;background:var(--navy);color:#fff;border-radius:10px;font-size:.68em;min-width:1.7em;padding:1px 5px;vertical-align:middle}
-
-/* Bank kata */
-.bank-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:8px}
-.bank-head h2{margin:0}
-.bank-count{font-size:.82em;color:#667;white-space:nowrap}
-.bank{display:flex;flex-wrap:wrap;gap:8px}
-.chip{background:#eaf2fb;color:var(--navy);border:1px solid #c9dcf0;border-radius:20px;padding:8px 14px;font-weight:600;min-height:40px;font-size:.98em}
-.chip.used{background:#f1f3f5;color:#98a2ad;border-color:var(--line);text-decoration:line-through}
-.hint{font-size:.82em;color:#667;margin:10px 0 0}
+/* Kalimat rumpang berwarna */
+.sent-h{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
+.sent-h h2{margin:0}
+.sent-prog{font-size:.8em;font-weight:700;color:#667;background:#f1f3f5;border-radius:20px;padding:2px 10px;white-space:nowrap}
+.sent-prog.done{background:#e4f6ea;color:var(--grn)}
+.para{font-size:1.08em;line-height:2.5;margin:0 0 10px}
+.blank{display:inline-block;min-width:4.8em;margin:0 3px;padding:0 6px;text-align:center;line-height:1.35;
+  border-bottom:4px solid var(--c);background:var(--t);border-radius:6px 6px 0 0;
+  color:var(--c);font-size:.8em;font-weight:700;vertical-align:baseline}
+.blank.filled{color:#1f2937;font-size:1em;font-weight:800;cursor:pointer}
+.bank{display:flex;flex-wrap:wrap;gap:8px;padding-top:10px;border-top:1px dashed var(--line)}
+.chip{border:2px solid transparent;border-radius:20px;padding:8px 14px;font-weight:700;min-height:42px;font-size:.98em;background:var(--c);color:var(--fg)}
+.chip.used{background:#f1f3f5;color:#a0a8b1;border-color:var(--line);text-decoration:line-through;cursor:default}
+.hint{font-size:.82em;color:#667;margin:8px 0 0}
+.legend{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:.82em;margin-top:8px;color:#445}
+.legend b{font-weight:700}
 
 /* Foto */
 .ph-slot{display:flex;flex-direction:column;gap:10px}
@@ -87,7 +90,7 @@ button{font:inherit;cursor:pointer;border:0}
 </style>
 </head>
 <body>
-<header><h1>🧬 Materi Enzim</h1><small>Lengkapi paragraf → tulis di buku → foto &amp; kirim</small></header>
+<header><h1>🧬 Materi Enzim</h1><small>Cocokkan warna → tulis di buku → foto &amp; kirim</small></header>
 <main id="app"></main>
 
 <script>
@@ -111,13 +114,27 @@ const $ = id => document.getElementById(id);
 const app = $('app');
 const esc = t => String(t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-// Bangun paragraf rumpang + daftar kata
-const KATA = [];
-let paragrafHTML = PARAGRAF.join(' ').replace(/\[\[(.+?)\]\]/g, (_, w) => {
-  KATA.push(w);
-  return `<span class="blank"><b>${KATA.length}</b></span>`;
+// Warna per urutan rumpang dalam satu kalimat (disertai simbol agar tetap jelas bagi siswa buta warna)
+const WARNA = [
+  { n: 'merah',  c: '#dc3545', t: '#fde8ea', fg: '#ffffff', s: '●' },
+  { n: 'kuning', c: '#f5a300', t: '#fff4d6', fg: '#3b2a00', s: '▲' },
+  { n: 'hijau',  c: '#198754', t: '#e4f6ea', fg: '#ffffff', s: '■' },
+  { n: 'biru',   c: '#0d6efd', t: '#e7f0ff', fg: '#ffffff', s: '◆' }
+];
+
+// Per kalimat: kata rumpang diberi warna sesuai urutannya; bank kata diurutkan abjad
+const KAL = PARAGRAF.map((txt, si) => {
+  const kata = [];
+  const html = txt.replace(/\[\[(.+?)\]\]/g, (_, w) => {
+    const k = WARNA[kata.length % WARNA.length];
+    kata.push({ w, k });
+    return `<span class="blank" data-s="${si}" data-w="${esc(w)}" style="--c:${k.c};--t:${k.t}">${k.s}</span>`;
+  });
+  const bank = [...kata].sort((a, b) => a.w.localeCompare(b.w, 'id'));
+  return { html, kata, bank };
 });
-const BANK = [...KATA].sort((a, b) => a.localeCompare(b, 'id'));
+const TOTAL_KATA = KAL.reduce((n, x) => n + x.kata.length, 0);
+const fkey = (si, w) => si + ':' + w;
 
 // ====== STATE ======
 let P = {};
@@ -126,7 +143,7 @@ if (!P.student) P.student = null;
 if (!P.elapsed) P.elapsed = 0;
 if (!P.lastTick) P.lastTick = null;
 if (!P.reported) P.reported = false;
-if (!P.used) P.used = {};
+if (!P.fill) P.fill = {};
 
 let resetting = false;
 function save() { if (resetting) return; try { localStorage.setItem(KEY, JSON.stringify(P)); } catch(e) {} }
@@ -264,7 +281,41 @@ function refreshSendUI() {
 }
 
 // ====== TAMPILAN UTAMA ======
-function usedCount() { return BANK.filter(w => P.used[w]).length; }
+function findBlank(si, w) {
+  return [...document.querySelectorAll('.blank')].find(b => +b.dataset.s === si && b.dataset.w === w);
+}
+function findChip(si, w) {
+  return [...document.querySelectorAll('.chip')].find(c => +c.dataset.s === si && c.dataset.w === w);
+}
+function paintWord(si, o) {
+  const on = !!P.fill[fkey(si, o.w)];
+  const b = findBlank(si, o.w), c = findChip(si, o.w);
+  if (b) { b.textContent = on ? o.w : o.k.s; b.classList.toggle('filled', on); }
+  if (c) { c.classList.toggle('used', on); c.disabled = on; }
+}
+function paintProgress(si) {
+  const n = KAL[si].kata.filter(o => P.fill[fkey(si, o.w)]).length;
+  const el = $('prog-' + si);
+  if (!el) return;
+  el.textContent = n === KAL[si].kata.length ? '✅ Lengkap' : `${n}/${KAL[si].kata.length}`;
+  el.classList.toggle('done', n === KAL[si].kata.length);
+}
+function bindSentences() {
+  KAL.forEach((x, si) => { x.kata.forEach(o => paintWord(si, o)); paintProgress(si); });
+  document.querySelectorAll('.chip').forEach(c => c.onclick = () => {
+    const si = +c.dataset.s, w = c.dataset.w;
+    P.fill[fkey(si, w)] = true;
+    paintWord(si, KAL[si].kata.find(o => o.w === w));
+    paintProgress(si); save();
+  });
+  document.querySelectorAll('.blank').forEach(b => b.onclick = () => {
+    const si = +b.dataset.s, w = b.dataset.w;
+    if (!P.fill[fkey(si, w)]) return;
+    P.fill[fkey(si, w)] = false;
+    paintWord(si, KAL[si].kata.find(o => o.w === w));
+    paintProgress(si); save();
+  });
+}
 
 function renderMain() {
   const cukup = P.elapsed >= MIN_DETIK;
@@ -277,21 +328,18 @@ function renderMain() {
 
     <div class="card">
       <h2>Halo, ${esc(P.student.nama)} (${esc(P.student.kelas)}) 👋</h2>
-      <div class="step"><span>1</span><div>Baca paragraf rumpang di bawah. Tiap bagian kosong punya nomor.</div></div>
-      <div class="step"><span>2</span><div><b>Tulis paragraf secara lengkap di buku tulismu</b>, isi bagian kosong dengan kata dari Bank Kata.</div></div>
+      <div class="step"><span>1</span><div><b>Cocokkan warna.</b> Ketuk sebuah kata, maka kata itu mengisi garis yang <b>warnanya sama</b>. Ketuk kata di dalam garis untuk melepasnya lagi.</div></div>
+      <div class="step"><span>2</span><div><b>Tulis keempat kalimat yang sudah lengkap di buku tulismu</b>, berurutan sebagai satu paragraf.</div></div>
       <div class="step"><span>3</span><div>Foto tulisanmu, lalu kirim. Pastikan tulisan terbaca jelas.</div></div>
+      <div class="legend">${WARNA.map(k => `<span><b style="color:${k.c}">${k.s}</b> ${k.n}</span>`).join('')}</div>
     </div>
 
-    <div class="card">
-      <h2>📖 Paragraf Rumpang</h2>
-      <p class="para">${paragrafHTML}</p>
-    </div>
-
-    <div class="card">
-      <div class="bank-head"><h2>🔤 Bank Kata</h2><span class="bank-count" id="bank-count">Terpakai ${usedCount()}/${BANK.length}</span></div>
-      <div class="bank" id="bank">${BANK.map(w => `<button class="chip ${P.used[w] ? 'used' : ''}" data-w="${esc(w)}">${esc(w)}</button>`).join('')}</div>
-      <p class="hint">Ketuk sebuah kata untuk menandainya sudah dipakai. Ada ${BANK.length} kata untuk ${BANK.length} bagian kosong.</p>
-    </div>
+    ${KAL.map((x, si) => `
+    <div class="card" data-sent="${si}">
+      <div class="sent-h"><h2>Kalimat ${si + 1} dari ${KAL.length}</h2><span class="sent-prog" id="prog-${si}"></span></div>
+      <p class="para">${x.html}</p>
+      <div class="bank">${x.bank.map(o => `<button class="chip" data-s="${si}" data-w="${esc(o.w)}" style="--c:${o.k.c};--fg:${o.k.fg}">${o.k.s} ${esc(o.w)}</button>`).join('')}</div>
+    </div>`).join('')}
 
     <div class="card">
       <h2>📸 Foto Hasil Tulisan</h2>
@@ -315,13 +363,7 @@ function renderMain() {
     ss.className = 'send-status ok';
     ss.textContent = '✅ Laporan Anda sudah diterima guru. Tidak perlu mengirim ulang.';
   }
-  $('bank').querySelectorAll('.chip').forEach(ch => ch.onclick = () => {
-    const w = ch.dataset.w;
-    P.used[w] = !P.used[w];
-    ch.classList.toggle('used', !!P.used[w]);
-    $('bank-count').textContent = `Terpakai ${usedCount()}/${BANK.length}`;
-    save();
-  });
+  bindSentences();
   bindPhoto();
   scrollTo(0, 0);
 }
@@ -396,7 +438,7 @@ function showModal() {
       <label for="inp-nama">Nama Lengkap</label>
       <input id="inp-nama" type="text" placeholder="Contoh: Ahmad Fauzi" autocomplete="name">
       <label for="inp-kelas">Kelas</label>
-      <input id="inp-kelas" type="text" placeholder="Contoh: XI IPA 1" autocomplete="off">
+      <input id="inp-kelas" type="text" placeholder="Contoh: XII IPA 1" autocomplete="off">
       <div class="err" id="modal-err">Nama dan kelas wajib diisi.</div>
       <button class="btn" id="btn-start">Mulai Belajar</button>
     </div>`;
@@ -426,8 +468,8 @@ function showResumeModal() {
       waktu belajar <b>${formatTime(P.elapsed)}</b>, foto tulisan <b>${FOTO ? 'sudah ada' : 'belum ada'}</b>.
       ${P.reported ? 'Laporan sudah <b>terkirim</b>.' : 'Laporan <b>belum dikirim</b>.'}</p>
       <button class="btn" id="btn-resume">Lanjutkan sebagai ${esc(P.student.nama)}</button>
-      <button class="btn alt" id="btn-reset">Mulai baru</button>
-      <p style="margin:10px 0 0;font-size:.8em;color:#666">Jika HP ini dipakai bergantian, pilih "Mulai baru". Data lama (nama, waktu, foto) akan dihapus dari perangkat ini.</p>
+      <button class="btn alt" id="btn-reset">Bukan saya / mulai baru</button>
+      <p style="margin:10px 0 0;font-size:.8em;color:#666">Jika HP ini dipakai bergantian, pilih "Bukan saya". Data lama (nama, waktu, foto) akan dihapus dari perangkat ini.</p>
     </div>`;
   document.body.appendChild(o);
   $('btn-resume').onclick = () => {
@@ -450,7 +492,7 @@ function showResumeModal() {
     resetting = true;
     if (timerInterval) clearInterval(timerInterval);
     try { localStorage.removeItem(KEY); localStorage.removeItem(PHOTO_KEY); } catch(e) {}
-    P = { student: null, elapsed: 0, lastTick: null, reported: false, used: {} };
+    P = { student: null, elapsed: 0, lastTick: null, reported: false, fill: {} };
     FOTO = '';
     resetting = false;
     o.remove();
