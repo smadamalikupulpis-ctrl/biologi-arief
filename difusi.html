@@ -1,0 +1,359 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Rekam Suara: Difusi & Osmosis</title>
+<style>
+:root{--navy:#1c4f82;--blue:#0d6efd;--grn:#198754;--red:#dc3545;--line:#dfe3e8;--fs:16px}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;background:#f3f6fa;color:#1f2a37;font-size:var(--fs);line-height:1.55;padding-bottom:max(28px,env(safe-area-inset-bottom))}
+body.dock-on{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+header{background:linear-gradient(90deg,#16406c,#0f8a6a);color:#fff;padding:14px 16px;padding-top:max(14px,env(safe-area-inset-top))}
+header h1{margin:0;font-size:1.2em}
+header small{opacity:.9;display:block;margin-top:2px}
+main{max-width:720px;margin:0 auto;padding:16px}
+button{font:inherit;cursor:pointer;border:0}
+select{font:inherit;font-size:16px}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;margin:0 0 14px}
+.card h2{margin:0 0 10px;font-size:1.05em;color:var(--navy)}
+.center{text-align:center}
+.muted{color:#667;font-size:.9em}
+.btn{display:inline-block;padding:12px 18px;border-radius:26px;background:var(--navy);color:#fff;font-weight:700;min-height:48px;text-align:center}
+.btn.alt{background:#eaf2fb;color:var(--navy)}
+.btn.rec{background:var(--red)}
+.btn.go{background:linear-gradient(90deg,#198754,#20a56a)}
+.btn.block{display:block;width:100%;margin-top:12px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.stack{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+label.f{display:block;font-weight:600;font-size:.9em;margin:12px 0 4px}
+select.sel{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;background:#fff}
+.note{border-radius:12px;padding:12px 14px;margin:0 0 14px;font-size:.92em;border:1px solid}
+.note.info{background:#eaf6ff;border-color:#bcdcf5;color:#0b4a78}
+.note.warn{background:#fff6e0;border-color:#f2d58b;color:#7a5300}
+.note.err{background:#fde8ea;border-color:#f3b7be;color:#9c1c2b}
+.note b{font-weight:700}
+.spin{width:34px;height:34px;border:4px solid #dfe8f3;border-top-color:var(--navy);border-radius:50%;margin:6px auto 12px;animation:sp 1s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.tag{display:inline-block;background:#eaf2fb;color:var(--navy);border-radius:20px;padding:2px 10px;font-size:.78em;font-weight:700;margin-bottom:10px}
+.chips{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip{background:#f1f5f9;border-radius:20px;padding:4px 12px;font-size:.88em;font-weight:600}
+
+/* Teks bacaan */
+.read{font-size:1.2em;line-height:2.1;text-align:left}
+.w{padding:1px 2px;border-radius:5px;transition:background .15s,color .15s}
+.w.open{font-style:italic;color:#0f6a50}
+.w.done{color:var(--navy);font-weight:600}
+.w.cur{background:#ffe066;color:#1f2a37;font-weight:700}
+.tips{margin:0;padding-left:18px;font-size:.92em;color:#445}
+.tips li{margin:3px 0}
+
+/* Rekam */
+.topbar{position:sticky;top:0;z-index:40;background:#fff;border-bottom:1px solid var(--line);margin:-16px -16px 14px;padding:10px 16px;display:flex;align-items:center;gap:12px}
+.topbar .dot{width:12px;height:12px;border-radius:50%;background:var(--red);animation:bl 1s infinite}
+@keyframes bl{50%{opacity:.25}}
+.topbar .tm{font-weight:800;font-variant-numeric:tabular-nums;color:var(--red);font-size:1.15em}
+.meter{flex:1;height:10px;background:#e8edf3;border-radius:6px;overflow:hidden}
+.meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,#20a56a,#f5a300,#dc3545);transition:width .08s}
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:60;background:#fff;border-top:1px solid var(--line);padding:10px 16px max(10px,env(safe-area-inset-bottom))}
+.dock .btn{display:block;width:100%;max-width:720px;margin:0 auto}
+audio{width:100%;margin:6px 0}
+.big{font-size:3em;line-height:1.1}
+@media(min-width:700px){:root{--fs:17px}}
+</style>
+</head>
+<body>
+<header><h1>🎙️ Rekam Suara: Difusi &amp; Osmosis</h1><small>Baca teks dengan jelas, rekam, dengarkan, lalu kirim</small></header>
+<main id="app"></main>
+
+<script>
+// ====== KONFIGURASI ======
+const GAS_URL = "https://script.google.com/macros/s/AKfycbz0j0Tp0Fg2619EanHkDVRo71dTtBDYgoB5ZlG21SBbmc75MwuF7NDHNCVeo-xVlRnO/exec";
+const LATIHAN_DETIK = 60;    // teks diam: waktu latihan membaca sebelum tombol rekam aktif
+const MIN_REKAM     = 45;    // tombol "Selesai" terkunci sampai durasi rekam minimal ini (detik)
+const MAX_REKAM     = 150;   // otomatis berhenti (detik)
+const KECEPATAN     = 1.9;   // kata per detik untuk sorotan karaoke
+const BITRATE       = 24000; // Opus ±24 kbps
+const MIN_UKURAN_KB = 15;    // di bawah ini dianggap rekaman kosong/rusak
+const MIN_DENGAR    = 10;     // detik pratinjau yang wajib didengar sebelum boleh kirim
+
+// Empat varian teks (setara, 130-140 kata)
+const TEKS = {"A":{"judul":"Dasar Difusi","tentang":"dasar difusi","isi":"Difusi adalah perpindahan molekul atau ion dari daerah berkonsentrasi tinggi menuju daerah berkonsentrasi rendah. Perpindahan ini terjadi karena molekul selalu bergerak acak akibat energi kinetiknya. Selama masih ada perbedaan konsentrasi, yang disebut gradien konsentrasi, molekul akan terus berpindah sampai konsentrasinya merata. Keadaan merata itu dinamakan kesetimbangan dinamis, sebab molekul tetap bergerak walaupun tidak ada perpindahan bersih. Difusi tidak membutuhkan energi dari sel, sehingga termasuk transpor pasif. Laju difusi dipengaruhi oleh suhu, ukuran molekul, luas permukaan, dan jarak tempuh. Semakin tinggi suhu, semakin cepat molekul bergerak, sehingga difusi berlangsung lebih cepat. Contoh difusi dalam tubuh adalah pertukaran oksigen dan karbon dioksida di alveolus paru-paru. Pada tumbuhan, gas karbon dioksida masuk ke daun melalui stomata secara difusi untuk digunakan dalam proses fotosintesis. Contoh lainnya adalah menyebarnya warna teh celup ke seluruh air tanpa diaduk."},"B":{"judul":"Dasar Osmosis","tentang":"dasar osmosis","isi":"Osmosis adalah difusi air melalui membran semipermeabel, yaitu membran yang hanya meloloskan molekul tertentu. Air berpindah dari larutan dengan konsentrasi zat terlarut rendah menuju larutan dengan konsentrasi zat terlarut tinggi. Larutan yang konsentrasi zat terlarutnya lebih tinggi disebut hipertonik, sedangkan larutan yang konsentrasinya lebih rendah disebut hipotonik. Dua larutan yang konsentrasinya sama dinamakan isotonik, sehingga tidak terjadi perpindahan air bersih. Seperti difusi, osmosis tidak memerlukan energi sehingga termasuk transpor pasif. Osmosis berhenti ketika tercapai keseimbangan, atau ketika tekanan yang melawan, misalnya tekanan turgor pada sel tumbuhan, sudah mengimbangi dorongan air. Dalam kehidupan sehari-hari, akar tanaman menyerap air dari tanah melalui osmosis. Sayuran layu yang direndam air dingin menjadi segar kembali karena selnya menyerap air. Di dalam tubuh, sel darah merah juga mengalami osmosis, sehingga cairan di sekitarnya harus dijaga agar tidak terlalu encer atau terlalu pekat."},"C":{"judul":"Eksperimen Laboratorium","tentang":"eksperimen difusi dan osmosis di laboratorium","isi":"Dalam percobaan osmosis di laboratorium, potongan kentang dengan ukuran dan massa awal yang sama direndam dalam tiga larutan, yaitu air murni, larutan garam pekat, dan larutan isotonik. Variabel manipulasinya adalah konsentrasi larutan, variabel responsnya adalah perubahan massa kentang, sedangkan lama perendaman dan ukuran kentang dijaga tetap sebagai variabel kontrol. Setelah tiga puluh menit, potongan kentang ditimbang kembali. Kentang dalam air murni menyerap air sehingga massanya bertambah dan teksturnya kaku. Kentang dalam larutan pekat kehilangan air sehingga massanya berkurang dan teksturnya lunak. Pada larutan isotonik, massa kentang hampir tidak berubah. Percobaan sebaiknya diulang beberapa kali agar hasilnya lebih dapat dipercaya. Setiap gelas perlakuan juga diberi label yang jelas agar tidak tertukar. Pada percobaan difusi, tetesan tinta menyebar lebih cepat dalam air hangat daripada air dingin. Data hasil percobaan disajikan dalam tabel dan grafik, kemudian ditarik kesimpulan."},"D":{"judul":"Dampak pada Sel","tentang":"dampak difusi dan osmosis pada sel","isi":"Difusi dan osmosis sangat memengaruhi keadaan sel. Sel hewan yang berada dalam larutan hipotonik menyerap air, membengkak, lalu dapat pecah, peristiwa ini disebut lisis. Dalam larutan hipertonik, sel hewan kehilangan air dan mengerut, yang dinamakan krenasi. Sel tumbuhan bereaksi berbeda karena memiliki dinding sel. Dalam larutan hipotonik, sel tumbuhan menjadi turgid, yaitu kaku dan tegang karena tekanan turgor, dan keadaan ini justru menopang batang serta daun agar tetap tegak. Dalam larutan hipertonik, membran plasma terlepas dari dinding sel sehingga terjadi plasmolisis, dan tanaman tampak layu. Peristiwa plasmolisis masih dapat pulih jika tanaman segera disiram air. Karena itu, pupuk yang terlalu pekat dapat merusak akar. Pada manusia, cairan infus dibuat isotonik dengan sel darah merah supaya sel tidak pecah maupun mengerut. Dengan demikian, kesehatan sel sangat bergantung pada keseimbangan konsentrasi larutan di dalam dan di luar sel."}};
+
+// ====== UTIL ======
+const $ = id => document.getElementById(id);
+const app = $('app');
+const esc = t => String(t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtT = s => { s = Math.max(0, Math.floor(s)); return String(Math.floor(s/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0'); };
+function view(html, dock) { app.innerHTML = html; document.body.classList.toggle('dock-on', !!dock); scrollTo(0, 0); }
+function sapa() { const h = new Date().getHours(); return h >= 4 && h < 11 ? 'pagi' : h < 15 ? 'siang' : h < 18 ? 'sore' : 'malam'; }
+
+const UA = navigator.userAgent || '';
+const IS_IOS = /iPhone|iPad|iPod/.test(UA) || (/Macintosh/.test(UA) && navigator.maxTouchPoints > 1);
+const IN_APP = /FBAN|FBAV|Instagram|Line\/|MicroMessenger|TikTok|Snapchat|Telegram|; wv\)/i.test(UA);
+
+async function api(body) {
+  if (GAS_URL.indexOf('GANTI') === 0) throw new Error('Alamat server (GAS_URL) belum diisi oleh guru.');
+  const res = await fetch(GAS_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) });
+  let out;
+  try { out = JSON.parse(await res.text()); } catch (e) { throw new Error('Respons server tidak terbaca. Periksa koneksi atau pengaturan deployment.'); }
+  if (!out.success) { const e = new Error(out.error || 'Server menolak permintaan'); e.duplicate = !!out.duplicate; throw e; }
+  return out;
+}
+
+// ====== STATE ======
+const DONE_KEY = 'rekam-difusi-v1-selesai';
+let INIT = null;
+let ME = { kelas: '', nama: '', v: 'A' };
+let S = { phase: 'login', latihanOk: false, sending: false };
+window.onbeforeunload = e => { if (['rekam', 'preview', 'gagal'].includes(S.phase)) { e.preventDefault(); e.returnValue = ''; } };
+document.addEventListener('visibilitychange', () => { if (document.hidden && S.phase === 'rekam') S.keluar = true; });
+
+function loading(msg) { view(`<div class="card center"><div class="spin"></div><p>${esc(msg)}</p></div>`); }
+function errorView(msg, retry, back) {
+  view(`<div class="card"><h2>⚠️ Terjadi kendala</h2><p>${esc(msg)}</p>
+    <button class="btn block" id="b-retry">Coba lagi</button>${back ? '<button class="btn alt block" id="b-back">← Kembali</button>' : ''}</div>`);
+  $('b-retry').onclick = retry; if (back) $('b-back').onclick = back;
+}
+
+function bannerHTML() {
+  let h = `<div class="note info">📱 <b>Petunjuk:</b> rekam suara memakai <b>HP Android</b> dan buka di <b>Chrome</b>. Cari tempat yang tenang, dan jangan tutup halaman ini sebelum rekamanmu terkirim.</div>`;
+  if (IS_IOS) h += `<div class="note warn">🍎 Kamu memakai <b>iPhone</b>. Perekaman di iPhone belum seandal di Android. Jika bisa, pinjam HP Android. Jika tetap memakai iPhone, gunakan <b>Safari</b> dan izinkan mikrofon. Kalau gagal, hubungi guru.</div>`;
+  if (IN_APP) h += `<div class="note err">⚠️ Halaman ini terbuka di <b>dalam aplikasi</b> (bukan Chrome/Safari), sehingga mikrofon sering diblokir. Ketuk titik tiga ⋮ lalu pilih <b>Buka di Chrome</b>.</div>`;
+  return h;
+}
+
+// ====== LOGIN & KUNCI ======
+function readDone() { try { return JSON.parse(localStorage.getItem(DONE_KEY)); } catch (e) { return null; } }
+function markDone() { try { localStorage.setItem(DONE_KEY, JSON.stringify({ kelas: ME.kelas, nama: ME.nama, waktu: Date.now() })); } catch (e) {} }
+
+function renderTerkunci(info) {
+  S.phase = 'terkunci';
+  view(`<div class="card center" style="border-color:#b9e2c8;background:#f1fbf5"><div class="big">✅</div>
+    <h2 style="margin-top:8px">Anda sudah mengirimkan hasil.</h2><p style="margin:0">Terima kasih${info && info.nama ? ', <b>' + esc(info.nama) + '</b>' : ''}! Rekamanmu sudah diterima guru.</p></div>
+    <p class="center"><a href="#" id="b-ganti" style="color:var(--navy);font-size:.88em">↩ Bukan saya / ganti nama</a></p>`);
+  $('b-ganti').onclick = ev => { ev.preventDefault(); try { localStorage.removeItem(DONE_KEY); } catch (e) {} boot(true); };
+}
+
+async function boot(lewatiKunci) {
+  const done = lewatiKunci ? null : readDone();
+  if (done) { renderTerkunci(done); return; }
+  loading('Memuat daftar siswa...');
+  try { INIT = await api({ action: 'init' }); renderLogin(); }
+  catch (e) { errorView(e.message, () => boot(true)); }
+}
+
+function renderLogin() {
+  S = { phase: 'login', latihanOk: false, sending: false };
+  const kelasList = [...new Set(INIT.siswa.map(s => s.kelas))];
+  view(bannerHTML() + `
+    <div class="card"><h2>👤 Siapa kamu?</h2>
+      <label class="f" for="sel-kelas">Kelas</label>
+      <select class="sel" id="sel-kelas"><option value="">— pilih kelas —</option>${kelasList.map(k => `<option>${esc(k)}</option>`).join('')}</select>
+      <label class="f" for="sel-nama">Nama (sesuai absen)</label>
+      <select class="sel" id="sel-nama" disabled><option value="">— pilih nama —</option></select>
+      <p class="muted" style="margin:10px 0 0">Pilih <b>namamu sendiri</b>. Rekaman dan nilai akan tercatat atas nama yang kamu pilih.</p>
+      <button class="btn block" id="b-lanjut" disabled>Lanjut</button></div>`);
+  const upd = () => { $('b-lanjut').disabled = !($('sel-kelas').value && $('sel-nama').value); };
+  $('sel-kelas').onchange = () => {
+    const k = $('sel-kelas').value;
+    $('sel-nama').innerHTML = '<option value="">— pilih nama —</option>' + INIT.siswa.filter(s => s.kelas === k).map(s => `<option>${esc(s.nama)}</option>`).join('');
+    $('sel-nama').disabled = !k; upd();
+  };
+  $('sel-nama').onchange = upd;
+  $('b-lanjut').onclick = async () => {
+    const kelas = $('sel-kelas').value, nama = $('sel-nama').value;
+    const s = INIT.siswa.find(x => x.kelas === kelas && x.nama === nama);
+    ME = { kelas, nama, v: s.v };
+    loading('Memeriksa data kamu...');
+    try {
+      const st = await api({ action: 'status', kelas, nama });
+      if (st.terkirim) renderTerkunci(ME); else renderLatihan();   // kunci server; kunci HP hanya dipasang oleh HP yang benar-benar mengirim
+    } catch (e) { errorView(e.message, () => renderLogin(), renderLogin); }
+  };
+}
+
+// ====== TEKS ======
+function kataKata() {
+  const t = TEKS[ME.v];
+  const buka = `Selamat ${sapa()}, saya ${ME.nama} dari kelas ${ME.kelas} akan menerangkan tentang ${t.tentang}.`;
+  const nBuka = buka.split(/\s+/).length;
+  return { words: (buka + ' ' + t.isi).split(/\s+/), nBuka, judul: t.judul };
+}
+function teksHTML(k) { return k.words.map((w, i) => `<span class="w ${i < k.nBuka ? 'open' : ''}" data-i="${i}">${esc(w)}</span>`).join(' '); }
+
+// ====== FASE 1: LATIHAN (TEKS DIAM) ======
+function renderLatihan(pesan) {
+  S.phase = 'latihan';
+  const k = S.k = kataKata();
+  view(bannerHTML() + (pesan ? `<div class="note err">${esc(pesan)}</div>` : '') + `
+    <div class="card"><span class="tag">Teks ${ME.v} · ${esc(k.judul)}</span><div class="read">${teksHTML(k)}</div></div>
+    <div class="card"><h2>💡 Tips merekam</h2><ul class="tips">
+      <li>Berlatihlah membaca dulu, eja istilah ilmiah dengan jelas.</li>
+      <li>Baca dengan tempo sedang. Nanti ada <b>sorotan kuning</b> yang membantu mengatur kecepatan.</li>
+      <li>Pegang HP sekitar 10–15 cm dari mulut, di tempat yang tenang.</li>
+      <li>Kalimat pembuka (miring hijau) <b>ikut dibaca</b>.</li></ul>
+      <button class="btn rec block" id="b-rekam" disabled></button></div>`);
+  const t0 = Date.now();
+  const upd = () => {
+    const sisa = S.latihanOk ? 0 : Math.max(0, LATIHAN_DETIK - Math.floor((Date.now() - t0) / 1000));
+    const b = $('b-rekam'); if (!b) return clearInterval(S.tmLat);
+    b.disabled = sisa > 0;
+    b.textContent = sisa > 0 ? `📖 Berlatih dulu… (${fmtT(sisa)})` : '🔴 Mulai Rekam';
+    if (sisa === 0) { S.latihanOk = true; clearInterval(S.tmLat); }
+  };
+  clearInterval(S.tmLat); S.tmLat = setInterval(upd, 500); upd();
+  $('b-rekam').onclick = mulaiRekam;
+}
+
+// ====== FASE 2: REKAM (TEKS SOROT BERJALAN) ======
+function pilihMime() {
+  if (!window.MediaRecorder || !MediaRecorder.isTypeSupported) return '';
+  return ['audio/webm;codecs=opus', 'audio/ogg;codecs=opus', 'audio/mp4'].find(m => MediaRecorder.isTypeSupported(m)) || '';
+}
+function pesanMic(e) {
+  const n = e && e.name;
+  if (n === 'NotAllowedError' || n === 'SecurityError') return 'Izin mikrofon ditolak. Ketuk ikon 🔒 di kolom alamat → Izin → Mikrofon → Izinkan, lalu muat ulang halaman.';
+  if (n === 'NotFoundError') return 'Mikrofon tidak ditemukan di HP ini.';
+  if (n === 'NotReadableError') return 'Mikrofon sedang dipakai aplikasi lain. Tutup aplikasi lain, lalu coba lagi.';
+  return 'Mikrofon tidak bisa diakses' + (IN_APP ? '. Buka halaman ini di Chrome (bukan di dalam aplikasi).' : '. Pastikan memakai Chrome dan alamat berawalan https.');
+}
+
+async function mulaiRekam() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.MediaRecorder)
+    return renderLatihan('Browser ini belum mendukung perekaman suara. Buka halaman ini di Chrome pada HP Android.');
+  let stream;
+  try { stream = await navigator.mediaDevices.getUserMedia({ audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true, autoGainControl: true } }); }
+  catch (e) { return renderLatihan(pesanMic(e)); }
+
+  const mime = pilihMime();
+  let rec;
+  try { rec = new MediaRecorder(stream, mime ? { mimeType: mime, audioBitsPerSecond: BITRATE } : { audioBitsPerSecond: BITRATE }); }
+  catch (e) { try { rec = new MediaRecorder(stream); } catch (e2) { stream.getTracks().forEach(t => t.stop()); return renderLatihan('Perekaman tidak bisa dimulai di browser ini.'); } }
+
+  const R = S.rec = { rec, stream, chunks: [], t0: Date.now(), peak: 0, meter: null, mime: rec.mimeType || mime || 'audio/webm' };
+  rec.ondataavailable = ev => { if (ev.data && ev.data.size) R.chunks.push(ev.data); };
+  rec.onerror = () => { akhiriRekam(true); renderLatihan('Perekaman terhenti karena kesalahan. Silakan coba lagi.'); };
+  rec.onstop = () => selesaiRekam();
+  try {   // meter suara (opsional)
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (AC) { const ctx = new AC(); if (ctx.resume) ctx.resume(); const an = ctx.createAnalyser(); an.fftSize = 512; ctx.createMediaStreamSource(stream).connect(an); R.meter = { ctx, an, buf: new Uint8Array(an.fftSize) }; }
+  } catch (e) { R.meter = null; }
+
+  S.keluar = false;
+  rec.start(1000);
+  renderRekam();
+}
+
+function renderRekam() {
+  S.phase = 'rekam';
+  const k = S.k;
+  view(`<div class="topbar"><span class="dot"></span><span class="tm" id="tm">00:00</span><div class="meter"><i id="mt"></i></div></div>
+    <div class="card"><span class="tag">Teks ${ME.v} · ${esc(k.judul)}</span><div class="read" id="read">${teksHTML(k)}</div></div>`, true);
+  const dock = document.createElement('div');
+  dock.className = 'dock'; dock.id = 'dock';
+  dock.innerHTML = '<button class="btn rec" id="b-stop" disabled></button>';
+  document.body.appendChild(dock);
+  $('b-stop').onclick = () => S.rec.rec.state !== 'inactive' && S.rec.rec.stop();
+
+  const words = [...app.querySelectorAll('.w')];
+  let cur = -1;
+  clearInterval(S.tmRec);
+  S.tmRec = setInterval(() => {
+    const R = S.rec; if (!R) return;
+    const el = (Date.now() - R.t0) / 1000;
+    $('tm').textContent = fmtT(el);
+    const idx = Math.min(words.length, Math.floor(el * KECEPATAN));
+    if (idx !== cur) {
+      cur = idx;
+      words.forEach((w, i) => { w.classList.toggle('done', i < idx); w.classList.toggle('cur', i === idx); });
+      const c = words[idx];
+      if (c) { const r = c.getBoundingClientRect(); if (r.top < innerHeight * 0.22 || r.bottom > innerHeight * 0.68) c.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
+    }
+    if (R.meter) { R.meter.an.getByteTimeDomainData(R.meter.buf); let mx = 0; for (const v of R.meter.buf) { const a = Math.abs(v - 128) / 128; if (a > mx) mx = a; } if (mx > R.peak) R.peak = mx; $('mt').style.width = Math.min(100, mx * 160) + '%'; }
+    const b = $('b-stop');
+    if (b) { const sisa = Math.ceil(MIN_REKAM - el); b.disabled = sisa > 0; b.textContent = sisa > 0 ? `⏳ Selesai dalam ${sisa} dtk (rekaman minimal ${MIN_REKAM} dtk)` : '⏹ Selesai Merekam'; }
+    if (el >= MAX_REKAM && R.rec.state !== 'inactive') R.rec.stop();
+  }, 100);
+}
+
+function akhiriRekam(buang) {
+  clearInterval(S.tmRec);
+  const R = S.rec; if (!R) return;
+  try { R.stream.getTracks().forEach(t => t.stop()); } catch (e) {}
+  try { if (R.meter) R.meter.ctx.close(); } catch (e) {}
+  const d = $('dock'); if (d) d.remove();
+  if (buang) S.rec = null;
+}
+
+function selesaiRekam() {
+  const R = S.rec; if (!R) return;
+  const durasi = Math.round((Date.now() - R.t0) / 1000);
+  akhiriRekam(false);
+  const blob = new Blob(R.chunks, { type: R.mime });
+  S.rec = null;
+  if (blob.size < MIN_UKURAN_KB * 1024) { return renderLatihan('Rekaman kosong atau terlalu pendek. Pastikan mikrofon aktif lalu rekam ulang.'); }
+  if (S.url) URL.revokeObjectURL(S.url);
+  S.blob = blob; S.mime = R.mime; S.durasi = durasi; S.peak = R.meter ? R.peak : null; S.url = URL.createObjectURL(blob);
+  renderPreview();
+}
+
+// ====== FASE 3: PRATINJAU WAJIB ======
+function renderPreview() {
+  S.phase = 'preview'; S.heard = false;
+  const kb = Math.round(S.blob.size / 1024);
+  view(`<div class="card"><h2>🎧 Dengarkan rekamanmu</h2>
+    <p class="muted" style="margin:0 0 6px">Putar minimal ${MIN_DENGAR} detik untuk memastikan suaramu terdengar jelas.</p>
+    <audio id="au" controls preload="auto" src="${S.url}"></audio>
+    <div class="chips"><span class="chip">⏱️ ${fmtT(S.durasi)}</span><span class="chip">💾 ${kb} KB</span></div>
+    ${S.peak !== null && S.peak < 0.04 ? '<div class="note warn" style="margin:12px 0 0">🔈 Suaramu terdeteksi sangat pelan. Dengarkan baik-baik. Jika tidak terdengar, tekan <b>Rekam Ulang</b>.</div>' : ''}
+    ${S.keluar ? '<div class="note warn" style="margin:12px 0 0">⚠️ Kamu sempat meninggalkan halaman saat merekam, sehingga rekaman mungkin terputus. Pastikan seluruh bacaan terdengar.</div>' : ''}
+    <button class="btn go block" id="b-kirim" disabled>🎧 Dengarkan dulu</button>
+    <button class="btn alt block" id="b-ulang">🔁 Rekam Ulang</button></div>`);
+  const au = $('au');
+  const ok = () => { if (S.heard) return; S.heard = true; const b = $('b-kirim'); if (b) { b.disabled = false; b.textContent = '📤 Kirim Tugas'; } };
+  au.addEventListener('timeupdate', () => { if (au.currentTime >= MIN_DENGAR) ok(); });
+  au.addEventListener('ended', ok);
+  $('b-kirim').onclick = kirim;
+  $('b-ulang').onclick = () => { S.latihanOk = true; renderLatihan(); };
+}
+
+// ====== FASE 4: KIRIM ======
+function blobToDataURL(b) { return new Promise((res, rej) => { const f = new FileReader(); f.onload = () => res(f.result); f.onerror = () => rej(new Error('Gagal membaca rekaman')); f.readAsDataURL(b); }); }
+
+async function kirim() {
+  if (S.sending) return;
+  S.sending = true; S.phase = 'kirim';
+  loading('Mengirim rekaman ke guru… jangan tutup halaman ini.');
+  try {
+    const audio = await blobToDataURL(S.blob);
+    await api({ action: 'kirim', kelas: ME.kelas, nama: ME.nama, mime: S.mime, durasi: S.durasi, audio });
+    markDone(); S.phase = 'selesai';
+    view(`<div class="card center" style="border-color:#b9e2c8;background:#f1fbf5"><div class="big">🎉</div>
+      <h2 style="margin-top:8px;color:var(--grn)">Rekaman terkirim!</h2>
+      <p style="margin:0">Terima kasih, <b>${esc(ME.nama)}</b>. Guru akan mendengarkan rekamanmu dan memberi nilai.</p>
+      <div class="chips"><span class="chip">⏱️ ${fmtT(S.durasi)}</span></div></div>`);
+  } catch (e) {
+    if (e.duplicate) return renderTerkunci(ME);
+    renderGagal(e.message);
+  } finally { S.sending = false; }
+}
+
+function nmFile() { const ext = /webm/.test(S.mime) ? 'webm' : /ogg/.test(S.mime) ? 'ogg' : 'm4a'; return `${ME.kelas}_${ME.nama}_${ME.v}.${ext}`.replace(/\s+/g, '_'); }
+
+// ====== JALUR DARURAT ======
+function renderGagal(msg) {
+  S.phase = 'gagal';
+  view(`<div class="card"><h2>⚠️ Pengiriman gagal</h2><p>${esc(msg)}</p>
+    <p class="muted" style="margin:0">Rekamanmu masih tersimpan di halaman ini. <b>Jangan tutup halaman.</b></p>
+    <button class="btn go block" id="b-coba">🔁 Coba kirim lagi</button>
+    <div class="note warn" style="margin:14px 0 0"><b>Jalur darurat (sinyal buruk):</b> unduh rekaman ke HP, lalu kirim filenya lewat WhatsApp ke guru.</div>
+    <a class="btn alt block" id="b-unduh" href="${S.url}" download="${esc(nmFile())}">⬇️ Unduh Rekaman</a></div>`);
+  $('b-coba').onclick = kirim;
+}
+
+boot();
+</script>
+</body>
+</html>
