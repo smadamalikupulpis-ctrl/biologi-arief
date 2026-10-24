@@ -1,0 +1,387 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Kuis Biologi Kelas 11</title>
+<style>
+:root{--navy:#1c4f82;--blue:#0d6efd;--grn:#198754;--red:#dc3545;--gold:#f5a300;--line:#dfe3e8;--fs:16px}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;background:#f3f6fa;color:#1f2a37;font-size:var(--fs);line-height:1.55;padding-bottom:max(28px,env(safe-area-inset-bottom))}
+header{background:linear-gradient(90deg,#16406c,#6a3fb5);color:#fff;padding:14px 16px;padding-top:max(14px,env(safe-area-inset-top))}
+header h1{margin:0;font-size:1.2em}
+header small{opacity:.88;display:block;margin-top:2px}
+main{max-width:720px;margin:0 auto;padding:16px}
+button{font:inherit;cursor:pointer;border:0}
+select{font:inherit;font-size:16px}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;margin:0 0 14px}
+.card h2{margin:0 0 10px;font-size:1.05em;color:var(--navy)}
+.center{text-align:center}
+.muted{color:#667;font-size:.9em}
+.btn{display:inline-block;padding:11px 18px;border-radius:24px;background:var(--navy);color:#fff;font-weight:700;min-height:46px;text-align:center}
+.btn.alt{background:#eaf2fb;color:var(--navy)}
+.btn.warn{background:#fde8ea;color:var(--red)}
+.btn.go{background:linear-gradient(90deg,#198754,#20a56a)}
+.btn.block{display:block;width:100%;margin-top:12px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.stack{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+label.f{display:block;font-weight:600;font-size:.9em;margin:12px 0 4px}
+select#sel-kelas,select#sel-nama{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;background:#fff}
+.pledge{display:flex;gap:10px;align-items:flex-start;margin-top:14px;background:#f6f1ff;border:1px solid #e1d6f7;border-radius:12px;padding:12px;font-size:.9em;cursor:pointer}
+.pledge input{width:22px;height:22px;flex:none;margin-top:2px}
+.spin{width:34px;height:34px;border:4px solid #dfe8f3;border-top-color:var(--navy);border-radius:50%;margin:6px auto 12px;animation:sp 1s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* Kuis */
+.qhead{display:flex;justify-content:space-between;align-items:center;font-size:.95em;margin-bottom:6px}
+.qhead .qt{font-variant-numeric:tabular-nums;color:var(--navy);font-weight:700}
+.bar{height:8px;background:#e5eaf1;border-radius:6px;overflow:hidden;margin-bottom:12px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#6a3fb5,#0d6efd);transition:width .3s}
+.tag{display:inline-block;background:#eaf2fb;color:var(--navy);border-radius:20px;padding:2px 10px;font-size:.78em;font-weight:700;margin-bottom:10px}
+.stim{overflow-x:auto;margin-bottom:6px}
+.stim p,.qtext p{margin:0 0 8px}
+.stim table{border-collapse:collapse;font-size:.9em;margin:6px 0}
+.stim th,.stim td{border:1px solid #cbd5e1;padding:5px 8px;text-align:left}
+.stim th{background:#f1f5f9}
+.stim svg{max-width:100%;height:auto}
+.qtext{font-weight:600;margin:8px 0 12px}
+.opt{display:flex;gap:10px;align-items:flex-start;padding:12px;margin:0 0 10px;border:2px solid var(--line);border-radius:12px;background:#fff;cursor:pointer}
+.opt input{position:absolute;opacity:0;pointer-events:none}
+.opt .lt{flex:none;width:28px;height:28px;border-radius:50%;background:#eaf2fb;color:var(--navy);display:grid;place-items:center;font-weight:700;font-size:.9em}
+.opt .c{flex:1;min-width:0}
+.opt .c p{margin:0}
+.opt.sel{border-color:#6a3fb5;background:#f6f1ff}
+.opt.sel .lt{background:#6a3fb5;color:#fff}
+.opt.mc .lt{border-radius:8px}
+.kat-wrap{overflow-x:auto}
+table.kat{width:100%;border-collapse:collapse}
+table.kat th{font-size:.82em;color:#556;padding:4px 6px}
+table.kat td{padding:10px 6px;border-top:1px solid var(--line);vertical-align:middle}
+table.kat td p{margin:0}
+table.kat td.ck{width:64px;text-align:center}
+table.kat td.ck label{display:grid;place-items:center;min-height:44px;cursor:pointer}
+table.kat input{width:24px;height:24px;accent-color:#6a3fb5}
+.msg{color:var(--red);font-size:.88em;min-height:1.3em;margin-top:6px}
+
+/* Hasil & leaderboard */
+.big{font-size:3.2em;font-weight:800;color:var(--navy);line-height:1.1}
+.sub{color:#556;margin-top:4px}
+.chips{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip{background:#f1f5f9;border-radius:20px;padding:4px 12px;font-size:.88em;font-weight:600}
+.ask{background:#f6f1ff;border:1px solid #e1d6f7}
+.lb-row{display:flex;align-items:center;gap:10px;padding:9px 8px;border-bottom:1px solid #eef1f5}
+.lb-row:last-child{border-bottom:0}
+.lb-row.me{background:#fff7dd;border-radius:10px}
+.lb-rank{flex:none;width:34px;text-align:center;font-weight:800;font-size:1.05em}
+.lb-name{flex:1;min-width:0;font-weight:600;overflow-wrap:anywhere}
+.lb-name small,.lb-score small{display:block;font-weight:400;color:#667;font-size:.78em}
+.lb-score{flex:none;text-align:right;font-weight:800;color:var(--navy);font-variant-numeric:tabular-nums}
+.own{margin-top:12px;background:#eaf2fb;border-radius:12px;padding:10px 12px;font-size:.92em}
+a.link{color:var(--navy);text-decoration:underline;font-size:.88em;cursor:pointer}
+
+/* Soal rumpang & susun */
+.pic{display:block;width:100%;max-height:240px;object-fit:contain;background:#0c1930;border-radius:10px;margin:0 0 10px}
+.sent{font-size:1.1em;line-height:2.5;margin-bottom:12px}
+.slot{display:inline-block;min-width:5em;text-align:center;padding:0 8px;margin:0 2px;border-bottom:3px solid #b9a5e6;background:#f6f1ff;border-radius:8px 8px 0 0;color:#6a3fb5;font-weight:700;cursor:pointer;line-height:1.7}
+.slot b{font-size:.75em;opacity:.85}
+.slot.filled{background:#eaf7ef;border-bottom-color:#20a56a;color:#145c3a}
+.slot.sel{outline:2px solid #6a3fb5;outline-offset:1px}
+.bankbox{display:flex;flex-wrap:wrap;gap:8px;padding-top:12px;border-top:1px dashed var(--line)}
+.chip2{border:2px solid #d9cdf2;background:#fff;color:#4a2c8f;border-radius:20px;padding:8px 14px;font-weight:700;min-height:42px;font-size:.98em}
+.chip2.used{background:#f1f3f5;color:#a0a8b1;border-color:var(--line);text-decoration:line-through;cursor:default}
+.ansbox{display:flex;flex-wrap:wrap;gap:8px;min-height:58px;padding:10px;border:2px dashed #cbbfe8;border-radius:12px;background:#faf8ff;margin-bottom:12px;align-items:center}
+.ansbox .ph{color:#9a8fb8;font-size:.9em}
+.ansbox .chip2{background:#6a3fb5;color:#fff;border-color:#6a3fb5}
+.mini{background:none;color:var(--navy);text-decoration:underline;font-size:.88em;padding:6px 2px}
+@media(min-width:700px){:root{--fs:17px}}
+</style>
+</head>
+<body>
+<header><h1>🏆 Kuis Biologi Kelas 11</h1><small>Enzim · Difusi &amp; Osmosis · nilai tertinggi masuk 20 Besar</small></header>
+<main id="app"></main>
+
+<script>
+// ====== KONFIGURASI ======
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwlYUASn5dzN-eeGWBAnVCwfdRP5GtnfuzzJ4mUcsQjFisUTg0Gj-NG34L_rauaMsvG/exec";
+
+// Soal TANPA kunci jawaban (kunci hanya ada di server)
+const SOAL = [{"id":"e-pg1","t":"pg","topik":"Enzim","q":"Apa yang terjadi jika enzim mengalami denaturasi?","opts":[{"v":"A","h":"Struktur protein apoenzim rusak sehingga enzim tidak dapat bekerja"},{"v":"B","h":"Kofaktor berubah menjadi apoenzim baru"},{"v":"C","h":"Enzim berubah menjadi substrat"},{"v":"D","h":"Enzim justru bekerja dua kali lebih cepat"}]},{"id":"e-pg2","t":"pg","topik":"Enzim","q":"Apa yang terjadi jika kofaktor pada enzim rusak atau tidak tersedia?","opts":[{"v":"A","h":"Enzim tidak dapat aktif bekerja walaupun apoenzimnya masih utuh"},{"v":"B","h":"Reaksi berlangsung lebih cepat tanpa holoenzim"},{"v":"C","h":"Enzim menjadi tahan terhadap panas"},{"v":"D","h":"Apoenzim langsung menggantikan fungsi kofaktor"}]},{"id":"e-pg3","t":"pg","topik":"Enzim","q":"Apa yang terjadi jika enzim dipanaskan pada suhu yang sangat tinggi?","opts":[{"v":"A","h":"Apoenzim yang bersifat termolabil mengalami denaturasi sehingga enzim tidak berfungsi"},{"v":"B","h":"Apoenzim menjadi lebih stabil dan tahan panas"},{"v":"C","h":"Kofaktor bertambah banyak sehingga enzim lebih aktif"},{"v":"D","h":"Enzim berubah menjadi biokatalisator baru"}]},{"id":"e-pg4","t":"pg","topik":"Enzim","q":"Apa yang terjadi jika apoenzim mengalami kerusakan?","opts":[{"v":"A","h":"Enzim berubah menjadi senyawa non-protein yang aktif"},{"v":"B","h":"Holoenzim tidak terbentuk dan spesifisitas enzim hilang"},{"v":"C","h":"Kofaktor dapat bekerja sendiri sebagai enzim lengkap"},{"v":"D","h":"Enzim menjadi cocok dengan semua jenis substrat"}]},{"id":"e-pg5","t":"pg","topik":"Enzim","q":"Apa yang terjadi jika sel tidak mampu memproduksi enzim?","opts":[{"v":"A","h":"Reaksi metabolisme berjalan lebih cepat"},{"v":"B","h":"Laju reaksi metabolisme menjadi sangat lambat"},{"v":"C","h":"Tidak ada pengaruh pada reaksi metabolisme"},{"v":"D","h":"Sel menghasilkan kofaktor dalam jumlah berlebih"}]},{"id":"e-pg6","t":"pg","topik":"Enzim","q":"Apa yang terjadi jika ion kalsium sebagai kofaktor tidak ada dalam sel?","opts":[{"v":"A","h":"Apoenzim yang membutuhkannya tidak dapat aktif sehingga reaksi terhambat"},{"v":"B","h":"Apoenzim berubah menjadi kofaktor"},{"v":"C","h":"Enzim otomatis mengalami denaturasi menjadi holoenzim"},{"v":"D","h":"Enzim bekerja lebih spesifik dari sebelumnya"}]},{"id":"e-pg7","t":"pg","topik":"Enzim","q":"Apa yang terjadi jika suhu lingkungan sangat dingin hingga mendekati titik beku?","opts":[{"v":"A","h":"Enzim menjadi tidak aktif tetapi strukturnya tidak rusak"},{"v":"B","h":"Laju reaksi metabolisme meningkat drastis"},{"v":"C","h":"Apoenzim langsung mengalami denaturasi permanen"},{"v":"D","h":"Kofaktor terlepas dan berubah menjadi substrat"}]},{"id":"e-pg8","t":"pg","topik":"Enzim","q":"Apa yang terjadi jika sisi aktif enzim mengalami perubahan bentuk?","opts":[{"v":"A","h":"Enzim bekerja lebih cepat secara spesifik"},{"v":"B","h":"Kofaktor mengambil alih fungsi sisi aktif"},{"v":"C","h":"Enzim langsung terurai menjadi asam amino bebas"},{"v":"D","h":"Substrat tidak dapat berikatan sehingga aktivitas enzim terhambat"}]},{"id":"e-pg9","t":"pg","topik":"Enzim","q":"Apa yang terjadi jika tubuh atau sel tidak memiliki enzim?","opts":[{"v":"A","h":"Reaksi kimia tetap berjalan normal karena digantikan oleh substrat"},{"v":"B","h":"Reaksi metabolisme berjalan sangat lambat sehingga tidak dapat menopang kehidupan sel"},{"v":"C","h":"Sel akan menggunakan energi panas untuk mempercepat seluruh reaksi"},{"v":"D","h":"Kofaktor akan mengambil alih seluruh fungsi katalitis di dalam sel"}]},{"id":"e-r1","t":"rumpang","topik":"Enzim","templ":"Enzim adalah senyawa {{0}} berupa {{1}} yang diproduksi oleh {{2}} dan bertindak sebagai {{3}}.","bank":["organik","sel","biokatalisator","protein"]},{"id":"e-r2","t":"rumpang","topik":"Enzim","templ":"Biokatalisator adalah {{0}} yang dapat {{1}} laju reaksi {{2}}, tanpa ikut bereaksi atau berubah {{3}} di akhir reaksi.","bank":["zat","metabolisme","mempercepat","struktur"]},{"id":"e-r3","t":"rumpang","topik":"Enzim","templ":"{{0}} enzim lengkap disebut {{1}}, yang terdiri atas {{2}} dan {{3}}.","bank":["holoenzim","apoenzim","Struktur","kofaktor"]},{"id":"e-r4","t":"rumpang","topik":"Enzim","templ":"{{0}} adalah komponen utama enzim yang tersusun atas protein. Bersifat {{1}} (mudah rusak/denaturasi oleh panas) dan menentukan {{2}} enzim.","bank":["termolabil","Apoenzim","spesifisitas"]},{"id":"e-r5","t":"rumpang","topik":"Enzim","templ":"{{0}} adalah komponen {{1}} yang diperlukan agar enzim dapat aktif {{2}}, contohnya ion {{3}} dan klorin.","bank":["bekerja","Kofaktor","non-protein","kalsium"]},{"id":"k-r1","t":"rumpang","topik":"Enzim","templ":"Enzim adalah senyawa {{0}} berupa {{1}} yang bertindak sebagai {{2}}.","bank":["protein","organik","biokatalisator"]},{"id":"k-r2","t":"rumpang","topik":"Enzim","templ":"{{0}} adalah zat yang {{1}} laju reaksi tanpa mengalami perubahan {{2}} di akhir reaksi.","bank":["Biokatalisator","struktur","mempercepat"]},{"id":"k-r3","t":"rumpang","topik":"Enzim","templ":"{{0}} merupakan struktur enzim lengkap yang tersusun atas {{1}} dan {{2}}.","bank":["Holoenzim","kofaktor","apoenzim"]},{"id":"k-r4","t":"rumpang","topik":"Enzim","templ":"{{0}} adalah komponen utama enzim yang tersusun atas {{1}} dan menentukan {{2}} enzim.","bank":["spesifisitas","protein","Apoenzim"]},{"id":"k-r5","t":"rumpang","topik":"Enzim","templ":"Apoenzim bersifat {{0}} sehingga mudah rusak atau mengalami {{1}} oleh {{2}}.","bank":["denaturasi","panas","termolabil"]},{"id":"k-r6","t":"rumpang","topik":"Enzim","templ":"{{0}} adalah komponen {{1}} yang diperlukan agar enzim menjadi {{2}}.","bank":["non-protein","aktif","Kofaktor"]},{"id":"k-r7","t":"rumpang","topik":"Enzim","templ":"Enzim {{0}} reaksi dengan cara {{1}} energi {{2}} yang diperlukan untuk memulai reaksi.","bank":["aktivasi","mempercepat","menurunkan"]},{"id":"k-r8","t":"rumpang","topik":"Enzim","templ":"Satu jenis {{0}} hanya mampu {{1}} satu jenis reaksi dengan {{2}} yang cocok.","bank":["mengatalisis","enzim","substrat"]},{"id":"k-r9","t":"rumpang","topik":"Enzim","templ":"Enzim tidak menentukan {{0}} reaksi sehingga bekerja {{1}} atau {{2}}.","bank":["reversible","arah","bolak-balik"]},{"id":"k-r10","t":"rumpang","topik":"Enzim","templ":"Enzim tetap {{0}} setelah reaksi selesai sehingga dapat digunakan {{1}} kali dalam jumlah {{2}}.","bank":["utuh","sedikit","berulang"]},{"id":"k-r11","t":"rumpang","topik":"Enzim","templ":"Enzim bersifat {{0}} karena dapat {{1}} senyawa sederhana menjadi senyawa {{2}}.","bank":["menyusun","kompleks","reversible"]},{"id":"k-s1","t":"susun","topik":"Enzim","q":"Bagaimana cara enzim mempercepat reaksi menurut grafik?","img":"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMDAgMTgwIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgZmlsbD0iIzBjMTkzMCIvPjxwYXRoIGQ9Ik0zMCAyMFYxNTBIMjgwIiBzdHJva2U9IiM4Yjk2YWMiIGZpbGw9Im5vbmUiIHN0cm9rZS13aWR0aD0iMiIvPjxwYXRoIGQ9Ik00MCAxMzBDMTAwIDEzMCAxMTAgMzAgMTUwIDMwUzIwMCAxMTAgMjYwIDExMCIgc3Ryb2tlPSIjZjQ2MzNmIiBmaWxsPSJub25lIiBzdHJva2Utd2lkdGg9IjMiLz48cGF0aCBkPSJNNDAgMTMwQzEwMCAxMzAgMTEwIDgwIDE1MCA4MFMyMDAgMTEwIDI2MCAxMTAiIHN0cm9rZT0iIzJlY2M3MSIgZmlsbD0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIzIi8+PHRleHQgeD0iMjE1IiB5PSI0MCIgZmlsbD0iI2Y0NjMzZiIgZm9udC1zaXplPSIxMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiPnRhbnBhIGVuemltPC90ZXh0Pjx0ZXh0IHg9IjIxNSIgeT0iNzIiIGZpbGw9IiMyZWNjNzEiIGZvbnQtc2l6ZT0iMTIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIj5kZW5nYW4gZW56aW08L3RleHQ+PHRleHQgeD0iMTUwIiB5PSIxNzIiIGZpbGw9IiM4Yjk2YWMiIGZvbnQtc2l6ZT0iMTIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIj5HcmFmaWsgZW5lcmdpIHN1YXR1IHJlYWtzaTwvdGV4dD48dGV4dCB4PSIxNCIgeT0iODUiIGZpbGw9IiM4Yjk2YWMiIGZvbnQtc2l6ZT0iMTIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIj5FPC90ZXh0Pjwvc3ZnPg==","bank":["aktivasi","menurunkan","energi","Enzim","dengan","reaksi","mempercepat"]},{"id":"k-s2","t":"susun","topik":"Enzim","q":"Apa peran enzim pada grafik energi reaksi ini?","img":"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMDAgMTgwIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgZmlsbD0iIzBjMTkzMCIvPjxwYXRoIGQ9Ik0zMCAyMFYxNTBIMjgwIiBzdHJva2U9IiM4Yjk2YWMiIGZpbGw9Im5vbmUiIHN0cm9rZS13aWR0aD0iMiIvPjxwYXRoIGQ9Ik00MCAxMzBDMTAwIDEzMCAxMTAgMzAgMTUwIDMwUzIwMCAxMTAgMjYwIDExMCIgc3Ryb2tlPSIjZjQ2MzNmIiBmaWxsPSJub25lIiBzdHJva2Utd2lkdGg9IjMiLz48cGF0aCBkPSJNNDAgMTMwQzEwMCAxMzAgMTEwIDgwIDE1MCA4MFMyMDAgMTEwIDI2MCAxMTAiIHN0cm9rZT0iIzJlY2M3MSIgZmlsbD0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIzIi8+PHRleHQgeD0iMjE1IiB5PSI0MCIgZmlsbD0iI2Y0NjMzZiIgZm9udC1zaXplPSIxMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiPnRhbnBhIGVuemltPC90ZXh0Pjx0ZXh0IHg9IjIxNSIgeT0iNzIiIGZpbGw9IiMyZWNjNzEiIGZvbnQtc2l6ZT0iMTIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIj5kZW5nYW4gZW56aW08L3RleHQ+PHRleHQgeD0iMTUwIiB5PSIxNzIiIGZpbGw9IiM4Yjk2YWMiIGZvbnQtc2l6ZT0iMTIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIj5HcmFmaWsgZW5lcmdpIHN1YXR1IHJlYWtzaTwvdGV4dD48dGV4dCB4PSIxNCIgeT0iODUiIGZpbGw9IiM4Yjk2YWMiIGZvbnQtc2l6ZT0iMTIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIj5FPC90ZXh0Pjwvc3ZnPg==","bank":["untuk","batas","Enzim","minimal","menurunkan","reaksi","memulai","energi"]},{"id":"k-s3","t":"susun","topik":"Enzim","q":"Sifat enzim apa yang ditunjukkan gambar?","img":"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMDAgMTgwIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgZmlsbD0iIzBjMTkzMCIvPjxwYXRoIGQ9Ik0zMCA0NUgxNDBWNzVMMTE1IDkwTDE0MCAxMDVWMTM1SDMwWiIgZmlsbD0iIzJhNmZhOCIvPjxwYXRoIGQ9Ik0yMDAgNzVMMTc1IDkwTDIwMCAxMDVaIiBmaWxsPSIjMmVjYzcxIi8+PGNpcmNsZSBjeD0iMjUwIiBjeT0iNTAiIHI9IjE2IiBmaWxsPSIjZjQ2MzNmIi8+PHJlY3QgeD0iMjM1IiB5PSIxMTUiIHdpZHRoPSIzMCIgaGVpZ2h0PSIzMCIgZmlsbD0iI2Y0NjMzZiIvPjx0ZXh0IHg9Ijg1IiB5PSI5NSIgZmlsbD0iI2ZmZiIgZm9udC1zaXplPSIxNCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiPkVOWklNPC90ZXh0Pjx0ZXh0IHg9IjE5MCIgeT0iMTI1IiBmaWxsPSIjMmVjYzcxIiBmb250LXNpemU9IjExIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiI+c3Vic3RyYXQ8L3RleHQ+PHRleHQgeD0iMTUwIiB5PSIxNzIiIGZpbGw9IiM4Yjk2YWMiIGZvbnQtc2l6ZT0iMTIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIj5FbnppbSBkYW4gYmViZXJhcGEgYmVudHVrIHN1YnN0cmF0PC90ZXh0Pjwvc3ZnPg==","bank":["jenis","mengatalisis","satu","reaksi","Satu","enzim","hanya"]},{"id":"k-s4","t":"susun","topik":"Enzim","q":"Prinsip apa yang berlaku pada gambar ini?","img":"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMDAgMTgwIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgZmlsbD0iIzBjMTkzMCIvPjxwYXRoIGQ9Ik0zMCA0NUgxNDBWNzVMMTE1IDkwTDE0MCAxMDVWMTM1SDMwWiIgZmlsbD0iIzJhNmZhOCIvPjxwYXRoIGQ9Ik0yMDAgNzVMMTc1IDkwTDIwMCAxMDVaIiBmaWxsPSIjMmVjYzcxIi8+PGNpcmNsZSBjeD0iMjUwIiBjeT0iNTAiIHI9IjE2IiBmaWxsPSIjZjQ2MzNmIi8+PHJlY3QgeD0iMjM1IiB5PSIxMTUiIHdpZHRoPSIzMCIgaGVpZ2h0PSIzMCIgZmlsbD0iI2Y0NjMzZiIvPjx0ZXh0IHg9Ijg1IiB5PSI5NSIgZmlsbD0iI2ZmZiIgZm9udC1zaXplPSIxNCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiPkVOWklNPC90ZXh0Pjx0ZXh0IHg9IjE5MCIgeT0iMTI1IiBmaWxsPSIjMmVjYzcxIiBmb250LXNpemU9IjExIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiI+c3Vic3RyYXQ8L3RleHQ+PHRleHQgeD0iMTUwIiB5PSIxNzIiIGZpbGw9IiM4Yjk2YWMiIGZvbnQtc2l6ZT0iMTIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIj5FbnppbSBkYW4gYmViZXJhcGEgYmVudHVrIHN1YnN0cmF0PC90ZXh0Pjwvc3ZnPg==","bank":["pada","substrat","bekerja","Enzim","cocok","spesifik","yang"]},{"id":"k-s5","t":"susun","topik":"Enzim","q":"Apa yang dimaksud dengan holoenzim?","img":"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMDAgMTgwIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgZmlsbD0iIzBjMTkzMCIvPjxjaXJjbGUgY3g9IjExMCIgY3k9Ijg1IiByPSI1MCIgZmlsbD0iIzJhNmZhOCIvPjxjaXJjbGUgY3g9IjE4NSIgY3k9Ijg1IiByPSIyNiIgZmlsbD0iI2U2N2UyMiIvPjxwYXRoIGQ9Ik02MCAxNTBIMjExIiBzdHJva2U9IiNmMGMwNDAiIHN0cm9rZS13aWR0aD0iMiIvPjx0ZXh0IHg9IjExMCIgeT0iOTAiIGZpbGw9IiNmZmYiIGZvbnQtc2l6ZT0iMTMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIj5iYWdpYW4gQTwvdGV4dD48dGV4dCB4PSIxODUiIHk9IjkwIiBmaWxsPSIjZmZmIiBmb250LXNpemU9IjExIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiI+YmFnaWFuIEI8L3RleHQ+PHRleHQgeD0iMTM1IiB5PSIxNzAiIGZpbGw9IiNmMGMwNDAiIGZvbnQtc2l6ZT0iMTIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIj5TdHJ1a3R1ciBlbnppbSBsZW5na2FwPC90ZXh0Pjwvc3ZnPg==","bank":["kofaktor","atas","dan","Holoenzim","apoenzim","tersusun"]},{"id":"k-s6","t":"susun","topik":"Enzim","q":"Bagian enzim manakah yang tersusun atas protein?","img":"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMDAgMTgwIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgZmlsbD0iIzBjMTkzMCIvPjxjaXJjbGUgY3g9IjExMCIgY3k9Ijg1IiByPSI1MCIgZmlsbD0iIzJhNmZhOCIvPjxjaXJjbGUgY3g9IjE4NSIgY3k9Ijg1IiByPSIyNiIgZmlsbD0iI2U2N2UyMiIvPjxwYXRoIGQ9Ik02MCAxNTBIMjExIiBzdHJva2U9IiNmMGMwNDAiIHN0cm9rZS13aWR0aD0iMiIvPjx0ZXh0IHg9IjExMCIgeT0iOTAiIGZpbGw9IiNmZmYiIGZvbnQtc2l6ZT0iMTMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIj5iYWdpYW4gQTwvdGV4dD48dGV4dCB4PSIxODUiIHk9IjkwIiBmaWxsPSIjZmZmIiBmb250LXNpemU9IjExIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiI+YmFnaWFuIEI8L3RleHQ+PHRleHQgeD0iMTM1IiB5PSIxNzAiIGZpbGw9IiNmMGMwNDAiIGZvbnQtc2l6ZT0iMTIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIj5TdHJ1a3R1ciBlbnppbSBsZW5na2FwPC90ZXh0Pjwvc3ZnPg==","bank":["tersusun","Apoenzim","dan","atas","protein","termolabil","bersifat"]},{"id":"k-s7","t":"susun","topik":"Enzim","q":"Apa yang terjadi pada enzim setelah reaksi selesai?","img":"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMDAgMTgwIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgZmlsbD0iIzBjMTkzMCIvPjxwYXRoIGQ9Ik0yNSA1NUg3NVY3NUw2MiA4NUw3NSA5NVYxMTVIMjVaIiBmaWxsPSIjMmE2ZmE4Ii8+PHBhdGggZD0iTTk1IDc4TDgyIDg1TDk1IDkyWiIgZmlsbD0iIzJlY2M3MSIvPjxwYXRoIGQ9Ik0xMzAgODVIMTY1IiBzdHJva2U9IiNmMGMwNDAiIHN0cm9rZS13aWR0aD0iMyIvPjxwYXRoIGQ9Ik0xNjUgNzhMMTc4IDg1TDE2NSA5MloiIGZpbGw9IiNmMGMwNDAiLz48cGF0aCBkPSJNMTk1IDU1SDI0NVYxMTVIMTk1WiIgZmlsbD0iIzJhNmZhOCIvPjxjaXJjbGUgY3g9IjI2OCIgY3k9IjcyIiByPSI5IiBmaWxsPSIjZTY3ZTIyIi8+PGNpcmNsZSBjeD0iMjY4IiBjeT0iOTgiIHI9IjkiIGZpbGw9IiNlNjdlMjIiLz48dGV4dCB4PSI1MCIgeT0iMTMwIiBmaWxsPSIjZmZmIiBmb250LXNpemU9IjE0IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiI+RTwvdGV4dD48dGV4dCB4PSIyMjAiIHk9IjEzMCIgZmlsbD0iI2ZmZiIgZm9udC1zaXplPSIxNCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiPkU8L3RleHQ+PHRleHQgeD0iMTUwIiB5PSI1MCIgZmlsbD0iIzhiOTZhYyIgZm9udC1zaXplPSIxMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiPnNlYmVsdW0g4oaSIHNlc3VkYWggcmVha3NpPC90ZXh0Pjx0ZXh0IHg9IjE1MCIgeT0iMTcyIiBmaWxsPSIjOGI5NmFjIiBmb250LXNpemU9IjEyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiI+S2VhZGFhbiBlbnppbSBzZWJlbHVtIGRhbiBzZXN1ZGFoIHJlYWtzaTwvdGV4dD48L3N2Zz4=","bank":["dapat","digunakan","Enzim","sehingga","kali","tetap","berulang","utuh"]},{"id":"k-s8","t":"susun","topik":"Enzim","q":"Bagaimana arah reaksi yang dikatalisis enzim?","img":"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMDAgMTgwIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgZmlsbD0iIzBjMTkzMCIvPjxjaXJjbGUgY3g9IjU1IiBjeT0iOTAiIHI9IjI2IiBmaWxsPSIjMmVjYzcxIi8+PHJlY3QgeD0iMjE1IiB5PSI2NSIgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIiBmaWxsPSIjZTY3ZTIyIi8+PHBhdGggZD0iTTEwMCA3OEgxOTAiIHN0cm9rZT0iI2YwYzA0MCIgc3Ryb2tlLXdpZHRoPSIzIi8+PHBhdGggZD0iTTE5MCA3MEwyMDQgNzhMMTkwIDg2WiIgZmlsbD0iI2YwYzA0MCIvPjxwYXRoIGQ9Ik0yMDAgMTA1SDExMCIgc3Ryb2tlPSIjZjBjMDQwIiBzdHJva2Utd2lkdGg9IjMiLz48cGF0aCBkPSJNMTEwIDk3TDk2IDEwNUwxMTAgMTEzWiIgZmlsbD0iI2YwYzA0MCIvPjx0ZXh0IHg9IjE1MCIgeT0iNTgiIGZpbGw9IiNmZmYiIGZvbnQtc2l6ZT0iMTMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIj5FTlpJTTwvdGV4dD48dGV4dCB4PSI1NSIgeT0iOTUiIGZpbGw9IiMwNjIxMGYiIGZvbnQtc2l6ZT0iMTYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIj5TPC90ZXh0Pjx0ZXh0IHg9IjI0MCIgeT0iOTUiIGZpbGw9IiNmZmYiIGZvbnQtc2l6ZT0iMTYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIj5QPC90ZXh0Pjx0ZXh0IHg9IjE1MCIgeT0iMTcyIiBmaWxsPSIjOGI5NmFjIiBmb250LXNpemU9IjEyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiI+UmVha3NpIGRhcGF0IGJlcmphbGFuIGR1YSBhcmFoPC90ZXh0Pjwvc3ZnPg==","bank":["bekerja","reaksi","arah","dan","bolak-balik","tidak","menentukan","Enzim"]},{"id":"k-s9","t":"susun","topik":"Enzim","q":"Apa yang dapat dilakukan oleh enzim yang sama?","img":"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMDAgMTgwIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgZmlsbD0iIzBjMTkzMCIvPjxjaXJjbGUgY3g9IjU1IiBjeT0iOTAiIHI9IjI2IiBmaWxsPSIjMmVjYzcxIi8+PHJlY3QgeD0iMjE1IiB5PSI2NSIgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIiBmaWxsPSIjZTY3ZTIyIi8+PHBhdGggZD0iTTEwMCA3OEgxOTAiIHN0cm9rZT0iI2YwYzA0MCIgc3Ryb2tlLXdpZHRoPSIzIi8+PHBhdGggZD0iTTE5MCA3MEwyMDQgNzhMMTkwIDg2WiIgZmlsbD0iI2YwYzA0MCIvPjxwYXRoIGQ9Ik0yMDAgMTA1SDExMCIgc3Ryb2tlPSIjZjBjMDQwIiBzdHJva2Utd2lkdGg9IjMiLz48cGF0aCBkPSJNMTEwIDk3TDk2IDEwNUwxMTAgMTEzWiIgZmlsbD0iI2YwYzA0MCIvPjx0ZXh0IHg9IjE1MCIgeT0iNTgiIGZpbGw9IiNmZmYiIGZvbnQtc2l6ZT0iMTMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIj5FTlpJTTwvdGV4dD48dGV4dCB4PSI1NSIgeT0iOTUiIGZpbGw9IiMwNjIxMGYiIGZvbnQtc2l6ZT0iMTYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIj5TPC90ZXh0Pjx0ZXh0IHg9IjI0MCIgeT0iOTUiIGZpbGw9IiNmZmYiIGZvbnQtc2l6ZT0iMTYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIj5QPC90ZXh0Pjx0ZXh0IHg9IjE1MCIgeT0iMTcyIiBmaWxsPSIjOGI5NmFjIiBmb250LXNpemU9IjEyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiI+UmVha3NpIGRhcGF0IGJlcmphbGFuIGR1YSBhcmFoPC90ZXh0Pjwvc3ZnPg==","bank":["Enzim","atau","menguraikan","senyawa","menyusun","yang","sama","dapat"]},{"id":"d-r1","t":"rumpang","topik":"Difusi & Osmosis","templ":"Difusi merupakan {{0}} partikel dari konsentrasi {{1}} ke konsentrasi {{2}}.","bank":["rendah","tinggi","perpindahan"]},{"id":"d-r2","t":"rumpang","topik":"Difusi & Osmosis","templ":"{{0}} akan berhenti ketika {{1}} mencapai kondisi {{2}}.","bank":["difusi","kesetimbangan","partikel"]},{"id":"d-r3","t":"rumpang","topik":"Difusi & Osmosis","templ":"Semakin tinggi {{0}}, semakin {{1}} proses {{2}} berlangsung.","bank":["cepat","suhu","difusi"]},{"id":"d-r4","t":"rumpang","topik":"Difusi & Osmosis","templ":"{{0}} berukuran {{1}} berdifusi lebih {{2}} daripada partikel besar.","bank":["cepat","partikel","kecil"]},{"id":"d-r5","t":"rumpang","topik":"Difusi & Osmosis","templ":"Semakin {{0}} perbedaan {{1}}, semakin {{2}} laju difusi.","bank":["konsentrasi","besar","cepat"]},{"id":"d-r6","t":"rumpang","topik":"Difusi & Osmosis","templ":"{{0}} permukaan yang lebih {{1}} {{2}} proses difusi.","bank":["luas","mempercepat","besar"]},{"id":"d-r7","t":"rumpang","topik":"Difusi & Osmosis","templ":"{{0}} adalah perpindahan molekul {{1}} melalui membran {{2}}.","bank":["semipermeabel","air","osmosis"]},{"id":"d-r9","t":"rumpang","topik":"Difusi & Osmosis","templ":"Osmosis termasuk {{0}} {{1}} karena tidak memerlukan {{2}}.","bank":["energi","pasif","transpor"]},{"id":"d-r10","t":"rumpang","topik":"Difusi & Osmosis","templ":"Larutan {{0}} memiliki konsentrasi {{1}} terlarut yang {{2}} dengan di dalam sel.","bank":["zat","isotonis","sama"]},{"id":"d-r11","t":"rumpang","topik":"Difusi & Osmosis","templ":"Larutan {{0}} memiliki konsentrasi zat terlarut lebih {{1}} dibanding di dalam {{2}}.","bank":["rendah","hipotonis","sel"]},{"id":"d-r12","t":"rumpang","topik":"Difusi & Osmosis","templ":"Larutan {{0}} memiliki konsentrasi zat terlarut lebih {{1}} dibanding di dalam sel.","bank":["tinggi","hipertonis"]},{"id":"d-r13","t":"rumpang","topik":"Difusi & Osmosis","templ":"{{0}} darah merah dalam {{1}} murni akan mengalami {{2}} karena air masuk berlebihan.","bank":["air","sel","lisis"]},{"id":"d-r14","t":"rumpang","topik":"Difusi & Osmosis","templ":"Sel {{0}} yang kehilangan banyak {{1}} akan mengalami {{2}}.","bank":["plasmolisis","air","tumbuhan"]},{"id":"d-r15","t":"rumpang","topik":"Difusi & Osmosis","templ":"{{0}} memindahkan partikel zat {{1}}, sedangkan osmosis memindahkan molekul {{2}}.","bank":["air","terlarut","difusi"]},{"id":"d-s1","t":"susun","topik":"Difusi & Osmosis","q":"Peristiwa apa yang ditunjukkan gambar?","img":"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMDAgMTgwIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgZmlsbD0iIzBjMTkzMCIvPjxyZWN0IHg9IjMwIiB5PSI0MCIgd2lkdGg9IjI0MCIgaGVpZ2h0PSIxMDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzNhNGQ2YiIgc3Ryb2tlLXdpZHRoPSIzIi8+PGNpcmNsZSBjeD0iODAiIGN5PSI5MCIgcj0iNiIgZmlsbD0iI2Y0NjMzZiIvPjxjaXJjbGUgY3g9Ijk1IiBjeT0iNzUiIHI9IjYiIGZpbGw9IiNmNDYzM2YiLz48Y2lyY2xlIGN4PSI3MCIgY3k9IjEwNSIgcj0iNiIgZmlsbD0iI2Y0NjMzZiIvPjxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iNiIgZmlsbD0iI2Y0NjMzZiIvPjxjaXJjbGUgY3g9IjExMCIgY3k9IjgwIiByPSI2IiBmaWxsPSIjZjQ2MzNmIi8+PGNpcmNsZSBjeD0iMTMwIiBjeT0iOTUiIHI9IjYiIGZpbGw9IiNmNDYzM2YiLz48Y2lyY2xlIGN4PSIxNTAiIGN5PSI4NSIgcj0iNiIgZmlsbD0iI2Y0NjMzZiIvPjxjaXJjbGUgY3g9IjE3MCIgY3k9IjEwMCIgcj0iNiIgZmlsbD0iI2Y0NjMzZiIvPjxjaXJjbGUgY3g9IjIwMCIgY3k9IjgwIiByPSI2IiBmaWxsPSIjZjQ2MzNmIi8+PGNpcmNsZSBjeD0iMjMwIiBjeT0iOTUiIHI9IjYiIGZpbGw9IiNmNDYzM2YiLz48Y2lyY2xlIGN4PSIyNTAiIGN5PSIxMTAiIHI9IjYiIGZpbGw9IiNmNDYzM2YiLz48dGV4dCB4PSIxNTAiIHk9IjE2NSIgZmlsbD0iIzhiOTZhYyIgZm9udC1zaXplPSIxMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiPlBhcnRpa2VsIG1lbnllYmFyIGRhcmkga2lyaSAocGVrYXQpIGtlIGthbmFuIChlbmNlcik8L3RleHQ+PC9zdmc+","bank":["dari","tinggi","menyebar","ke","rendah","konsentrasi","Partikel"]},{"id":"d-s2","t":"susun","topik":"Difusi & Osmosis","q":"Apa yang terjadi pada gambar?","img":"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMDAgMTgwIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgZmlsbD0iIzBjMTkzMCIvPjxyZWN0IHg9IjMwIiB5PSI0MCIgd2lkdGg9IjI0MCIgaGVpZ2h0PSIxMDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzNhNGQ2YiIgc3Ryb2tlLXdpZHRoPSIzIi8+PGxpbmUgeDE9IjE1MCIgeTE9IjQwIiB4Mj0iMTUwIiB5Mj0iMTQwIiBzdHJva2U9IiNmNWI5NDIiIHN0cm9rZS13aWR0aD0iMyIgc3Ryb2tlLWRhc2hhcnJheT0iNiw2Ii8+PHRleHQgeD0iOTAiIHk9IjM1IiBmaWxsPSIjOGI5NmFjIiBmb250LXNpemU9IjEwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiI+ZW5jZXI8L3RleHQ+PHRleHQgeD0iMjEwIiB5PSIzNSIgZmlsbD0iIzhiOTZhYyIgZm9udC1zaXplPSIxMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiPnBla2F0PC90ZXh0PjxjaXJjbGUgY3g9IjgwIiBjeT0iOTAiIHI9IjQiIGZpbGw9IiMyZGQ0YmYiLz48Y2lyY2xlIGN4PSI5NSIgY3k9Ijc1IiByPSI0IiBmaWxsPSIjMmRkNGJmIi8+PGNpcmNsZSBjeD0iNzAiIGN5PSIxMDUiIHI9IjQiIGZpbGw9IiMyZGQ0YmYiLz48Y2lyY2xlIGN4PSIxMDAiIGN5PSIxMDAiIHI9IjQiIGZpbGw9IiMyZGQ0YmYiLz48Y2lyY2xlIGN4PSIxMjAiIGN5PSI4MCIgcj0iNCIgZmlsbD0iIzJkZDRiZiIvPjxjaXJjbGUgY3g9IjEzMCIgY3k9IjExMCIgcj0iNCIgZmlsbD0iIzJkZDRiZiIvPjxjaXJjbGUgY3g9IjE4MCIgY3k9IjkwIiByPSI0IiBmaWxsPSIjMmRkNGJmIi8+PGNpcmNsZSBjeD0iMjAwIiBjeT0iMTAwIiByPSI0IiBmaWxsPSIjMmRkNGJmIi8+PGNpcmNsZSBjeD0iMjIwIiBjeT0iODAiIHI9IjQiIGZpbGw9IiMyZGQ0YmYiLz48Y2lyY2xlIGN4PSIyNDAiIGN5PSI5NSIgcj0iNCIgZmlsbD0iIzJkZDRiZiIvPjx0ZXh0IHg9IjE1MCIgeT0iMTY1IiBmaWxsPSIjOGI5NmFjIiBmb250LXNpemU9IjEyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiI+QWlyIGJlcnBpbmRhaCBkYXJpIGVuY2VyIGtlIHBla2F0IG1lbGFsdWkgbWVtYnJhbjwvdGV4dD48L3N2Zz4=","bank":["melalui","Air","semipermeabel","berpindah","membran"]},{"id":"d-s3","t":"susun","topik":"Difusi & Osmosis","q":"Peristiwa apa yang dialami sel tumbuhan ini?","img":"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMDAgMTgwIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgZmlsbD0iIzBjMTkzMCIvPjxyZWN0IHg9IjYwIiB5PSI0MCIgd2lkdGg9IjE4MCIgaGVpZ2h0PSIxMDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2Y1Yjk0MiIgc3Ryb2tlLXdpZHRoPSI0Ii8+PHBhdGggZD0iTTEwMCw2MCBRMTUwLDUwIDIwMCw2MCBRMTcwLDkwIDIwMCwxMjAgUTE1MCwxMzAgMTAwLDEyMCBRMTMwLDkwIDEwMCw2MCBaIiBmaWxsPSIjM2E0ZDZiIiBzdHJva2U9IiNmNWI5NDIiIHN0cm9rZS13aWR0aD0iMiIvPjx0ZXh0IHg9IjE1MCIgeT0iMTY1IiBmaWxsPSIjOGI5NmFjIiBmb250LXNpemU9IjEyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiI+TWVtYnJhbiBzZWwgbGVwYXMgZGFyaSBkaW5kaW5nIHNlbDwvdGV4dD48L3N2Zz4=","bank":["mengalami","kehilangan","plasmolisis","karena","air","Sel","tumbuhan"]},{"id":"d-s4","t":"susun","topik":"Difusi & Osmosis","q":"Apa yang terjadi pada sel darah merah ini?","img":"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMDAgMTgwIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgZmlsbD0iIzBjMTkzMCIvPjxjaXJjbGUgY3g9IjE1MCIgY3k9IjkwIiByPSI0NSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZjQ2MzNmIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1kYXNoYXJyYXk9IjQsNCIvPjxjaXJjbGUgY3g9IjE1MCIgY3k9IjkwIiByPSI1MCIgZmlsbD0icmdiYSgyNDQsOTksNjMsMC4yNSkiLz48dGV4dCB4PSIxNTAiIHk9IjE2NSIgZmlsbD0iIzhiOTZhYyIgZm9udC1zaXplPSIxMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiPlNlbCBtZW1iZW5na2FrIGRhbiBwZWNhaDwvdGV4dD48L3N2Zz4=","bank":["lisis","air","merah","Sel","mengalami","karena","masuk","darah"]},{"id":"d-s5","t":"susun","topik":"Difusi & Osmosis","q":"Peristiwa apa yang dialami sel ini?","img":"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMDAgMTgwIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgZmlsbD0iIzBjMTkzMCIvPjxwYXRoIGQ9Ik0xNTAsNTAgTDE2MCw2MCBMMTcwLDU1IEwxNzUsNzAgTDE5MCw3NSBMMTgwLDg1IEwxOTAsMTAwIEwxNzUsMTA1IEwxNzAsMTIwIEwxNjAsMTE1IEwxNTAsMTMwIEwxNDAsMTE1IEwxMzAsMTIwIEwxMjUsMTA1IEwxMTAsMTAwIEwxMjAsODUgTDExMCw3NSBMMTI1LDcwIEwxMzAsNTUgTDE0MCw2MCBaIiBmaWxsPSIjOGEyZjFjIiBzdHJva2U9IiNmNDYzM2YiIHN0cm9rZS13aWR0aD0iMiIvPjx0ZXh0IHg9IjE1MCIgeT0iMTY1IiBmaWxsPSIjOGI5NmFjIiBmb250LXNpemU9IjEyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiI+U2VsIG1lbmdlcnV0IGRhbiBwZXJtdWthYW4gYmVyZHVyaTwvdGV4dD48L3N2Zz4=","bank":["Sel","air","karena","krenasi","mengalami","merah","keluar","darah"]},{"id":"d-s6","t":"susun","topik":"Difusi & Osmosis","q":"Proses apa yang ditunjukkan gambar?","img":"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMDAgMTgwIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgZmlsbD0iIzBjMTkzMCIvPjxyZWN0IHg9IjMwIiB5PSI0MCIgd2lkdGg9IjI0MCIgaGVpZ2h0PSIxMDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzNhNGQ2YiIgc3Ryb2tlLXdpZHRoPSIzIi8+PGNpcmNsZSBjeD0iODAiIGN5PSI5MCIgcj0iNiIgZmlsbD0iI2Y0NjMzZiIvPjxjaXJjbGUgY3g9Ijk1IiBjeT0iNzUiIHI9IjYiIGZpbGw9IiNmNDYzM2YiLz48Y2lyY2xlIGN4PSI3MCIgY3k9IjEwNSIgcj0iNiIgZmlsbD0iI2Y0NjMzZiIvPjxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iNiIgZmlsbD0iI2Y0NjMzZiIvPjxjaXJjbGUgY3g9IjExMCIgY3k9IjgwIiByPSI2IiBmaWxsPSIjZjQ2MzNmIi8+PGNpcmNsZSBjeD0iMTMwIiBjeT0iOTUiIHI9IjYiIGZpbGw9IiNmNDYzM2YiLz48Y2lyY2xlIGN4PSIxNTAiIGN5PSI4NSIgcj0iNiIgZmlsbD0iI2Y0NjMzZiIvPjxjaXJjbGUgY3g9IjE3MCIgY3k9IjEwMCIgcj0iNiIgZmlsbD0iI2Y0NjMzZiIvPjxjaXJjbGUgY3g9IjIwMCIgY3k9IjgwIiByPSI2IiBmaWxsPSIjZjQ2MzNmIi8+PGNpcmNsZSBjeD0iMjMwIiBjeT0iOTUiIHI9IjYiIGZpbGw9IiNmNDYzM2YiLz48Y2lyY2xlIGN4PSIyNTAiIGN5PSIxMTAiIHI9IjYiIGZpbGw9IiNmNDYzM2YiLz48dGV4dCB4PSIxNTAiIHk9IjE2NSIgZmlsbD0iIzhiOTZhYyIgZm9udC1zaXplPSIxMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiPlBhcnRpa2VsIG1lbnllYmFyIGRhcmkga2lyaSAocGVrYXQpIGtlIGthbmFuIChlbmNlcik8L3RleHQ+PC9zdmc+","bank":["merata","terlarut","area","menuju","rendah","konsentrasi","bergerak","Zat"]},{"id":"d-s7","t":"susun","topik":"Difusi & Osmosis","q":"Proses transpor yang terjadi pada gambar?","img":"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMDAgMTgwIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgZmlsbD0iIzBjMTkzMCIvPjxyZWN0IHg9IjMwIiB5PSI0MCIgd2lkdGg9IjI0MCIgaGVpZ2h0PSIxMDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzNhNGQ2YiIgc3Ryb2tlLXdpZHRoPSIzIi8+PGxpbmUgeDE9IjE1MCIgeTE9IjQwIiB4Mj0iMTUwIiB5Mj0iMTQwIiBzdHJva2U9IiNmNWI5NDIiIHN0cm9rZS13aWR0aD0iMyIgc3Ryb2tlLWRhc2hhcnJheT0iNiw2Ii8+PHRleHQgeD0iOTAiIHk9IjM1IiBmaWxsPSIjOGI5NmFjIiBmb250LXNpemU9IjEwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiI+ZW5jZXI8L3RleHQ+PHRleHQgeD0iMjEwIiB5PSIzNSIgZmlsbD0iIzhiOTZhYyIgZm9udC1zaXplPSIxMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiPnBla2F0PC90ZXh0PjxjaXJjbGUgY3g9IjgwIiBjeT0iOTAiIHI9IjQiIGZpbGw9IiMyZGQ0YmYiLz48Y2lyY2xlIGN4PSI5NSIgY3k9Ijc1IiByPSI0IiBmaWxsPSIjMmRkNGJmIi8+PGNpcmNsZSBjeD0iNzAiIGN5PSIxMDUiIHI9IjQiIGZpbGw9IiMyZGQ0YmYiLz48Y2lyY2xlIGN4PSIxMDAiIGN5PSIxMDAiIHI9IjQiIGZpbGw9IiMyZGQ0YmYiLz48Y2lyY2xlIGN4PSIxMjAiIGN5PSI4MCIgcj0iNCIgZmlsbD0iIzJkZDRiZiIvPjxjaXJjbGUgY3g9IjEzMCIgY3k9IjExMCIgcj0iNCIgZmlsbD0iIzJkZDRiZiIvPjxjaXJjbGUgY3g9IjE4MCIgY3k9IjkwIiByPSI0IiBmaWxsPSIjMmRkNGJmIi8+PGNpcmNsZSBjeD0iMjAwIiBjeT0iMTAwIiByPSI0IiBmaWxsPSIjMmRkNGJmIi8+PGNpcmNsZSBjeD0iMjIwIiBjeT0iODAiIHI9IjQiIGZpbGw9IiMyZGQ0YmYiLz48Y2lyY2xlIGN4PSIyNDAiIGN5PSI5NSIgcj0iNCIgZmlsbD0iIzJkZDRiZiIvPjx0ZXh0IHg9IjE1MCIgeT0iMTY1IiBmaWxsPSIjOGI5NmFjIiBmb250LXNpemU9IjEyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiI+QWlyIGJlcnBpbmRhaCBkYXJpIGVuY2VyIGtlIHBla2F0IG1lbGFsdWkgbWVtYnJhbjwvdGV4dD48L3N2Zz4=","bank":["menuju","larutan","pekat","membran","melewati","selaput","air","Molekul"]},{"id":"d-s8","t":"susun","topik":"Difusi & Osmosis","q":"Apa yang terjadi pada sel eritrosit?","img":"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMDAgMTgwIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgZmlsbD0iIzBjMTkzMCIvPjxjaXJjbGUgY3g9IjE1MCIgY3k9IjkwIiByPSI0NSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZjQ2MzNmIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1kYXNoYXJyYXk9IjQsNCIvPjxjaXJjbGUgY3g9IjE1MCIgY3k9IjkwIiByPSI1MCIgZmlsbD0icmdiYSgyNDQsOTksNjMsMC4yNSkiLz48dGV4dCB4PSIxNTAiIHk9IjE2NSIgZmlsbD0iIzhiOTZhYyIgZm9udC1zaXplPSIxMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiPlNlbCBtZW1iZW5na2FrIGRhbiBwZWNhaDwvdGV4dD48L3N2Zz4=","bank":["mengalami","air","secara","menyerap","Sel","lisis","karena","berlebihan"]},{"id":"d-s9","t":"susun","topik":"Difusi & Osmosis","q":"Peristiwa apa yang dialami sel darah merah?","img":"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMDAgMTgwIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgZmlsbD0iIzBjMTkzMCIvPjxwYXRoIGQ9Ik0xNTAsNTAgTDE2MCw2MCBMMTcwLDU1IEwxNzUsNzAgTDE5MCw3NSBMMTgwLDg1IEwxOTAsMTAwIEwxNzUsMTA1IEwxNzAsMTIwIEwxNjAsMTE1IEwxNTAsMTMwIEwxNDAsMTE1IEwxMzAsMTIwIEwxMjUsMTA1IEwxMTAsMTAwIEwxMjAsODUgTDExMCw3NSBMMTI1LDcwIEwxMzAsNTUgTDE0MCw2MCBaIiBmaWxsPSIjOGEyZjFjIiBzdHJva2U9IiNmNDYzM2YiIHN0cm9rZS13aWR0aD0iMiIvPjx0ZXh0IHg9IjE1MCIgeT0iMTY1IiBmaWxsPSIjOGI5NmFjIiBmb250LXNpemU9IjEyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiI+U2VsIG1lbmdlcnV0IGRhbiBwZXJtdWthYW4gYmVyZHVyaTwvdGV4dD48L3N2Zz4=","bank":["bersifat","luar","akibat","mengkerut","Sel","lingkungan","hipertonis","darah"]},{"id":"d-s10","t":"susun","topik":"Difusi & Osmosis","q":"Perubahan apa yang terjadi pada sel eritrosit?","img":"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMDAgMTgwIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgZmlsbD0iIzBjMTkzMCIvPjxjaXJjbGUgY3g9IjE1MCIgY3k9IjkwIiByPSI0NSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZjQ2MzNmIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1kYXNoYXJyYXk9IjQsNCIvPjxjaXJjbGUgY3g9IjE1MCIgY3k9IjkwIiByPSI1MCIgZmlsbD0icmdiYSgyNDQsOTksNjMsMC4yNSkiLz48dGV4dCB4PSIxNTAiIHk9IjE2NSIgZmlsbD0iIzhiOTZhYyIgZm9udC1zaXplPSIxMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiPlNlbCBtZW1iZW5na2FrIGRhbiBwZWNhaDwvdGV4dD48L3N2Zz4=","bank":["menyebabkan","Larutan","lisis","sel","mengalami","hipotonis"]},{"id":"d-s11","t":"susun","topik":"Difusi & Osmosis","q":"Perubahan apa yang dialami oleh sel darah merah?","img":"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMDAgMTgwIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgZmlsbD0iIzBjMTkzMCIvPjxwYXRoIGQ9Ik0xNTAsNTAgTDE2MCw2MCBMMTcwLDU1IEwxNzUsNzAgTDE5MCw3NSBMMTgwLDg1IEwxOTAsMTAwIEwxNzUsMTA1IEwxNzAsMTIwIEwxNjAsMTE1IEwxNTAsMTMwIEwxNDAsMTE1IEwxMzAsMTIwIEwxMjUsMTA1IEwxMTAsMTAwIEwxMjAsODUgTDExMCw3NSBMMTI1LDcwIEwxMzAsNTUgTDE0MCw2MCBaIiBmaWxsPSIjOGEyZjFjIiBzdHJva2U9IiNmNDYzM2YiIHN0cm9rZS13aWR0aD0iMiIvPjx0ZXh0IHg9IjE1MCIgeT0iMTY1IiBmaWxsPSIjOGI5NmFjIiBmb250LXNpemU9IjEyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiI+U2VsIG1lbmdlcnV0IGRhbiBwZXJtdWthYW4gYmVyZHVyaTwvdGV4dD48L3N2Zz4=","bank":["hipertonis","larutan","akibat","pada","Sel","krenasi","diletakkan","mengalami"]}];
+
+// ====== UTIL ======
+const $ = id => document.getElementById(id);
+const app = $('app');
+const esc = t => String(t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtT = s => { s = Math.max(0, Math.round(s)); return String(Math.floor(s/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0'); };
+const fmtS = n => Number(n).toLocaleString('id-ID', { maximumFractionDigits: 1 });
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function view(html) { app.innerHTML = html; scrollTo(0, 0); }
+
+async function api(body) {
+  if (GAS_URL.indexOf('GANTI') === 0) throw new Error('Alamat server (GAS_URL) belum diisi oleh guru.');
+  const res = await fetch(GAS_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) });
+  let out;
+  try { out = JSON.parse(await res.text()); } catch (e) { throw new Error('Respons server tidak terbaca. Periksa koneksi atau pengaturan deployment.'); }
+  if (!out.success) throw new Error(out.error || 'Server menolak permintaan');
+  return out;
+}
+
+let INIT = null;           // data awal dari server
+let ME = { kelas: '', nama: '' };
+let Q = null;              // state kuis berjalan
+window.onbeforeunload = e => { if (Q && Q.active) { e.preventDefault(); e.returnValue = ''; } };
+
+function loading(msg) { view(`<div class="card center"><div class="spin"></div><p>${esc(msg)}</p></div>`); }
+function errorView(msg, retry, back) {
+  view(`<div class="card"><h2>⚠️ Terjadi kendala</h2><p>${esc(msg)}</p>
+    <button class="btn block" id="b-retry">Coba lagi</button>
+    ${back ? '<button class="btn alt block" id="b-back">← Kembali</button>' : ''}</div>`);
+  $('b-retry').onclick = retry;
+  if (back) $('b-back').onclick = back;
+}
+
+// ====== LEADERBOARD ======
+function papanHTML(p) {
+  const rows = p.daftar.map(x => {
+    const me = ME.nama && x.nama === ME.nama && x.kelas === ME.kelas;
+    const rk = ['🥇','🥈','🥉'][x.rank - 1] || x.rank;
+    return `<div class="lb-row ${me ? 'me' : ''}"><span class="lb-rank">${rk}</span>
+      <span class="lb-name">${esc(x.nama)}<small>${esc(x.kelas)}${me ? ' · Anda' : ''}</small></span>
+      <span class="lb-score">${fmtS(x.skor)}<small>⏱ ${fmtT(x.durasi)}</small></span></div>`;
+  }).join('');
+  let own = '';
+  if (p.saya && !p.saya.diPapan) {
+    let gap = '';
+    if (p.batas !== null) {
+      const g = p.batas - p.saya.skor;
+      gap = g > 0.05 ? ` Skor peringkat ${p.topN} adalah <b>${fmtS(p.batas)}</b> (kurang ${fmtS(g)} poin).`
+                     : ` Skormu setara peringkat ${p.topN}; selesaikan lebih cepat untuk masuk.`;
+    }
+    own = `<div class="own">Skor terbaikmu <b>${fmtS(p.saya.skor)}</b>, belum masuk ${p.topN} Besar.${gap}</div>`;
+  }
+  return `<div class="card"><h2>🏆 ${p.topN} Besar</h2>${rows || '<p class="muted">Belum ada skor yang masuk. Jadilah yang pertama!</p>'}${own}
+    <p class="muted" style="margin:10px 0 0">Urutan: skor tertinggi, lalu waktu tercepat.</p></div>`;
+}
+
+async function showPapan(back) {
+  loading('Memuat papan peringkat...');
+  try {
+    const r = await api({ action: 'papan', kelas: ME.kelas, nama: ME.nama });
+    view(papanHTML(r.papan) + `<button class="btn alt block" id="b-ref">↻ Perbarui</button><button class="btn block" id="b-kb">← Kembali</button>`);
+    $('b-ref').onclick = () => showPapan(back);
+    $('b-kb').onclick = back;
+  } catch (e) { errorView(e.message, () => showPapan(back), back); }
+}
+
+// ====== LOGIN ======
+function renderLogin() {
+  ME = { kelas: '', nama: '' };
+  const kelasList = [...new Set(INIT.siswa.map(s => s.kelas))];
+  view(`
+    <div class="card">
+      <h2>👤 Siapa kamu?</h2>
+      <label class="f" for="sel-kelas">Kelas</label>
+      <select id="sel-kelas"><option value="">— pilih kelas —</option>${kelasList.map(k => `<option>${esc(k)}</option>`).join('')}</select>
+      <label class="f" for="sel-nama">Nama (sesuai absen)</label>
+      <select id="sel-nama" disabled><option value="">— pilih nama —</option></select>
+      <label class="pledge"><input type="checkbox" id="chk"><span>Saya memilih <b>nama saya sendiri</b> dan akan mengerjakan dengan jujur. Nilai hasil kerja sendiri lebih berharga daripada peringkat.</span></label>
+      <button class="btn block" id="b-lanjut" disabled>Lanjut</button>
+    </div>
+    <button class="btn alt block" id="b-papan">🏆 Lihat ${INIT.papan.topN} Besar</button>`);
+  const upd = () => { $('b-lanjut').disabled = !($('sel-kelas').value && $('sel-nama').value && $('chk').checked); };
+  $('sel-kelas').onchange = () => {
+    const k = $('sel-kelas').value;
+    $('sel-nama').innerHTML = '<option value="">— pilih nama —</option>' + INIT.siswa.filter(s => s.kelas === k).map(s => `<option>${esc(s.nama)}</option>`).join('');
+    $('sel-nama').disabled = !k; upd();
+  };
+  $('sel-nama').onchange = upd; $('chk').onchange = upd;
+  $('b-papan').onclick = () => showPapan(renderLogin);
+  $('b-lanjut').onclick = async () => {
+    ME = { kelas: $('sel-kelas').value, nama: $('sel-nama').value };
+    loading('Memeriksa data kamu...');
+    try { renderStatus(await api({ action: 'status', kelas: ME.kelas, nama: ME.nama })); }
+    catch (e) { errorView(e.message, () => $('b-lanjut') ? $('b-lanjut').click() : renderLogin(), renderLogin); }
+  };
+}
+
+// ====== STATUS / KEPUTUSAN ======
+function keputusanHTML(st) {
+  const skorTxt = st.skorKe.map((s, i) => s === null ? '' : `<span class="chip">Percobaan ${i + 1}: ${fmtS(s)}</span>`).join('');
+  if (st.terkunci) {
+    return `<div class="card center"><h2>🔒 Nilaimu terkunci</h2>
+      <div class="big">${fmtS(st.terbaik)}</div><div class="sub">skor terbaik yang dipakai</div>
+      <div class="chips">${skorTxt}</div></div>`;
+  }
+  return `<div class="card ask center"><h2>Ingin mengulang kuis?</h2>
+    <div class="chips">${skorTxt}<span class="chip">Terbaik: ${fmtS(st.terbaik)}</span></div>
+    <p class="muted" style="margin:10px 0 0">Sisa <b>${st.sisa}</b> kesempatan. Yang dipakai adalah <b>nilai tertinggi</b>. Jika tidak mengulang, nilaimu dikunci.</p>
+    <div class="stack"><button class="btn go" id="b-ulang">🔁 Ya, ulangi kuis</button>
+    <button class="btn alt" id="b-kunci">🔒 Tidak, kunci nilaiku</button></div></div>`;
+}
+function bindKeputusan(st) {
+  if (st.terkunci) return;
+  $('b-ulang').onclick = startQuiz;
+  let armed = false;
+  $('b-kunci').onclick = async () => {
+    const b = $('b-kunci');
+    if (!armed) { armed = true; b.textContent = '⚠️ Yakin? Klik lagi untuk mengunci'; b.className = 'btn warn'; return; }
+    loading('Mengunci nilai...');
+    try { renderStatus(await api({ action: 'kunci', kelas: ME.kelas, nama: ME.nama })); }
+    catch (e) { errorView(e.message, () => renderStatus(st), () => renderStatus(st)); }
+  };
+}
+
+function renderStatus(st) {
+  if (st.percobaan === 0) {
+    view(`<div class="card center"><h2>👋 Halo, ${esc(ME.nama)}</h2>
+      <p style="margin:0 0 6px">Kelas ${esc(ME.kelas)}</p>
+      <div class="chips"><span class="chip">📝 ${INIT.total} soal</span><span class="chip">🔁 Maks. ${INIT.maks}× main</span><span class="chip">⭐ Nilai tertinggi dipakai</span></div>
+      <p class="muted" style="margin:12px 0 0">Ada 3 jenis soal: pilihan ganda, rumpang, dan susun kalimat. Urutan soal diacak. Jawab semua soal lalu kirim. Kerjakan sendiri dan jujur ya!</p>
+      <button class="btn go block" id="b-mulai">▶ Mulai Kuis</button></div>
+      <p class="center"><a class="link" id="b-ganti">↩ Bukan saya / ganti nama</a></p>`);
+    $('b-mulai').onclick = startQuiz;
+  } else {
+    view(`<div class="card center" style="padding:10px 16px"><b>${esc(ME.nama)}</b> · ${esc(ME.kelas)}</div>` + keputusanHTML(st) + papanHTML(st.papan) +
+      `<p class="center"><a class="link" id="b-ganti">↩ Bukan saya / ganti nama</a></p>`);
+    bindKeputusan(st);
+  }
+  $('b-ganti').onclick = renderLogin;
+}
+
+// ====== KUIS ======
+const SOAL_BY_ID = Object.fromEntries(SOAL.map(s => [s.id, s]));
+const JENIS = { pg: 'Pilihan ganda', rumpang: 'Rumpang', susun: 'Susun kalimat' };
+
+async function startQuiz() {
+  loading('Menyiapkan kuis...');
+  try {
+    const r = await api({ action: 'mulai', kelas: ME.kelas, nama: ME.nama });
+    const daftar = r.ids.map(id => SOAL_BY_ID[id]);
+    if (daftar.some(x => !x)) throw new Error('Versi halaman kuis tidak cocok dengan server. Muat ulang halaman, atau hubungi guru.');
+    const items = shuffle(daftar).map(s => ({
+      s,
+      opts: s.opts ? shuffle(s.opts) : null,
+      bank: s.bank ? shuffle(s.bank.map((w, i) => ({ i, w }))) : null
+    }));
+    Q = { ke: r.ke, items, i: 0, jawab: {}, t0: Date.now(), tm: null, active: true };
+    Q.tm = setInterval(() => { const e = $('tm'); if (e) e.textContent = fmtT((Date.now() - Q.t0) / 1000); }, 1000);
+    renderQ();
+  } catch (e) {
+    errorView(e.message, startQuiz, async () => { try { renderStatus(await api({ action: 'status', kelas: ME.kelas, nama: ME.nama })); } catch (_) { renderLogin(); } });
+  }
+}
+
+function bangunPG(it, s) {
+  $('area').innerHTML = it.opts.map((o, k) => `<label class="opt"><input type="radio" name="o" value="${o.v}"><span class="lt">${'ABCD'[k]}</span><div class="c">${esc(o.h)}</div></label>`).join('');
+  $('area').querySelectorAll('input').forEach(inp => inp.onchange = () => {
+    $('qmsg').textContent = '';
+    Q.jawab[s.id] = [inp.value];
+    $('area').querySelectorAll('.opt').forEach(o => o.classList.toggle('sel', o.querySelector('input').checked));
+  });
+}
+
+function bangunRumpang(it, s) {
+  const parts = s.templ.split(/\{\{(\d+)\}\}/);     // [teks, no, teks, no, ..., teks]
+  const nB = it.bank.length;
+  const slots = new Array(nB).fill(null);           // isi: indeks chip atau null
+  let sel = 0;
+  $('area').innerHTML = '<div class="sent" id="sent"></div><div class="bankbox" id="bankbox"></div><p class="muted" style="margin:10px 0 0">Ketuk kata untuk mengisi kotak yang menyala. Ketuk kata di dalam kalimat untuk melepasnya.</p>';
+  function paint() {
+    $('sent').innerHTML = parts.map((p, i) => i % 2 === 0 ? esc(p) :
+      `<span class="slot ${slots[+p] !== null ? 'filled' : ''} ${sel === +p ? 'sel' : ''}" data-s="${p}">${slots[+p] !== null ? esc(it.bank[slots[+p]].w) : '<b>' + (+p + 1) + '</b>'}</span>`).join('');
+    $('bankbox').innerHTML = it.bank.map((c, ci) => `<button class="chip2 ${slots.includes(ci) ? 'used' : ''}" data-c="${ci}" ${slots.includes(ci) ? 'disabled' : ''}>${esc(c.w)}</button>`).join('');
+    $('sent').querySelectorAll('.slot').forEach(el => el.onclick = () => {
+      const k = +el.dataset.s; $('qmsg').textContent = '';
+      if (slots[k] !== null) slots[k] = null;
+      sel = k; paint();
+    });
+    $('bankbox').querySelectorAll('.chip2').forEach(el => el.onclick = () => {
+      const ci = +el.dataset.c; $('qmsg').textContent = '';
+      let t = (sel !== null && slots[sel] === null) ? sel : slots.indexOf(null);
+      if (t === -1) t = sel;                         // semua terisi: ganti isi kotak terpilih
+      if (t === null || t === -1) return;
+      slots[t] = ci;
+      const nx = slots.indexOf(null);
+      sel = nx === -1 ? t : nx;
+      paint();
+    });
+    Q.jawab[s.id] = slots.map(ci => ci === null ? null : it.bank[ci].w);
+  }
+  paint();
+}
+
+function bangunSusun(it, s) {
+  const ans = [];                                   // indeks chip sesuai urutan jawaban
+  $('area').innerHTML = '<div class="ansbox" id="ansbox"></div><div class="bankbox" id="bankbox"></div><button class="mini" id="b-reset">↺ Ulangi dari awal</button>';
+  function paint() {
+    $('ansbox').innerHTML = ans.length ? ans.map((ci, k) => `<button class="chip2" data-k="${k}">${esc(it.bank[ci].w)}</button>`).join('') : '<span class="ph">Ketuk kata di bawah untuk menyusun kalimat…</span>';
+    $('bankbox').innerHTML = it.bank.map((c, ci) => `<button class="chip2 ${ans.includes(ci) ? 'used' : ''}" data-c="${ci}" ${ans.includes(ci) ? 'disabled' : ''}>${esc(c.w)}</button>`).join('');
+    $('ansbox').querySelectorAll('.chip2').forEach(el => el.onclick = () => { ans.splice(+el.dataset.k, 1); $('qmsg').textContent = ''; paint(); });
+    $('bankbox').querySelectorAll('.chip2').forEach(el => el.onclick = () => { ans.push(+el.dataset.c); $('qmsg').textContent = ''; paint(); });
+    Q.jawab[s.id] = ans.map(ci => it.bank[ci].w);
+  }
+  $('b-reset').onclick = () => { ans.length = 0; paint(); };
+  paint();
+}
+
+function renderQ() {
+  const it = Q.items[Q.i], s = it.s, n = Q.items.length;
+  view(`
+    <div class="qhead"><span>Soal <b>${Q.i + 1}</b> dari ${n}</span><span class="qt">⏱️ <span id="tm">${fmtT((Date.now() - Q.t0) / 1000)}</span></span></div>
+    <div class="bar"><i style="width:${Q.i / n * 100}%"></i></div>
+    <div class="card">
+      <span class="tag">${esc(s.topik)} · ${JENIS[s.t]}</span>
+      ${s.t === 'susun' ? `<img class="pic" src="${s.img}" alt="Gambar untuk soal ini"><div class="qtext">${esc(s.q)}</div><p class="muted" style="margin:0 0 10px">Susun kata-kata menjadi satu kalimat jawaban yang benar.</p>` : ''}
+      ${s.t === 'pg' ? `<div class="qtext">${esc(s.q)}</div>` : ''}
+      ${s.t === 'rumpang' ? '<div class="qtext">Lengkapi kalimat berikut dengan kata yang tepat.</div>' : ''}
+      <div id="area"></div>
+      <div class="msg" id="qmsg"></div>
+      <button class="btn block ${Q.i === n - 1 ? 'go' : ''}" id="b-next">${Q.i === n - 1 ? '✅ Selesai & Kirim' : 'Lanjut →'}</button>
+    </div>`);
+  if (s.t === 'pg') bangunPG(it, s); else if (s.t === 'rumpang') bangunRumpang(it, s); else bangunSusun(it, s);
+
+  $('b-next').onclick = () => {
+    const a = Q.jawab[s.id];
+    let ok, pesan;
+    if (s.t === 'pg') { ok = a && a.length === 1; pesan = 'Pilih jawaban dulu.'; }
+    else if (s.t === 'rumpang') { ok = a && a.length === it.bank.length && a.every(x => x !== null); pesan = 'Isi semua kotak yang kosong dulu.'; }
+    else { ok = a && a.length === it.bank.length; pesan = 'Pakai semua kata untuk menyusun kalimat dulu.'; }
+    if (!ok) { $('qmsg').textContent = pesan; return; }
+    if (Q.i === n - 1) submit(); else { Q.i++; renderQ(); }
+  };
+}
+
+async function submit() {
+  clearInterval(Q.tm);
+  loading('Mengirim jawaban dan menghitung skor...');
+  try {
+    const r = await api({ action: 'kirim', kelas: ME.kelas, nama: ME.nama, ke: Q.ke, jawaban: Q.jawab, durasiKlien: Math.floor((Date.now() - Q.t0) / 1000) });
+    Q.active = false;
+    renderHasil(r);
+  } catch (e) {
+    errorView(e.message + ' Jawabanmu masih tersimpan di halaman ini, jangan ditutup.', submit);
+  }
+}
+
+function renderHasil(r) {
+  const emo = r.skor >= 80 ? '🎉' : r.skor >= 60 ? '👏' : '💪';
+  view(`<div class="card center"><div>${emo} Percobaan ${r.ke} selesai</div>
+      <div class="big">${fmtS(r.skor)}</div>
+      <div class="sub">${fmtS(r.benar)} dari ${r.total} poin</div>
+      <div class="chips"><span class="chip">⏱️ ${fmtT(r.durasi)}</span><span class="chip">Terbaik: ${fmtS(r.terbaik)}</span></div></div>` +
+    keputusanHTML(r) + papanHTML(r.papan) +
+    `<p class="center"><a class="link" id="b-ganti">↩ Selesai / ganti nama</a></p>`);
+  bindKeputusan(r);
+  $('b-ganti').onclick = renderLogin;
+}
+
+// ====== INIT ======
+async function boot() {
+  loading('Memuat daftar siswa...');
+  try { INIT = await api({ action: 'init' }); renderLogin(); }
+  catch (e) { errorView(e.message, boot); }
+}
+boot();
+</script>
+</body>
+</html>
