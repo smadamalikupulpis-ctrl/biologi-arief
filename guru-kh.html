@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="utf-8">
@@ -41,11 +41,11 @@ audio{width:100%;margin:8px 0}
 textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;min-height:64px}
 details{margin-top:6px}
 .big{font-size:2.2em;font-weight:800;color:var(--navy)}
-.miss{background:#fde8ea;color:#9c1c2b;border-radius:4px;padding:0 2px;text-decoration:underline wavy #dc3545}
+.foto{display:block;width:100%;max-width:420px;border-radius:12px;margin:0 auto}
 </style>
 </head>
 <body>
-<header><h1>🎧 Penilaian Rekaman: Keanekaragaman Hayati (Kelas 12)</h1></header>
+<header><h1>🎧 Penilaian Suara &amp; Foto: Keanekaragaman Hayati (Kelas 12)</h1></header>
 <main id="app"></main>
 <script>
 const GAS_URL = "https://script.google.com/macros/s/AKfycbzrdx2JBISnWTZGyv_wuT_QttEkurJ6WsdClXg3XulAXzanZPLIZFdWLkRr9jor4pyUyg/exec";
@@ -94,7 +94,7 @@ function renderList() {
     <div class="row" style="margin-top:12px"><select class="inp" id="f-kelas" style="flex:1"><option value="">Semua kelas</option>${kelas.map(k => `<option ${FILTER.kelas === k ? 'selected' : ''}>${esc(k)}</option>`).join('')}</select>
       <label style="display:flex;gap:6px;align-items:center;font-size:.9em"><input type="checkbox" id="f-belum" ${FILTER.belumDinilai ? 'checked' : ''}> belum dinilai</label></div></div>
     <div class="card">${L.length ? L.map((x, i) => `<div class="item" data-k="${esc(x.kelas)}" data-n="${esc(x.nama)}"><div><b>${esc(x.nama)}</b><small>${esc(x.kelas)} · Teks ${esc(x.varian)} · ⏱ ${fmtT(x.durasi)}</small></div>
-      <span style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end">${x.aiSkor === null ? '' : `<span class="chip">🤖 ${x.aiSkor}</span>`}<span class="chip ${x.nilai === null ? 'no' : 'ok'}">${x.nilai === null ? 'belum dinilai' : x.nilai}</span></span></div>`).join('') : '<p style="margin:0;color:#667">Tidak ada rekaman yang cocok.</p>'}</div>
+      <span class="chip ${x.nilai === null ? 'no' : 'ok'}">${x.nilai === null ? 'belum dinilai' : x.nilai}</span></div>`).join('') : '<p style="margin:0;color:#667">Tidak ada rekaman yang cocok.</p>'}</div>
     <div class="card"><details><summary><b>Belum mengirim (${DATA.belum.length})</b></summary>${DATA.belum.map(x => `<div style="padding:5px 0;border-bottom:1px solid #eef1f5">${esc(x.nama)} <small style="color:#667">· ${esc(x.kelas)}</small></div>`).join('') || '<p style="color:#667">Semua siswa sudah mengirim 🎉</p>'}</details></div>`;
   $('f-kelas').onchange = () => { FILTER.kelas = $('f-kelas').value; renderList(); };
   $('f-belum').onchange = () => { FILTER.belumDinilai = $('f-belum').checked; renderList(); };
@@ -111,7 +111,7 @@ async function buka(kelas, nama) {
       <div class="row"><span class="chip">Teks ${esc(x.varian)}: ${esc(t.judul)}</span><span class="chip">⏱ ${fmtT(x.durasi)}</span><span class="chip">💾 ${x.ukuran} KB</span></div>
       <div id="audio-box" style="margin-top:10px">⏳ Memuat rekaman…</div>
       <div class="spd row" id="spd" style="margin-top:6px">${[1, 1.25, 1.5, 2].map(s => `<button data-s="${s}" class="${s === SPEED ? 'on' : ''}">${s}×</button>`).join('')}</div></div>
-    <div class="card"><h2>🤖 Skor AI (perkiraan)</h2><div id="ai-box" class="muted">⏳ Memuat…</div></div>
+    <div class="card"><h2>📸 Foto selfie</h2><div id="foto-box" class="muted">⏳ Memuat foto…</div></div>
     <div class="card"><details><summary><b>Teks acuan</b></summary><div class="ref" style="margin-top:8px"><i>Selamat …, saya ${esc(x.nama)} dari kelas ${esc(x.kelas)} akan menerangkan tentang ${esc(t.tentang)}.</i> ${esc(t.isi)}</div></details></div>
     <div class="card"><h2>📝 Rubrik (1–4)</h2>
       ${ASPEK.map(a => `<div class="asp"><b>${a[1]}</b><div class="muted" style="font-size:.8em;color:#667;margin-bottom:4px">${a[2]}</div><div class="opts" data-a="${a[0]}">${[1, 2, 3, 4].map(v => `<button data-v="${v}" class="${NILAI[a[0]] === v ? 'on' : ''}">${v}</button>`).join('')}</div></div>`).join('')}
@@ -130,14 +130,11 @@ async function buka(kelas, nama) {
     const url = `data:${r.mime.split(';')[0]};base64,${r.data}`;
     $('audio-box').innerHTML = `<audio id="au" controls src="${url}"></audio>`;
     const a = $('au'); a.playbackRate = SPEED; a.addEventListener('loadedmetadata', () => { a.playbackRate = SPEED; });
-    $('ai-box').className = '';
-    $('ai-box').innerHTML = r.aiSkor === null
-      ? `<div class="muted">Tidak ada transkrip AI untuk rekaman ini (${esc(x.aiStatus || 'tanpa AI')}). Nilai sepenuhnya dari rubrik Anda.</div>`
-      : `<div class="row"><span class="chip ok">🤖 Skor AI ${r.aiSkor}</span><span class="chip">${esc(x.aiStatus)}</span></div>
-         <div class="ref" style="margin-top:10px">${r.kata.map(k => k.ok ? esc(k.w) : `<span class="miss">${esc(k.w)}</span>`).join(' ')}</div>
-         <p style="font-size:.82em;color:#667;margin:8px 0">Kata <span class="miss">bergaris merah</span> = tidak terdeteksi AI. Bisa karena siswa salah baca <b>atau</b> komputer salah dengar. Putar rekaman untuk memastikan.</p>
-         <details><summary>Transkrip AI (yang “didengar” komputer)</summary><div class="ref" style="margin-top:6px">${esc(r.transkrip)}</div></details>`;
-  } catch (e) { $('audio-box').innerHTML = `<div class="msg">Gagal memuat rekaman: ${esc(e.message)}</div>`; $('ai-box').textContent = ''; }
+    $('foto-box').className = '';
+    $('foto-box').innerHTML = r.foto
+      ? `<img class="foto" src="data:${esc(r.fotoMime || 'image/jpeg')};base64,${r.foto}" alt="Foto ${esc(x.nama)}"><div class="row" style="margin-top:6px"><span class="chip">${x.fotoKB} KB</span><span class="chip ${x.fotoSumber === 'galeri' ? 'no' : 'ok'}">${x.fotoSumber === 'galeri' ? 'dari galeri' : 'dari kamera'}</span></div>`
+      : '<span class="muted">Tidak ada foto.</span>';
+  } catch (e) { $('audio-box').innerHTML = `<div class="msg">Gagal memuat rekaman: ${esc(e.message)}</div>`; $('foto-box').textContent = ''; }
 }
 
 function hitung() {
