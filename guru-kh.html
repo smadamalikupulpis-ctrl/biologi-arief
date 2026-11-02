@@ -1,0 +1,164 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Guru: Penilaian Rekaman KH</title>
+<style>
+:root{--navy:#1c4f82;--grn:#198754;--red:#dc3545;--line:#dfe3e8}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;background:#f3f6fa;color:#1f2a37;line-height:1.5;padding-bottom:30px}
+header{background:linear-gradient(90deg,#16406c,#0f8a6a);color:#fff;padding:14px 16px;padding-top:max(14px,env(safe-area-inset-top))}
+header h1{margin:0;font-size:1.15em}
+main{max-width:820px;margin:0 auto;padding:16px}
+button{font:inherit;cursor:pointer;border:0}
+input,select,textarea{font:inherit;font-size:16px}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;margin:0 0 14px}
+.card h2{margin:0 0 10px;font-size:1.05em;color:var(--navy)}
+.btn{display:inline-block;padding:10px 16px;border-radius:22px;background:var(--navy);color:#fff;font-weight:700;min-height:44px}
+.btn.alt{background:#eaf2fb;color:var(--navy)}
+.btn.go{background:var(--grn)}
+.btn.block{display:block;width:100%;margin-top:12px}
+.btn:disabled{opacity:.5}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.chip{background:#f1f5f9;border-radius:20px;padding:3px 11px;font-size:.85em;font-weight:600}
+.chip.ok{background:#e4f6ea;color:var(--grn)}
+.chip.no{background:#fff3cd;color:#8a6d00}
+.inp{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px}
+.item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 8px;border-bottom:1px solid #eef1f5;cursor:pointer;border-radius:8px}
+.item:hover{background:#f6f9fc}
+.item small{color:#667;display:block}
+.msg{color:var(--red);font-size:.9em;min-height:1.3em;margin-top:8px}
+.ref{background:#fafcff;border:1px solid var(--line);border-radius:10px;padding:12px;max-height:230px;overflow:auto;font-size:.95em}
+.spd button{padding:6px 12px;border-radius:16px;background:#eaf2fb;color:var(--navy);font-weight:700;min-height:36px}
+.spd button.on{background:var(--navy);color:#fff}
+audio{width:100%;margin:8px 0}
+.asp{margin:12px 0}
+.asp b{display:block;margin-bottom:4px;font-size:.92em}
+.asp .opts{display:flex;gap:8px}
+.asp .opts button{flex:1;padding:10px 0;border-radius:10px;background:#f1f5f9;font-weight:700;min-height:44px}
+.asp .opts button.on{background:var(--navy);color:#fff}
+textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;min-height:64px}
+details{margin-top:6px}
+.big{font-size:2.2em;font-weight:800;color:var(--navy)}
+.miss{background:#fde8ea;color:#9c1c2b;border-radius:4px;padding:0 2px;text-decoration:underline wavy #dc3545}
+</style>
+</head>
+<body>
+<header><h1>🎧 Penilaian Rekaman: Keanekaragaman Hayati (Kelas 12)</h1></header>
+<main id="app"></main>
+<script>
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzrdx2JBISnWTZGyv_wuT_QttEkurJ6WsdClXg3XulAXzanZPLIZFdWLkRr9jor4pyUyg/exec";
+const TEKS = {"A":{"judul":"Tingkat Keanekaragaman Hayati","tentang":"tingkat keanekaragaman hayati","isi":"Keanekaragaman hayati adalah keragaman makhluk hidup di bumi beserta ekosistem tempat mereka hidup. Keanekaragaman hayati dibedakan menjadi tiga tingkat. Pertama, keanekaragaman gen, yaitu variasi gen di dalam satu jenis makhluk hidup, sehingga individu sejenis memiliki perbedaan sifat. Contohnya adalah berbagai varietas padi dan beragam ras kucing. Variasi ini muncul akibat perbedaan susunan gen dan pengaruh lingkungan. Kedua, keanekaragaman jenis atau spesies, yaitu perbedaan antarjenis makhluk hidup dalam satu wilayah, misalnya mangga, jambu, dan rambutan yang tumbuh bersama di kebun. Ketiga, keanekaragaman ekosistem, yaitu perbedaan lingkungan hidup beserta interaksi komponen biotik dan abiotiknya, seperti hutan hujan tropis, terumbu karang, dan hutan mangrove. Ketiga tingkat ini saling berkaitan. Variasi gen memungkinkan suatu spesies beradaptasi, sedangkan keragaman spesies menopang kestabilan ekosistem. Indonesia termasuk negara megabiodiversitas karena memiliki ketiga tingkat keanekaragaman tersebut dalam jumlah yang sangat besar."},"B":{"judul":"Persebaran Flora dan Fauna","tentang":"persebaran flora dan fauna di Indonesia","isi":"Persebaran flora dan fauna di Indonesia dipengaruhi oleh sejarah geologi dan kondisi iklim. Pada masa lampau, sebagian wilayah barat Indonesia menyatu dengan benua Asia, sedangkan wilayah timur menyatu dengan benua Australia. Karena itu, makhluk hidup di kedua wilayah tersebut berbeda. Perbedaan itu masih dapat kita amati sampai sekarang. Alfred Wallace mengusulkan garis yang memisahkan wilayah persebaran fauna, yang dikenal sebagai Garis Wallace, melintasi Selat Makassar dan Selat Lombok. Di sebelah barat garis ini terdapat fauna Asiatis, misalnya harimau, gajah, dan orangutan. Di sebelah timur terdapat fauna peralihan, seperti anoa dan komodo, yang memiliki ciri campuran. Wilayah Papua memiliki fauna Australis, contohnya burung cenderawasih dan kanguru pohon. Selain faktor geologi, perbedaan suhu, curah hujan, dan ketinggian tempat membuat tumbuhan di setiap daerah juga berbeda. Hutan hujan tropis menjadi rumah bagi sebagian besar keanekaragaman hayati Indonesia."},"C":{"judul":"Ancaman Keanekaragaman Hayati","tentang":"ancaman terhadap keanekaragaman hayati","isi":"Keanekaragaman hayati Indonesia saat ini menghadapi berbagai ancaman, sebagian besar akibat aktivitas manusia. Alih fungsi hutan menjadi lahan pertanian, perkebunan, dan permukiman menyebabkan habitat satwa hilang dan terpecah. Perburuan serta perdagangan satwa liar menurunkan jumlah populasi spesies langka, seperti harimau sumatra dan orangutan. Pencemaran air, tanah, dan udara dapat membunuh makhluk hidup yang peka terhadap perubahan lingkungan. Masuknya spesies invasif, misalnya eceng gondok, mengganggu spesies asli karena tumbuh cepat dan menutupi permukaan perairan. Perubahan iklim juga memengaruhi suhu dan curah hujan sehingga banyak makhluk hidup sulit beradaptasi. Apabila suatu spesies punah, rantai makanan dalam ekosistem dapat terganggu. Hilangnya variasi gen pada satu populasi membuatnya lebih rentan terhadap penyakit. Karena itu, kita perlu menjaga kelestarian lingkungan. Setiap orang dapat ikut menjaga dengan tidak membeli satwa yang dilindungi dan tidak membuang sampah sembarangan."},"D":{"judul":"Pelestarian Keanekaragaman Hayati","tentang":"upaya pelestarian keanekaragaman hayati","isi":"Pelestarian keanekaragaman hayati dilakukan melalui dua cara, yaitu konservasi in situ dan ex situ. Konservasi in situ adalah pelestarian di habitat aslinya, misalnya dengan membentuk cagar alam, suaka margasatwa, dan taman nasional. Taman Nasional Ujung Kulon melindungi badak jawa, sedangkan Taman Nasional Komodo melindungi komodo. Konservasi ex situ adalah pelestarian di luar habitat aslinya, seperti di kebun raya, kebun binatang, penangkaran, dan bank benih. Kebun Raya Bogor menyimpan ribuan jenis tumbuhan yang berasal dari berbagai daerah. Cara ini berguna untuk menyelamatkan spesies yang habitatnya rusak parah. Contohnya, penangkaran dilakukan untuk memperbanyak populasi satwa langka sebelum dilepaskan kembali ke alam. Selain itu, pemerintah menetapkan undang-undang yang melarang perburuan satwa dilindungi. Masyarakat dapat membantu dengan menanam pohon, mengurangi sampah plastik, dan memakai sumber daya secara bijak. Pelestarian yang berhasil menjaga manfaat keanekaragaman hayati bagi generasi mendatang."}};
+const ASPEK = [['kel', 'Kelancaran membaca', 'Lancar, tidak terbata-bata, tempo wajar'], ['tep', 'Ketepatan pelafalan istilah', 'Istilah: megabiodiversitas, konservasi in situ/ex situ, spesies invasif, dst.'], ['jel', 'Kejelasan suara & intonasi', 'Terdengar jelas, volume cukup, intonasi baik']];
+
+const $ = id => document.getElementById(id);
+const app = $('app');
+const esc = t => String(t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtT = s => { s = Math.max(0, Math.floor(s)); return String(Math.floor(s/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0'); };
+
+let PIN = '', DATA = null, FILTER = { kelas: '', belumDinilai: false }, CUR = null, NILAI = {}, SPEED = 1;
+try { PIN = sessionStorage.getItem('guru-pin') || ''; } catch (e) {}
+
+async function api(body) {
+  if (GAS_URL.indexOf('GANTI') === 0) throw new Error('GAS_URL belum diisi.');
+  const res = await fetch(GAS_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(Object.assign({ pin: PIN }, body)) });
+  let out; try { out = JSON.parse(await res.text()); } catch (e) { throw new Error('Respons server tidak terbaca.'); }
+  if (!out.success) throw new Error(out.error || 'Ditolak server');
+  return out;
+}
+
+function renderPin(pesan) {
+  app.innerHTML = `<div class="card"><h2>🔒 Masuk Guru</h2>
+    <input class="inp" id="pin" type="password" inputmode="text" placeholder="PIN guru" autocomplete="off" value="${esc(PIN)}">
+    <div class="msg" id="msg">${esc(pesan || '')}</div>
+    <button class="btn block" id="b-masuk">Masuk</button></div>`;
+  const go = async () => {
+    PIN = $('pin').value; $('b-masuk').disabled = true; $('msg').textContent = 'Memeriksa…';
+    try { DATA = await api({ action: 'guruDaftar' }); try { sessionStorage.setItem('guru-pin', PIN); } catch (e) {} renderList(); }
+    catch (e) { PIN = ''; try { sessionStorage.removeItem('guru-pin'); } catch (_) {} $('b-masuk').disabled = false; $('msg').textContent = e.message; }
+  };
+  $('b-masuk').onclick = go; $('pin').onkeydown = e => { if (e.key === 'Enter') go(); };
+}
+
+async function muat() { DATA = await api({ action: 'guruDaftar' }); }
+
+function filtered() { return DATA.item.filter(x => (!FILTER.kelas || x.kelas === FILTER.kelas) && (!FILTER.belumDinilai || x.nilai === null)); }
+
+function renderList() {
+  const kelas = [...new Set(DATA.item.map(x => x.kelas).concat(DATA.belum.map(x => x.kelas)))].sort();
+  const dinilai = DATA.item.filter(x => x.nilai !== null).length;
+  const L = filtered();
+  app.innerHTML = `<div class="card"><div class="row"><span class="chip ok">Terkirim ${DATA.item.length}/${DATA.total}</span><span class="chip ${dinilai === DATA.item.length ? 'ok' : 'no'}">Dinilai ${dinilai}/${DATA.item.length}</span>
+      <button class="btn alt" id="b-seg" style="margin-left:auto">↻ Segarkan</button></div>
+    <div class="row" style="margin-top:12px"><select class="inp" id="f-kelas" style="flex:1"><option value="">Semua kelas</option>${kelas.map(k => `<option ${FILTER.kelas === k ? 'selected' : ''}>${esc(k)}</option>`).join('')}</select>
+      <label style="display:flex;gap:6px;align-items:center;font-size:.9em"><input type="checkbox" id="f-belum" ${FILTER.belumDinilai ? 'checked' : ''}> belum dinilai</label></div></div>
+    <div class="card">${L.length ? L.map((x, i) => `<div class="item" data-k="${esc(x.kelas)}" data-n="${esc(x.nama)}"><div><b>${esc(x.nama)}</b><small>${esc(x.kelas)} · Teks ${esc(x.varian)} · ⏱ ${fmtT(x.durasi)}</small></div>
+      <span style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end">${x.aiSkor === null ? '' : `<span class="chip">🤖 ${x.aiSkor}</span>`}<span class="chip ${x.nilai === null ? 'no' : 'ok'}">${x.nilai === null ? 'belum dinilai' : x.nilai}</span></span></div>`).join('') : '<p style="margin:0;color:#667">Tidak ada rekaman yang cocok.</p>'}</div>
+    <div class="card"><details><summary><b>Belum mengirim (${DATA.belum.length})</b></summary>${DATA.belum.map(x => `<div style="padding:5px 0;border-bottom:1px solid #eef1f5">${esc(x.nama)} <small style="color:#667">· ${esc(x.kelas)}</small></div>`).join('') || '<p style="color:#667">Semua siswa sudah mengirim 🎉</p>'}</details></div>`;
+  $('f-kelas').onchange = () => { FILTER.kelas = $('f-kelas').value; renderList(); };
+  $('f-belum').onchange = () => { FILTER.belumDinilai = $('f-belum').checked; renderList(); };
+  $('b-seg').onclick = async () => { try { await muat(); renderList(); } catch (e) { alert(e.message); } };
+  app.querySelectorAll('.item').forEach(it => it.onclick = () => buka(it.dataset.k, it.dataset.n));
+}
+
+async function buka(kelas, nama) {
+  const x = DATA.item.find(i => i.kelas === kelas && i.nama === nama);
+  CUR = x; NILAI = { kel: x.kel, tep: x.tep, jel: x.jel };
+  const t = TEKS[x.varian] || { judul: '', tentang: '', isi: '' };
+  app.innerHTML = `<button class="btn alt" id="b-kembali">← Daftar</button>
+    <div class="card" style="margin-top:12px"><h2>${esc(x.nama)} <small style="font-weight:400;color:#667">· ${esc(x.kelas)}</small></h2>
+      <div class="row"><span class="chip">Teks ${esc(x.varian)}: ${esc(t.judul)}</span><span class="chip">⏱ ${fmtT(x.durasi)}</span><span class="chip">💾 ${x.ukuran} KB</span></div>
+      <div id="audio-box" style="margin-top:10px">⏳ Memuat rekaman…</div>
+      <div class="spd row" id="spd" style="margin-top:6px">${[1, 1.25, 1.5, 2].map(s => `<button data-s="${s}" class="${s === SPEED ? 'on' : ''}">${s}×</button>`).join('')}</div></div>
+    <div class="card"><h2>🤖 Skor AI (perkiraan)</h2><div id="ai-box" class="muted">⏳ Memuat…</div></div>
+    <div class="card"><details><summary><b>Teks acuan</b></summary><div class="ref" style="margin-top:8px"><i>Selamat …, saya ${esc(x.nama)} dari kelas ${esc(x.kelas)} akan menerangkan tentang ${esc(t.tentang)}.</i> ${esc(t.isi)}</div></details></div>
+    <div class="card"><h2>📝 Rubrik (1–4)</h2>
+      ${ASPEK.map(a => `<div class="asp"><b>${a[1]}</b><div class="muted" style="font-size:.8em;color:#667;margin-bottom:4px">${a[2]}</div><div class="opts" data-a="${a[0]}">${[1, 2, 3, 4].map(v => `<button data-v="${v}" class="${NILAI[a[0]] === v ? 'on' : ''}">${v}</button>`).join('')}</div></div>`).join('')}
+      <textarea id="cat" placeholder="Catatan (opsional)">${esc(x.catatan)}</textarea>
+      <div style="margin-top:10px">Nilai: <span class="big" id="nilai">${x.nilai === null ? '–' : x.nilai}</span></div>
+      <div class="msg" id="msg"></div>
+      <button class="btn go block" id="b-simpan">💾 Simpan & berikutnya</button></div>`;
+  $('b-kembali').onclick = renderList;
+  app.querySelectorAll('.opts').forEach(g => g.querySelectorAll('button').forEach(b => b.onclick = () => {
+    NILAI[g.dataset.a] = +b.dataset.v; g.querySelectorAll('button').forEach(z => z.classList.toggle('on', z === b)); hitung();
+  }));
+  $('spd').querySelectorAll('button').forEach(b => b.onclick = () => { SPEED = +b.dataset.s; $('spd').querySelectorAll('button').forEach(z => z.classList.toggle('on', z === b)); const a = $('au'); if (a) a.playbackRate = SPEED; });
+  $('b-simpan').onclick = simpan;
+  try {
+    const r = await api({ action: 'guruDetail', kelas, nama });
+    const url = `data:${r.mime.split(';')[0]};base64,${r.data}`;
+    $('audio-box').innerHTML = `<audio id="au" controls src="${url}"></audio>`;
+    const a = $('au'); a.playbackRate = SPEED; a.addEventListener('loadedmetadata', () => { a.playbackRate = SPEED; });
+    $('ai-box').className = '';
+    $('ai-box').innerHTML = r.aiSkor === null
+      ? `<div class="muted">Tidak ada transkrip AI untuk rekaman ini (${esc(x.aiStatus || 'tanpa AI')}). Nilai sepenuhnya dari rubrik Anda.</div>`
+      : `<div class="row"><span class="chip ok">🤖 Skor AI ${r.aiSkor}</span><span class="chip">${esc(x.aiStatus)}</span></div>
+         <div class="ref" style="margin-top:10px">${r.kata.map(k => k.ok ? esc(k.w) : `<span class="miss">${esc(k.w)}</span>`).join(' ')}</div>
+         <p style="font-size:.82em;color:#667;margin:8px 0">Kata <span class="miss">bergaris merah</span> = tidak terdeteksi AI. Bisa karena siswa salah baca <b>atau</b> komputer salah dengar. Putar rekaman untuk memastikan.</p>
+         <details><summary>Transkrip AI (yang “didengar” komputer)</summary><div class="ref" style="margin-top:6px">${esc(r.transkrip)}</div></details>`;
+  } catch (e) { $('audio-box').innerHTML = `<div class="msg">Gagal memuat rekaman: ${esc(e.message)}</div>`; $('ai-box').textContent = ''; }
+}
+
+function hitung() {
+  const { kel, tep, jel } = NILAI;
+  $('nilai').textContent = (kel && tep && jel) ? Math.round((kel + tep + jel) / 12 * 100) : '–';
+}
+
+async function simpan() {
+  const { kel, tep, jel } = NILAI;
+  if (!(kel && tep && jel)) { $('msg').textContent = 'Isi ketiga aspek dulu.'; return; }
+  const b = $('b-simpan'); b.disabled = true; $('msg').textContent = 'Menyimpan…';
+  try {
+    const r = await api({ action: 'guruNilai', kelas: CUR.kelas, nama: CUR.nama, kel, tep, jel, catatan: $('cat').value });
+    Object.assign(CUR, { kel, tep, jel, nilai: r.nilai, catatan: $('cat').value });
+    const L = filtered(); const i = L.indexOf(CUR);
+    const next = L.slice(i + 1).find(x => x.nilai === null) || L[i + 1];
+    if (next) buka(next.kelas, next.nama); else renderList();
+  } catch (e) { b.disabled = false; $('msg').textContent = e.message; }
+}
+
+if (PIN) { api({ action: 'guruDaftar' }).then(d => { DATA = d; renderList(); }).catch(() => renderPin()); } else renderPin();
+</script>
+</body>
+</html>
