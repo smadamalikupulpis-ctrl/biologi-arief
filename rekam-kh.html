@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Rekam Suara: Keanekaragaman Hayati</title>
+<title>Rekam Suara & Selfie: Keanekaragaman Hayati</title>
 <style>
 :root{--navy:#1c4f82;--blue:#0d6efd;--grn:#198754;--red:#dc3545;--line:#dfe3e8;--fs:16px}
 *{box-sizing:border-box}
@@ -59,13 +59,13 @@ select.sel{width:100%;padding:12px;border:1px solid var(--line);border-radius:10
 .dock{position:fixed;left:0;right:0;bottom:0;z-index:60;background:#fff;border-top:1px solid var(--line);padding:10px 16px max(10px,env(safe-area-inset-bottom))}
 .dock .btn{display:block;width:100%;max-width:720px;margin:0 auto}
 audio{width:100%;margin:6px 0}
-.twb-img{display:block;width:100%;border-radius:14px;margin:4px 0 4px;box-shadow:0 2px 12px rgba(0,0,0,.18)}
+.twb-img{display:block;width:100%;border-radius:14px;margin:4px 0 8px;box-shadow:0 2px 12px rgba(0,0,0,.18)}
 .big{font-size:3em;line-height:1.1}
 @media(min-width:700px){:root{--fs:17px}}
 </style>
 </head>
 <body>
-<header><h1>🎙️ Rekam Suara: Keanekaragaman Hayati</h1><small>Baca teks dengan jelas, rekam, kirim, lalu buat twibbon selfie</small></header>
+<header><h1>🎙️ Rekam Suara &amp; Selfie</h1><small>Materi Keanekaragaman Hayati · baca, rekam, selfie, kirim</small></header>
 <main id="app"></main>
 
 <script>
@@ -78,9 +78,11 @@ const KECEPATAN     = 1.9;   // kata per detik untuk sorotan karaoke
 const BITRATE       = 24000; // Opus ±24 kbps
 const MIN_UKURAN_KB = 15;    // di bawah ini dianggap rekaman kosong/rusak
 const MIN_DENGAR    = 5;     // detik pratinjau yang wajib didengar sebelum boleh kirim
-const TES_DETIK     = 4;     // tes mikrofon + pengenalan ucapan sebelum rekam (detik)
-const AMBANG_SUARA  = 0.05;  // level suara minimal agar dianggap terdengar (0-1)
 const MATERI        = 'Keanekaragaman Hayati';   // dipakai pada kalimat twibbon
+// Foto dikompres seperti foto WhatsApp sebelum dikirim
+const FOTO_LEBAR    = 960;   // piksel
+const FOTO_TINGGI   = 1200;
+const FOTO_KUALITAS = 0.72;  // kualitas JPEG 0-1
 
 // Empat varian teks (setara, 130-140 kata)
 const TEKS = {"A":{"judul":"Tingkat Keanekaragaman Hayati","tentang":"tingkat keanekaragaman hayati","isi":"Keanekaragaman hayati adalah keragaman makhluk hidup di bumi beserta ekosistem tempat mereka hidup. Keanekaragaman hayati dibedakan menjadi tiga tingkat. Pertama, keanekaragaman gen, yaitu variasi gen di dalam satu jenis makhluk hidup, sehingga individu sejenis memiliki perbedaan sifat. Contohnya adalah berbagai varietas padi dan beragam ras kucing. Variasi ini muncul akibat perbedaan susunan gen dan pengaruh lingkungan. Kedua, keanekaragaman jenis atau spesies, yaitu perbedaan antarjenis makhluk hidup dalam satu wilayah, misalnya mangga, jambu, dan rambutan yang tumbuh bersama di kebun. Ketiga, keanekaragaman ekosistem, yaitu perbedaan lingkungan hidup beserta interaksi komponen biotik dan abiotiknya, seperti hutan hujan tropis, terumbu karang, dan hutan mangrove. Ketiga tingkat ini saling berkaitan. Variasi gen memungkinkan suatu spesies beradaptasi, sedangkan keragaman spesies menopang kestabilan ekosistem. Indonesia termasuk negara megabiodiversitas karena memiliki ketiga tingkat keanekaragaman tersebut dalam jumlah yang sangat besar."},"B":{"judul":"Persebaran Flora dan Fauna","tentang":"persebaran flora dan fauna di Indonesia","isi":"Persebaran flora dan fauna di Indonesia dipengaruhi oleh sejarah geologi dan kondisi iklim. Pada masa lampau, sebagian wilayah barat Indonesia menyatu dengan benua Asia, sedangkan wilayah timur menyatu dengan benua Australia. Karena itu, makhluk hidup di kedua wilayah tersebut berbeda. Perbedaan itu masih dapat kita amati sampai sekarang. Alfred Wallace mengusulkan garis yang memisahkan wilayah persebaran fauna, yang dikenal sebagai Garis Wallace, melintasi Selat Makassar dan Selat Lombok. Di sebelah barat garis ini terdapat fauna Asiatis, misalnya harimau, gajah, dan orangutan. Di sebelah timur terdapat fauna peralihan, seperti anoa dan komodo, yang memiliki ciri campuran. Wilayah Papua memiliki fauna Australis, contohnya burung cenderawasih dan kanguru pohon. Selain faktor geologi, perbedaan suhu, curah hujan, dan ketinggian tempat membuat tumbuhan di setiap daerah juga berbeda. Hutan hujan tropis menjadi rumah bagi sebagian besar keanekaragaman hayati Indonesia."},"C":{"judul":"Ancaman Keanekaragaman Hayati","tentang":"ancaman terhadap keanekaragaman hayati","isi":"Keanekaragaman hayati Indonesia saat ini menghadapi berbagai ancaman, sebagian besar akibat aktivitas manusia. Alih fungsi hutan menjadi lahan pertanian, perkebunan, dan permukiman menyebabkan habitat satwa hilang dan terpecah. Perburuan serta perdagangan satwa liar menurunkan jumlah populasi spesies langka, seperti harimau sumatra dan orangutan. Pencemaran air, tanah, dan udara dapat membunuh makhluk hidup yang peka terhadap perubahan lingkungan. Masuknya spesies invasif, misalnya eceng gondok, mengganggu spesies asli karena tumbuh cepat dan menutupi permukaan perairan. Perubahan iklim juga memengaruhi suhu dan curah hujan sehingga banyak makhluk hidup sulit beradaptasi. Apabila suatu spesies punah, rantai makanan dalam ekosistem dapat terganggu. Hilangnya variasi gen pada satu populasi membuatnya lebih rentan terhadap penyakit. Karena itu, kita perlu menjaga kelestarian lingkungan. Setiap orang dapat ikut menjaga dengan tidak membeli satwa yang dilindungi dan tidak membuang sampah sembarangan."},"D":{"judul":"Pelestarian Keanekaragaman Hayati","tentang":"upaya pelestarian keanekaragaman hayati","isi":"Pelestarian keanekaragaman hayati dilakukan melalui dua cara, yaitu konservasi in situ dan ex situ. Konservasi in situ adalah pelestarian di habitat aslinya, misalnya dengan membentuk cagar alam, suaka margasatwa, dan taman nasional. Taman Nasional Ujung Kulon melindungi badak jawa, sedangkan Taman Nasional Komodo melindungi komodo. Konservasi ex situ adalah pelestarian di luar habitat aslinya, seperti di kebun raya, kebun binatang, penangkaran, dan bank benih. Kebun Raya Bogor menyimpan ribuan jenis tumbuhan yang berasal dari berbagai daerah. Cara ini berguna untuk menyelamatkan spesies yang habitatnya rusak parah. Contohnya, penangkaran dilakukan untuk memperbanyak populasi satwa langka sebelum dilepaskan kembali ke alam. Selain itu, pemerintah menetapkan undang-undang yang melarang perburuan satwa dilindungi. Masyarakat dapat membantu dengan menanam pohon, mengurangi sampah plastik, dan memakai sumber daya secara bijak. Pelestarian yang berhasil menjaga manfaat keanekaragaman hayati bagi generasi mendatang."}};
@@ -107,11 +109,10 @@ async function api(body) {
 }
 
 // ====== STATE ======
-const DONE_KEY = 'rekam-kh-v2-selesai';
+const DONE_KEY = 'rekam-kh-v3-selesai';
 let INIT = null;
 let ME = { kelas: '', nama: '', v: 'A' };
 let S = { phase: 'login', latihanOk: false, sending: false };
-let AI = { mode: 'tanpa-ai:belum', teks: [], sr: null };   // keadaan penilaian AI untuk rekaman yang sedang dibuat
 window.onbeforeunload = e => { if (['rekam', 'preview', 'gagal'].includes(S.phase)) { e.preventDefault(); e.returnValue = ''; } };
 document.addEventListener('visibilitychange', () => { if (document.hidden && S.phase === 'rekam') S.keluar = true; });
 
@@ -123,7 +124,8 @@ function errorView(msg, retry, back) {
 }
 
 function bannerHTML() {
-  let h = `<div class="note info">📱 <b>Petunjuk:</b> rekam suara memakai <b>HP Android</b> dan buka di <b>Chrome</b>. Cari tempat yang tenang, dan jangan tutup halaman ini sebelum rekamanmu terkirim. Penilaian AI memakai <b>internet</b> saat kamu merekam.</div>`;
+  let h = `<div class="note info">📱 <b>Petunjuk:</b> rekam suara memakai <b>HP Android</b> dan buka di <b>Chrome</b>. Cari tempat yang tenang, dan jangan tutup halaman ini sebelum tugasmu terkirim.</div>
+    <div class="note info">📸 Setelah merekam, kamu akan membuat <b>foto selfie twibbon</b>. <b>Suara dan foto dikirim ke guru</b> sebagai bukti belajar PJJ, dan hanya dilihat guru.</div>`;
   if (IS_IOS) h += `<div class="note warn">🍎 Kamu memakai <b>iPhone</b>. Perekaman di iPhone belum seandal di Android. Jika bisa, pinjam HP Android. Jika tetap memakai iPhone, gunakan <b>Safari</b> dan izinkan mikrofon. Kalau gagal, hubungi guru.</div>`;
   if (IN_APP) h += `<div class="note err">⚠️ Halaman ini terbuka di <b>dalam aplikasi</b> (bukan Chrome/Safari), sehingga mikrofon sering diblokir. Ketuk titik tiga ⋮ lalu pilih <b>Buka di Chrome</b>.</div>`;
   return h;
@@ -191,7 +193,6 @@ function teksHTML(k) { return k.words.map((w, i) => `<span class="w ${i < k.nBuk
 // ====== FASE 1: LATIHAN (TEKS DIAM) ======
 function renderLatihan(pesan) {
   S.phase = 'latihan';
-  bersihkanStream();
   const k = S.k = kataKata();
   view(bannerHTML() + (pesan ? `<div class="note err">${esc(pesan)}</div>` : '') + `
     <div class="card"><span class="tag">Teks ${ME.v} · ${esc(k.judul)}</span><div class="read">${teksHTML(k)}</div></div>
@@ -199,8 +200,7 @@ function renderLatihan(pesan) {
       <li>Berlatihlah membaca dulu, eja istilah ilmiah dengan jelas.</li>
       <li>Baca dengan tempo sedang. Nanti ada <b>sorotan kuning</b> yang membantu mengatur kecepatan.</li>
       <li>Pegang HP sekitar 10–15 cm dari mulut, di tempat yang tenang.</li>
-      <li>Kalimat pembuka (miring hijau) <b>ikut dibaca</b>.</li>
-      <li>Saat menekan tombol rekam, ada <b>tes mikrofon 4 detik</b>: ucapkan “Tes, satu, dua, tiga”.</li></ul>
+      <li>Kalimat pembuka (miring hijau) <b>ikut dibaca</b>.</li></ul>
       <button class="btn rec block" id="b-rekam" disabled></button></div>`);
   const t0 = Date.now();
   const upd = () => {
@@ -227,125 +227,31 @@ function pesanMic(e) {
   return 'Mikrofon tidak bisa diakses' + (IN_APP ? '. Buka halaman ini di Chrome (bukan di dalam aplikasi).' : '. Pastikan memakai Chrome dan alamat berawalan https.');
 }
 
-// ---- meter suara
-function pasangMeter(stream) {
-  try {
-    const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null;
-    const ctx = new AC(); if (ctx.resume) ctx.resume();
-    const an = ctx.createAnalyser(); an.fftSize = 512;
-    ctx.createMediaStreamSource(stream).connect(an);
-    return { ctx, an, buf: new Uint8Array(an.fftSize) };
-  } catch (e) { return null; }
-}
-function levelSuara(m) { m.an.getByteTimeDomainData(m.buf); let mx = 0; for (const v of m.buf) { const a = Math.abs(v - 128) / 128; if (a > mx) mx = a; } return mx; }
-function tutupMeter(m) { try { if (m) m.ctx.close(); } catch (e) {} }
-function bersihkanStream() { if (S.stream) { try { S.stream.getTracks().forEach(t => t.stop()); } catch (e) {} S.stream = null; } }
-
-// ---- pengenalan ucapan (Web Speech API)
-const SRC = window.SpeechRecognition || window.webkitSpeechRecognition;
-const ALASAN = { 'tidak-didukung': 'browser ini tidak mendukung', 'not-allowed': 'izin pengenalan suara ditolak', 'service-not-allowed': 'layanan pengenalan suara tidak diizinkan',
-  'network': 'butuh internet', 'audio-capture': 'mikrofon tidak bisa dipakai bersamaan', 'language-not-supported': 'bahasa Indonesia tidak didukung', 'restart-berulang': 'pengenalan suara terus terhenti', 'gagal-mulai': 'gagal dimulai' };
-
-function bikinSR(opsi) {
-  const r = new SRC();
-  r.lang = 'id-ID'; r.continuous = true; r.interimResults = !!opsi.interim; r.maxAlternatives = 1;
-  let aktif = true, cepat = 0, mulai = 0, selesai = null;
-  r.onresult = e => { for (let i = e.resultIndex; i < e.results.length; i++) { const x = e.results[i]; const t = ((x[0] && x[0].transcript) || '').trim(); if (t) opsi.onText(t, !!x.isFinal); } };
-  r.onerror = e => { if (['not-allowed', 'service-not-allowed', 'audio-capture', 'network', 'language-not-supported'].includes(e.error)) { aktif = false; opsi.onFatal(e.error); } };
-  r.onend = () => {
-    if (selesai) { selesai(); selesai = null; return; }
-    if (!aktif) return;
-    cepat = (Date.now() - mulai < 700) ? cepat + 1 : 0;              // berhenti terus-menerus = tidak bisa dipakai
-    if (cepat > 6) { aktif = false; opsi.onFatal('restart-berulang'); return; }
-    setTimeout(() => { if (aktif) { try { mulai = Date.now(); r.start(); } catch (e) {} } }, 120);
-  };
-  mulai = Date.now();
-  r.start();
-  return {
-    stop() { aktif = false; try { r.abort(); } catch (e) {} },
-    halus() { return new Promise(res => { aktif = false; selesai = res; const t = setTimeout(() => { selesai = null; res(); }, 1500); try { r.stop(); } catch (e) { clearTimeout(t); res(); } }); }
-  };
-}
-
-// ---- tes mikrofon + AI sebelum merekam
 async function mulaiRekam() {
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.MediaRecorder)
     return renderLatihan('Browser ini belum mendukung perekaman suara. Buka halaman ini di Chrome pada HP Android.');
   let stream;
   try { stream = await navigator.mediaDevices.getUserMedia({ audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true, autoGainControl: true } }); }
   catch (e) { return renderLatihan(pesanMic(e)); }
-  S.stream = stream;
-  jalankanTes();
-}
 
-function jalankanTes() {
-  S.phase = 'tes';
-  const stream = S.stream;
-  view(`<div class="card center"><h2>🎤 Tes mikrofon cepat</h2>
-    <p style="margin:0 0 10px">Ucapkan dengan jelas:<br><b style="font-size:1.15em">“Tes, satu, dua, tiga”</b></p>
-    <div class="meter" style="margin:0 auto 10px;max-width:320px"><i id="mt"></i></div>
-    <div class="big" id="tcd">${TES_DETIK}</div><p class="muted" id="tmsg" style="margin:6px 0 0">Sedang mendengarkan…</p></div>`);
-  const meter = pasangMeter(stream);
-  const h = { puncak: 0, srTeks: false, srErr: null, meterOk: !!meter };
-  let sr = null;
-  if (!SRC) h.srErr = 'tidak-didukung';
-  else { try { sr = bikinSR({ interim: true, onText: () => { h.srTeks = true; }, onFatal: k => { h.srErr = k; } }); } catch (e) { h.srErr = 'gagal-mulai'; } }
-  const t0 = Date.now();
-  clearInterval(S.tmTes);
-  S.tmTes = setInterval(() => {
-    const el = (Date.now() - t0) / 1000;
-    if (meter) { const p = levelSuara(meter); if (p > h.puncak) h.puncak = p; const m = $('mt'); if (m) m.style.width = Math.min(100, p * 160) + '%'; }
-    const c = $('tcd'); if (c) c.textContent = Math.max(0, Math.ceil(TES_DETIK - el));
-    if (el >= TES_DETIK) { clearInterval(S.tmTes); if (sr) sr.stop(); tutupMeter(meter); selesaiTes(h); }
-  }, 100);
-}
-
-function selesaiTes(h) {
-  const suara = h.puncak >= AMBANG_SUARA;
-  let mode = 'ai', ikon = '✅', pesan = 'Mikrofon dan penilaian AI siap digunakan.';
-  const alasan = ALASAN[h.srErr] || h.srErr;
-  if (!h.meterOk) { mode = 'tanpa-ai:tanpa-meter'; ikon = 'ℹ️'; pesan = 'Penilaian AI tidak bisa diperiksa di HP ini. Rekaman tetap bisa dilanjutkan, hanya tanpa skor AI.'; }
-  else if (!suara && !h.srTeks) { mode = 'tanpa-ai:tes-gagal'; ikon = '🔈'; pesan = 'Suaramu belum terdengar. Dekatkan HP ke mulut, lalu ulangi tes.'; }
-  else if (!suara && h.srTeks) { mode = 'tanpa-ai:bentrok'; ikon = '⚠️'; pesan = 'Di HP ini penilaian AI mengganggu mikrofon perekam, jadi dimatikan agar rekamanmu aman. Rekaman tetap diterima guru.'; }
-  else if (h.srErr) { mode = 'tanpa-ai:' + h.srErr; ikon = '⚠️'; pesan = `Penilaian AI tidak tersedia (${alasan}). Rekaman tetap diterima guru, hanya tanpa skor AI.`; }
-  else if (!h.srTeks) { mode = 'tanpa-ai:tes-gagal'; ikon = '⚠️'; pesan = 'Penilaian AI belum mengenali suaramu. Coba ulangi tes dengan suara lebih jelas, atau lanjut tanpa AI.'; }
-  S.modeTes = mode;
-  view(`<div class="card center"><div class="big">${ikon}</div><p style="margin:8px 0 0">${esc(pesan)}</p>
-    <button class="btn rec block" id="b-lanjut">${mode === 'ai' ? '🔴 Mulai Rekam Sekarang' : '🔴 Mulai Rekam (tanpa AI)'}</button>
-    ${mode === 'ai' ? '' : '<button class="btn alt block" id="b-tes">🔁 Ulangi Tes</button>'}
-    <button class="btn alt block" id="b-batal">← Kembali ke teks</button></div>`);
-  $('b-lanjut').onclick = () => mulaiRekamSungguhan(mode);
-  if ($('b-tes')) $('b-tes').onclick = jalankanTes;
-  $('b-batal').onclick = () => renderLatihan();
-}
-
-function mulaiRekamSungguhan(mode) {
-  const stream = S.stream;
   const mime = pilihMime();
   let rec;
   try { rec = new MediaRecorder(stream, mime ? { mimeType: mime, audioBitsPerSecond: BITRATE } : { audioBitsPerSecond: BITRATE }); }
-  catch (e) { try { rec = new MediaRecorder(stream); } catch (e2) { return renderLatihan('Perekaman tidak bisa dimulai di browser ini.'); } }
+  catch (e) { try { rec = new MediaRecorder(stream); } catch (e2) { stream.getTracks().forEach(t => t.stop()); return renderLatihan('Perekaman tidak bisa dimulai di browser ini.'); } }
 
-  const R = S.rec = { rec, stream, chunks: [], t0: Date.now(), peak: 0, meter: pasangMeter(stream), mime: rec.mimeType || mime || 'audio/webm' };
+  const R = S.rec = { rec, stream, chunks: [], t0: Date.now(), peak: 0, meter: null, mime: rec.mimeType || mime || 'audio/webm' };
   rec.ondataavailable = ev => { if (ev.data && ev.data.size) R.chunks.push(ev.data); };
-  rec.onerror = () => { stopAI(); akhiriRekam(true); renderLatihan('Perekaman terhenti karena kesalahan. Silakan coba lagi.'); };
+  rec.onerror = () => { akhiriRekam(true); renderLatihan('Perekaman terhenti karena kesalahan. Silakan coba lagi.'); };
   rec.onstop = () => selesaiRekam();
+  try {   // meter suara (opsional)
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (AC) { const ctx = new AC(); if (ctx.resume) ctx.resume(); const an = ctx.createAnalyser(); an.fftSize = 512; ctx.createMediaStreamSource(stream).connect(an); R.meter = { ctx, an, buf: new Uint8Array(an.fftSize) }; }
+  } catch (e) { R.meter = null; }
 
-  AI = { mode, teks: [], sr: null };
   S.keluar = false;
   rec.start(1000);
-  if (mode === 'ai' && SRC) {
-    try {
-      AI.sr = bikinSR({ interim: true, onText: (t, fin) => { if (AI.teks.join(' ').length < 4000) AI.teks.push(t); }, onFatal: k => { AI.mode = 'tanpa-ai:' + k; } });
-    } catch (e) { AI.mode = 'tanpa-ai:gagal-mulai'; }
-    try {   // jika mikrofon perekam tiba-tiba dibisukan oleh pengenalan suara, korbankan AI demi rekaman
-      stream.getAudioTracks()[0].addEventListener('mute', () => { if (AI.sr) { AI.sr.stop(); AI.sr = null; AI.mode = 'tanpa-ai:bentrok'; } });
-    } catch (e) {}
-  }
   renderRekam();
 }
-
-function stopAI() { if (AI.sr) { AI.sr.stop(); AI.sr = null; } }
 
 function renderRekam() {
   S.phase = 'rekam';
@@ -388,12 +294,10 @@ function akhiriRekam(buang) {
   if (buang) S.rec = null;
 }
 
-async function selesaiRekam() {
+function selesaiRekam() {
   const R = S.rec; if (!R) return;
   const durasi = Math.round((Date.now() - R.t0) / 1000);
   akhiriRekam(false);
-  S.stream = null;
-  if (AI.sr) { loading('Memproses suaramu…'); const sr = AI.sr; AI.sr = null; await sr.halus(); }
   const blob = new Blob(R.chunks, { type: R.mime });
   S.rec = null;
   if (blob.size < MIN_UKURAN_KB * 1024) { return renderLatihan('Rekaman kosong atau terlalu pendek. Pastikan mikrofon aktif lalu rekam ulang.'); }
@@ -406,77 +310,55 @@ async function selesaiRekam() {
 function renderPreview() {
   S.phase = 'preview'; S.heard = false;
   const kb = Math.round(S.blob.size / 1024);
-  view(`<div class="card"><h2>🎧 Dengarkan rekamanmu</h2>
-    <p class="muted" style="margin:0 0 6px">Putar minimal ${MIN_DENGAR} detik untuk memastikan suaramu terdengar jelas.</p>
-    <audio id="au" controls preload="auto" src="${S.url}"></audio>
-    <div class="chips"><span class="chip">⏱️ ${fmtT(S.durasi)}</span><span class="chip">💾 ${kb} KB</span></div>
-    ${S.peak !== null && S.peak < 0.04 ? '<div class="note warn" style="margin:12px 0 0">🔈 Suaramu terdeteksi sangat pelan. Dengarkan baik-baik. Jika tidak terdengar, tekan <b>Rekam Ulang</b>.</div>' : ''}
-    <div class="note ${AI.mode === 'ai' ? 'info' : 'warn'}" style="margin:12px 0 0">${AI.mode === 'ai' ? (AI.teks.length ? '🤖 Penilaian AI aktif. Skor AI akan muncul setelah rekamanmu terkirim.' : '🤖 Penilaian AI aktif, tetapi belum menangkap suaramu. Rekamanmu tetap bisa dikirim.') : 'ℹ️ Penilaian AI tidak aktif pada rekaman ini. Rekamanmu tetap diterima guru.'}</div>
-    ${S.keluar ? '<div class="note warn" style="margin:12px 0 0">⚠️ Kamu sempat meninggalkan halaman saat merekam, sehingga rekaman mungkin terputus. Pastikan seluruh bacaan terdengar.</div>' : ''}
-    <button class="btn go block" id="b-kirim" disabled>🎧 Dengarkan dulu</button>
-    <button class="btn alt block" id="b-ulang">🔁 Rekam Ulang</button></div>`);
+  view(`<div class="card"><h2>1️⃣ Dengarkan rekamanmu</h2>
+      <p class="muted" style="margin:0 0 6px">Putar minimal ${MIN_DENGAR} detik untuk memastikan suaramu terdengar jelas.</p>
+      <audio id="au" controls preload="auto" src="${S.url}"></audio>
+      <div class="chips"><span class="chip">⏱️ ${fmtT(S.durasi)}</span><span class="chip">💾 ${kb} KB</span></div>
+      ${S.peak !== null && S.peak < 0.04 ? '<div class="note warn" style="margin:12px 0 0">🔈 Suaramu terdeteksi sangat pelan. Dengarkan baik-baik. Jika tidak terdengar, tekan <b>Rekam Ulang</b>.</div>' : ''}
+      ${S.keluar ? '<div class="note warn" style="margin:12px 0 0">⚠️ Kamu sempat meninggalkan halaman saat merekam, sehingga rekaman mungkin terputus. Pastikan seluruh bacaan terdengar.</div>' : ''}
+      <button class="btn alt block" id="b-ulang">🔁 Rekam Ulang</button></div>
+    <div class="card"><h2>2️⃣ Foto selfie</h2>
+      <p class="muted" style="margin:0 0 8px">Ambil selfie dengan wajah terlihat jelas. Foto diberi bingkai twibbon berisi nama, kelas, dan tanggal. Foto ini <b>dikirim ke guru</b> untuk laporan PJJ.</p>
+      <div id="twb"></div></div>
+    <div class="card"><div id="syarat" style="font-size:.92em"></div>
+      <button class="btn go block" id="b-kirim" disabled></button></div>`);
   const au = $('au');
-  const ok = () => { if (S.heard) return; S.heard = true; const b = $('b-kirim'); if (b) { b.disabled = false; b.textContent = '📤 Kirim Tugas'; } };
+  const ok = () => { if (S.heard) return; S.heard = true; refreshKirim(); };
   au.addEventListener('timeupdate', () => { if (au.currentTime >= MIN_DENGAR) ok(); });
   au.addEventListener('ended', ok);
   $('b-kirim').onclick = kirim;
   $('b-ulang').onclick = () => { S.latihanOk = true; renderLatihan(); };
+  tampilSelfie(); refreshKirim();
 }
 
-// ====== FASE 4: KIRIM ======
-function blobToDataURL(b) { return new Promise((res, rej) => { const f = new FileReader(); f.onload = () => res(f.result); f.onerror = () => rej(new Error('Gagal membaca rekaman')); f.readAsDataURL(b); }); }
-
-async function kirim() {
-  if (S.sending) return;
-  S.sending = true; S.phase = 'kirim';
-  loading('Mengirim rekaman ke guru… jangan tutup halaman ini.');
-  try {
-    const audio = await blobToDataURL(S.blob);
-    const out = await api({ action: 'kirim', kelas: ME.kelas, nama: ME.nama, mime: S.mime, durasi: S.durasi, audio,
-      transkrip: AI.teks.join(' '), aiStatus: AI.mode });
-    markDone(); S.phase = 'selesai';
-    S.aiSkor = (out.aiSkor === undefined || out.aiSkor === null) ? null : out.aiSkor;
-    S.aiStatus = out.aiStatus || '';
-    renderSukses();
-  } catch (e) {
-    if (e.duplicate) return renderTerkunci(ME);
-    renderGagal(e.message);
-  } finally { S.sending = false; }
+function refreshKirim() {
+  const b = $('b-kirim'); if (!b) return;
+  const ok = !!S.heard && !!S.foto;
+  b.disabled = !ok;
+  b.textContent = ok ? '📤 Kirim Suara & Foto' : !S.heard ? '🎧 Dengarkan rekaman dulu' : '📸 Ambil selfie dulu';
+  $('syarat').innerHTML = `<div>${S.heard ? '✅' : '⬜'} Rekaman sudah didengarkan</div><div>${S.foto ? '✅' : '⬜'} Foto selfie siap</div>`;
 }
 
-// ====== SUKSES + SKOR AI + TWIBBON ======
-function renderSukses() {
-  const sk = S.aiSkor;
-  const label = sk === null ? '' : sk >= 85 ? 'Luar biasa! 🌟' : sk >= 70 ? 'Bagus! 👏' : sk >= 50 ? 'Cukup baik. Terus berlatih ya 💪' : 'Tetap semangat, terus berlatih 💪';
-  view(`<div class="card center" style="border-color:#b9e2c8;background:#f1fbf5"><div class="big">🎉</div>
-      <h2 style="margin-top:8px;color:var(--grn)">Rekaman terkirim!</h2>
-      <p style="margin:0">Terima kasih, <b>${esc(ME.nama)}</b>. Guru akan mendengarkan rekamanmu dan memberi nilai.</p>
-      <div class="chips"><span class="chip">⏱️ ${fmtT(S.durasi)}</span></div></div>
-    <div class="card center"><h2>🤖 Skor AI</h2>
-      ${sk === null
-        ? `<p style="margin:0">Skor AI tidak tersedia untuk rekamanmu. Tenang, rekamanmu tetap diterima dan akan dinilai guru.</p>`
-        : `<div class="big" style="color:var(--navy)">${sk}</div><div>${label}</div>
-           <p class="muted" style="margin:10px 0 0">Ini hanya <b>perkiraan komputer</b> (pengenalan suara bisa keliru). Nilai akhirmu diberikan guru setelah mendengarkan rekamanmu.</p>`}
-    </div>
-    <div class="card"><h2>📸 Twibbon Selfie</h2>
-      <p class="muted" style="margin:0 0 6px">Foto selfie-mu hanya diproses di HP ini dan <b>tidak dikirim</b> ke guru. Simpan atau bagikan sebagai tanda kamu sudah selesai belajar.</p>
-      <div id="twb"></div></div>`);
-  twibbonAwal();
-}
-
-function twibbonAwal() {
-  $('twb').innerHTML = `<label class="btn go block">📸 Ambil Selfie<input type="file" accept="image/*" capture="user" hidden id="f-kamera"></label>
-    <label class="btn alt block">🖼️ Pilih dari Galeri<input type="file" accept="image/*" hidden id="f-galeri"></label>`;
-  ['f-kamera', 'f-galeri'].forEach(id => { $(id).onchange = ev => { const f = ev.target.files && ev.target.files[0]; if (f) buatTwibbon(f); }; });
-}
-
+// ====== SELFIE TWIBBON ======
 function kalimatTwibbon() { return `Saya ${ME.nama} telah selesai belajar PJJ materi ${MATERI}`; }
+
+function tampilSelfie() {
+  const t = $('twb'); if (!t) return;
+  if (S.foto) {
+    t.innerHTML = `<img class="twb-img" src="${S.foto.url}" alt="Twibbon ${esc(ME.nama)}">
+      <label class="btn alt block">🔄 Ganti Foto<input type="file" accept="image/*" capture="user" hidden data-f="kamera"></label>`;
+  } else {
+    t.innerHTML = `<label class="btn go block">📸 Ambil Selfie<input type="file" accept="image/*" capture="user" hidden data-f="kamera"></label>
+      <p class="center" style="margin:10px 0 0;font-size:.85em"><label style="color:var(--navy);text-decoration:underline;cursor:pointer">Kamera bermasalah? Pilih dari galeri<input type="file" accept="image/*" hidden data-f="galeri"></label></p>`;
+  }
+  t.querySelectorAll('input[data-f]').forEach(inp => inp.onchange = ev => { const f = ev.target.files && ev.target.files[0]; if (f) buatTwibbon(f, inp.dataset.f); });
+}
 
 function muatGambar(file) {
   return new Promise((res, rej) => {
     const url = URL.createObjectURL(file), im = new Image();
     im.onload = () => { URL.revokeObjectURL(url); res(im); };
-    im.onerror = () => { URL.revokeObjectURL(url); rej(new Error('Foto tidak bisa dibaca')); };
+    im.onerror = () => { URL.revokeObjectURL(url); rej(new Error('Foto tidak bisa dibaca. Coba ambil ulang.')); };
     im.src = url;
   });
 }
@@ -489,10 +371,10 @@ function bungkus(x, teks, maxW) {
 }
 
 function gambarTwibbon(img, info) {
-  const W = 1080, H = 1350;
+  const W = 1080, H = 1350, F = '"Segoe UI", Roboto, Arial, sans-serif';
   const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
   const x = cv.getContext('2d');
-  // foto selfie (penuhi kanvas, dipotong tengah)
+  // foto selfie (memenuhi kanvas, dipotong dari tengah)
   x.fillStyle = '#0c1930'; x.fillRect(0, 0, W, H);
   const sc = Math.max(W / img.width, H / img.height), dw = img.width * sc, dh = img.height * sc;
   x.drawImage(img, (W - dw) / 2, (H - dh) / 2, dw, dh);
@@ -500,63 +382,88 @@ function gambarTwibbon(img, info) {
   let g = x.createLinearGradient(0, 0, 0, 230); g.addColorStop(0, 'rgba(15,138,106,0.96)'); g.addColorStop(1, 'rgba(15,138,106,0)');
   x.fillStyle = g; x.fillRect(0, 0, W, 230);
   x.textAlign = 'center'; x.fillStyle = '#ffffff';
-  x.font = 'bold 58px "Segoe UI", Roboto, Arial, sans-serif'; x.fillText('SELESAI BELAJAR PJJ', W / 2, 88);
-  x.font = '600 42px "Segoe UI", Roboto, Arial, sans-serif'; x.fillText(MATERI, W / 2, 142);
+  x.font = `bold 58px ${F}`; x.fillText('SELESAI BELAJAR PJJ', W / 2, 88);
+  x.font = `600 42px ${F}`; x.fillText(MATERI, W / 2, 142);
   // panel bawah
   g = x.createLinearGradient(0, H - 640, 0, H); g.addColorStop(0, 'rgba(8,28,52,0)'); g.addColorStop(0.45, 'rgba(8,28,52,0.82)'); g.addColorStop(1, 'rgba(8,28,52,0.96)');
   x.fillStyle = g; x.fillRect(0, H - 640, W, 640);
-  // nama (diperkecil otomatis jika panjang)
-  let fs = 84; const maxW = W - 150;
-  do { x.font = `bold ${fs}px "Segoe UI", Roboto, Arial, sans-serif`; fs -= 4; } while (x.measureText(info.nama).width > maxW && fs > 40);
+  let fs = 84; const maxW = W - 150;                       // nama diperkecil otomatis jika panjang
+  do { x.font = `bold ${fs}px ${F}`; fs -= 4; } while (x.measureText(info.nama).width > maxW && fs > 40);
   x.fillStyle = '#ffffff'; x.fillText(info.nama, W / 2, H - 395);
-  x.font = '600 40px "Segoe UI", Roboto, Arial, sans-serif'; x.fillStyle = '#9fe3c9'; x.fillText('Kelas ' + info.kelas, W / 2, H - 335);
-  // kalimat
-  x.font = '600 44px "Segoe UI", Roboto, Arial, sans-serif'; x.fillStyle = '#ffffff';
-  const baris = bungkus(x, info.kalimat, W - 190).slice(0, 3);
-  baris.forEach((b, i) => x.fillText(b, W / 2, H - 255 + i * 58));
-  x.font = '500 30px "Segoe UI", Roboto, Arial, sans-serif'; x.fillStyle = '#b8c7dc';
+  x.font = `600 40px ${F}`; x.fillStyle = '#9fe3c9'; x.fillText('Kelas ' + info.kelas, W / 2, H - 335);
+  x.font = `600 44px ${F}`; x.fillStyle = '#ffffff';
+  bungkus(x, info.kalimat, W - 190).slice(0, 3).forEach((b, i) => x.fillText(b, W / 2, H - 255 + i * 58));
+  x.font = `500 30px ${F}`; x.fillStyle = '#b8c7dc';
   x.fillText(new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }), W / 2, H - 38);
-  // lencana skor AI
-  const cx = W - 190, cy = 410, rr = 118;
+  // lencana "selesai" (centang digambar sebagai garis, tidak bergantung pada font)
+  const cx = W - 190, cy = 400, rr = 112;
   g = x.createLinearGradient(cx - rr, cy - rr, cx + rr, cy + rr); g.addColorStop(0, '#ffe27a'); g.addColorStop(1, '#f5a300');
   x.beginPath(); x.arc(cx, cy, rr, 0, Math.PI * 2); x.fillStyle = g; x.fill();
   x.lineWidth = 10; x.strokeStyle = '#ffffff'; x.stroke();
-  x.fillStyle = '#3b2a00';
-  if (info.skor === null || info.skor === undefined) {
-    x.font = 'bold 84px "Segoe UI", Roboto, Arial, sans-serif'; x.fillText('✓', cx, cy + 16);
-    x.font = 'bold 30px "Segoe UI", Roboto, Arial, sans-serif'; x.fillText('SELESAI', cx, cy + 66);
-  } else {
-    x.font = 'bold 28px "Segoe UI", Roboto, Arial, sans-serif'; x.fillText('SKOR AI', cx, cy - 52);
-    x.font = 'bold 100px "Segoe UI", Roboto, Arial, sans-serif'; x.fillText(String(info.skor), cx, cy + 38);
-  }
+  x.beginPath(); x.moveTo(cx - 44, cy - 14); x.lineTo(cx - 12, cy + 20); x.lineTo(cx + 46, cy - 46);
+  x.lineWidth = 20; x.lineCap = 'round'; x.lineJoin = 'round'; x.strokeStyle = '#3b2a00'; x.stroke();
+  x.fillStyle = '#3b2a00'; x.font = `bold 32px ${F}`; x.fillText('SELESAI', cx, cy + 76);
   // bingkai
   g = x.createLinearGradient(0, 0, W, H); g.addColorStop(0, '#20a56a'); g.addColorStop(1, '#0d6efd');
   x.lineWidth = 26; x.strokeStyle = g; x.strokeRect(13, 13, W - 26, H - 26);
-  return cv;
+  // kecilkan & kompres seperti foto WhatsApp
+  const kecil = document.createElement('canvas'); kecil.width = FOTO_LEBAR; kecil.height = FOTO_TINGGI;
+  kecil.getContext('2d').drawImage(cv, 0, 0, FOTO_LEBAR, FOTO_TINGGI);
+  return kecil;
 }
 
-async function buatTwibbon(file) {
-  $('twb').innerHTML = '<div class="spin"></div><p class="muted center">Membuat twibbon…</p>';
+async function buatTwibbon(file, sumber) {
+  const t = $('twb');
+  t.innerHTML = '<div class="spin"></div><p class="muted center">Membuat twibbon…</p>';
   try {
     const img = await muatGambar(file);
-    const cv = gambarTwibbon(img, { nama: ME.nama, kelas: ME.kelas, skor: S.aiSkor, kalimat: kalimatTwibbon() });
-    const blob = await new Promise((res, rej) => cv.toBlob(b => b ? res(b) : rej(new Error('Gagal membuat gambar')), 'image/jpeg', 0.92));
-    if (S.twbUrl) URL.revokeObjectURL(S.twbUrl);
-    S.twbUrl = URL.createObjectURL(blob);
-    const nama = `Twibbon_${ME.nama.replace(/\s+/g, '_')}.jpg`;
-    const berkas = (typeof File === 'function') ? new File([blob], nama, { type: 'image/jpeg' }) : null;
-    const bisaBagi = !!(berkas && navigator.canShare && navigator.canShare({ files: [berkas] }));
-    $('twb').innerHTML = `<img class="twb-img" id="twb-img" src="${S.twbUrl}" alt="Twibbon ${esc(ME.nama)}">
-      <a class="btn go block" id="b-simpan" href="${S.twbUrl}" download="${esc(nama)}">⬇️ Simpan ke HP</a>
-      ${bisaBagi ? '<button class="btn alt block" id="b-bagi">📤 Bagikan</button>' : ''}
-      <button class="btn alt block" id="b-ulang-foto">🔄 Ganti Foto</button>
-      <p class="muted" style="margin:8px 0 0">Jika tombol simpan tidak berfungsi, tekan lama pada gambar lalu pilih “Simpan gambar”.</p>`;
-    if (bisaBagi) $('b-bagi').onclick = () => navigator.share({ files: [berkas], title: 'Twibbon PJJ', text: kalimatTwibbon() }).catch(() => {});
-    $('b-ulang-foto').onclick = twibbonAwal;
+    const cv = gambarTwibbon(img, { nama: ME.nama, kelas: ME.kelas, kalimat: kalimatTwibbon() });
+    const blob = await new Promise((res, rej) => cv.toBlob(b => b ? res(b) : rej(new Error('Gagal membuat gambar')), 'image/jpeg', FOTO_KUALITAS));
+    if (S.foto) URL.revokeObjectURL(S.foto.url);
+    S.foto = { blob, url: URL.createObjectURL(blob), sumber };
   } catch (e) {
-    $('twb').innerHTML = `<div class="note err">${esc(e.message || 'Gagal membuat twibbon')}</div>`;
-    twibbonAwal();
+    tampilSelfie(); refreshKirim();           // tampilkan lagi foto lama (jika ada) atau tombol ambil selfie
+    const t2 = $('twb'); if (t2) t2.insertAdjacentHTML('afterbegin', `<div class="note err">${esc(e.message || 'Gagal membuat twibbon')}</div>`);
+    return;
   }
+  tampilSelfie(); refreshKirim();
+}
+
+function nmFoto() { return `Twibbon_${ME.nama.replace(/\s+/g, '_')}.jpg`; }
+
+// ====== FASE 4: KIRIM ======
+function blobToDataURL(b) { return new Promise((res, rej) => { const f = new FileReader(); f.onload = () => res(f.result); f.onerror = () => rej(new Error('Gagal membaca rekaman')); f.readAsDataURL(b); }); }
+
+async function kirim() {
+  if (S.sending) return;
+  S.sending = true; S.phase = 'kirim';
+  loading('Mengirim suara dan foto ke guru… jangan tutup halaman ini.');
+  try {
+    const audio = await blobToDataURL(S.blob);
+    const foto = await blobToDataURL(S.foto.blob);
+    await api({ action: 'kirim', kelas: ME.kelas, nama: ME.nama, mime: S.mime, durasi: S.durasi, audio, foto, sumberFoto: S.foto.sumber });
+    markDone(); S.phase = 'selesai';
+    renderSukses();
+  } catch (e) {
+    if (e.duplicate) return renderTerkunci(ME);
+    renderGagal(e.message);
+  } finally { S.sending = false; }
+}
+
+// ====== SUKSES ======
+function renderSukses() {
+  const berkas = (typeof File === 'function') ? new File([S.foto.blob], nmFoto(), { type: 'image/jpeg' }) : null;
+  const bisaBagi = !!(berkas && navigator.canShare && navigator.canShare({ files: [berkas] }));
+  view(`<div class="card center" style="border-color:#b9e2c8;background:#f1fbf5"><div class="big">🎉</div>
+      <h2 style="margin-top:8px;color:var(--grn)">Suara dan foto terkirim!</h2>
+      <p style="margin:0">Terima kasih, <b>${esc(ME.nama)}</b>. Guru akan mendengarkan rekamanmu dan memberi nilai.</p>
+      <div class="chips"><span class="chip">⏱️ ${fmtT(S.durasi)}</span><span class="chip">📸 Foto diterima</span></div></div>
+    <div class="card"><h2>🖼️ Twibbon kamu</h2>
+      <img class="twb-img" src="${S.foto.url}" alt="Twibbon ${esc(ME.nama)}">
+      <a class="btn go block" id="b-simpan" href="${S.foto.url}" download="${esc(nmFoto())}">⬇️ Simpan ke HP</a>
+      ${bisaBagi ? '<button class="btn alt block" id="b-bagi">📤 Bagikan</button>' : ''}
+      <p class="muted" style="margin:8px 0 0">Jika tombol simpan tidak berfungsi, tekan lama pada gambar lalu pilih “Simpan gambar”.</p></div>`);
+  if (bisaBagi) $('b-bagi').onclick = () => navigator.share({ files: [berkas], title: 'Twibbon PJJ', text: kalimatTwibbon() }).catch(() => {});
 }
 
 function nmFile() { const ext = /webm/.test(S.mime) ? 'webm' : /ogg/.test(S.mime) ? 'ogg' : 'm4a'; return `${ME.kelas}_${ME.nama}_${ME.v}.${ext}`.replace(/\s+/g, '_'); }
@@ -565,10 +472,11 @@ function nmFile() { const ext = /webm/.test(S.mime) ? 'webm' : /ogg/.test(S.mime
 function renderGagal(msg) {
   S.phase = 'gagal';
   view(`<div class="card"><h2>⚠️ Pengiriman gagal</h2><p>${esc(msg)}</p>
-    <p class="muted" style="margin:0">Rekamanmu masih tersimpan di halaman ini. <b>Jangan tutup halaman.</b></p>
+    <p class="muted" style="margin:0">Suara dan fotomu masih tersimpan di halaman ini. <b>Jangan tutup halaman.</b></p>
     <button class="btn go block" id="b-coba">🔁 Coba kirim lagi</button>
-    <div class="note warn" style="margin:14px 0 0"><b>Jalur darurat (sinyal buruk):</b> unduh rekaman ke HP, lalu kirim filenya lewat WhatsApp ke guru.</div>
-    <a class="btn alt block" id="b-unduh" href="${S.url}" download="${esc(nmFile())}">⬇️ Unduh Rekaman</a></div>`);
+    <div class="note warn" style="margin:14px 0 0"><b>Jalur darurat (sinyal buruk):</b> unduh rekaman dan foto ke HP, lalu kirim kedua filenya lewat WhatsApp ke guru.</div>
+    <a class="btn alt block" id="b-unduh" href="${S.url}" download="${esc(nmFile())}">⬇️ Unduh Rekaman</a>
+    <a class="btn alt block" id="b-unduh-foto" href="${S.foto.url}" download="${esc(nmFoto())}">⬇️ Unduh Foto</a></div>`);
   $('b-coba').onclick = kirim;
 }
 
